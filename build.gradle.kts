@@ -5,6 +5,7 @@ plugins {
 version = "1.0-SNAPSHOT"
 
 val tornadofxVersion: String by rootProject
+val richtextfxVersion: String by rootProject
 
 repositories {
     mavenCentral()
@@ -17,6 +18,7 @@ application {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("no.tornado:tornadofx:$tornadofxVersion")
+    implementation("org.fxmisc.richtext:richtextfx:$richtextfxVersion")
     testImplementation(kotlin("test-junit"))
 }
 
