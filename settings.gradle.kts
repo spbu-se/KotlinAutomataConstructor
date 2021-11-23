@@ -1,1 +1,1 @@
-rootProject.name = "automaton-controller"
+rootProject.name = "automaton-constructor"
