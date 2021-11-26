@@ -35,10 +35,8 @@ class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
         }
         transitions.forEach { registerTransition(it) }
         transitions.addListener(SetChangeListener {
-            if (it.wasAdded()) {
-                registerTransition(it.elementAdded)
-                recheckDeterminism()
-            }
+            if (it.wasAdded()) registerTransition(it.elementAdded)
+            recheckDeterminism()
         })
         isNonDeterministic
     }
