@@ -1,7 +1,6 @@
 package automaton.constructor.model.transition.property
 
-import javafx.beans.property.SimpleObjectProperty
-import javafx.scene.control.Control
+import javafx.scene.Node
 
 class TransitionPropertyDescriptor<T>(
     val name: String,
@@ -9,12 +8,12 @@ class TransitionPropertyDescriptor<T>(
     // only influences "with epsilon transitions"/"without epsilon transitions" message shown to a user
     // (e.g. it doesn't make much sense to deem transition epsilon just because it writes an empty string (ε) to a stack)
     val canBeDeemedEpsilon: Boolean,
-    private val settingControlFactory: (TransitionProperty<T>) -> Control,
+    private val settingEditorFactory: (TransitionProperty<T>) -> Node,
     private val stringifier: (T) -> String
 ) {
-    fun createProperty() = TransitionProperty(SimpleObjectProperty(defaultValue), this)
+    fun createProperty() = TransitionProperty(this)
 
-    fun createSettingControl(property: TransitionProperty<T>): Control = settingControlFactory(property)
+    fun createSettingEditor(property: TransitionProperty<T>): Node = settingEditorFactory(property)
 
     fun stringifyValue(value: T): String = stringifier(value)
 }

@@ -32,7 +32,7 @@ class TransitionView(
     ) + transition.propertyGroups.map { (memoryUnit, filters, sideEffects) ->
         SettingGroup(
             memoryUnit.name.toProperty(),
-            (filters + sideEffects).map { Setting(it.name, it.createSettingControl()) })
+            (filters + sideEffects).map { Setting(it.name, it.createSettingEditor()) })
     }
 
     init {
@@ -40,8 +40,8 @@ class TransitionView(
         font = Font.font(48.0)
         textProperty().bind(stringBinding(transition, *transition.allProperties.toTypedArray()) {
             propertyGroups.joinToString(separator = ";") { (_, filters, sideEffects) ->
-                val filtersString = filters.joinToString(separator = ",") { it.stringValue }
-                val sideEffectsString = sideEffects.joinToString(separator = ",") { it.stringValue }
+                val filtersString = filters.joinToString(separator = ",") { it.stringify() }
+                val sideEffectsString = sideEffects.joinToString(separator = ",") { it.stringify() }
                 if (filtersString.isEmpty() || sideEffectsString.isEmpty()) filtersString + sideEffectsString
                 else "$filtersString/$sideEffectsString"
             }

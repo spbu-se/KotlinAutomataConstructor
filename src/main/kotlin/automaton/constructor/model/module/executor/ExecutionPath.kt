@@ -33,7 +33,7 @@ class ExecutionPath private constructor(
     private fun updateStatus() {
         if (
             (state.isFinal || memory.any { it.status == REQUIRES_ACCEPTANCE }) &&
-            memory.all { it.status != NOT_READY_TO_TERMINATE }
+            memory.all { it.status != NOT_READY_TO_ACCEPT }
         ) status = ACCEPTED
         else if (memory.any { it.status == REQUIRES_TERMINATION || it.status == REQUIRES_ACCEPTANCE })
             status = REJECTED

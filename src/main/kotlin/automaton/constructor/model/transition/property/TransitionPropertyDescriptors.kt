@@ -12,7 +12,7 @@ fun createCharOrEpsTransitionPropertyDescriptor(name: String, canBeDeemedEpsilon
         name = name,
         defaultValue = EPSILON_VALUE,
         canBeDeemedEpsilon = canBeDeemedEpsilon,
-        settingControlFactory = { property ->
+        settingEditorFactory = { property ->
             TextField().apply {
                 textFormatter = TextFormatter(object : StringConverter<Char?>() {
                     override fun toString(obj: Char?): String = property.descriptor.stringifyValue(obj)

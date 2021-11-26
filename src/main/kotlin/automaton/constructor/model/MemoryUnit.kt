@@ -10,18 +10,16 @@ interface MemoryUnit {
 
     // TODO val isAlwaysReadyToTerminate (if all memory units are always ready to terminate then there should be no transitions from final states)
     // TODO val mayRequireAcceptance (if any memory unit may require acceptance then automaton can ran without final states)
-    val currentState: List<*>
+    fun getCurrentFilterValues(): List<*>
     val status: Status
     var name: String
     fun takeTransition(transition: Transition)
     fun createEditor(): Node
     fun copy(): MemoryUnit
 
-    fun canDeemTransitionEpsilon() = (filterDescriptors + sideEffectDescriptors).any { it.canBeDeemedEpsilon }
-
     enum class Status {
-        NOT_READY_TO_TERMINATE,
-        READY_TO_TERMINATE,
+        NOT_READY_TO_ACCEPT,
+        READY_TO_ACCEPT,
         REQUIRES_TERMINATION,
         REQUIRES_ACCEPTANCE
     }

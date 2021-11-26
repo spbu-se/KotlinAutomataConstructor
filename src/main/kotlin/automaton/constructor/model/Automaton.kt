@@ -33,7 +33,7 @@ class Automaton(
     val states = observableSetOf<State>()
 
     fun getPossibleTransitions(state: State, memory: List<MemoryUnit>): Set<Transition> =
-        transitionStorages[state]?.getPossibleTransitions(memory.flatMap { it.currentState }) ?: emptySet()
+        transitionStorages[state]?.getPossibleTransitions(memory.flatMap { it.getCurrentFilterValues() }) ?: emptySet()
 
     fun getPureTransitions(state: State): Set<Transition> =
         transitionStorages[state]?.getPureTransitions() ?: emptySet()

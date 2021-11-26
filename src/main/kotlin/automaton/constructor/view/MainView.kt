@@ -4,7 +4,6 @@ import automaton.constructor.model.Automaton
 import automaton.constructor.model.State
 import automaton.constructor.model.memory.tape.InputTape
 import javafx.geometry.Point2D
-import javafx.scene.control.ScrollPane
 import tornadofx.*
 
 class MainView : View() {

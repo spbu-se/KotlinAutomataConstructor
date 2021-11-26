@@ -3,6 +3,7 @@ package automaton.constructor.model.module.executor
 import automaton.constructor.model.Automaton
 import automaton.constructor.model.State
 import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.transition.property.EPSILON_VALUE
 
 class SteppingStrategy(
     val name: String,
@@ -20,6 +21,8 @@ val STEP_BY_CLOSURE_STRATEGY = SteppingStrategy("Step by closure") { automaton, 
 }
 
 val STEPPING_STRATEGIES = listOf(STEP_BY_STATE_STRATEGY, STEP_BY_CLOSURE_STRATEGY)
+
+fun Transition.isPure() = allProperties.all { it.value == EPSILON_VALUE }
 
 fun Automaton.getClosure(state: State): Set<State> {
     val closure = mutableSetOf(state)

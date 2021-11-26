@@ -24,7 +24,7 @@ abstract class AbstractTape private constructor(
 ) : AbstractMemoryUnit(name) {
 
     override val filterDescriptors = listOf(expectedCharPropDescriptor)
-    override val currentState: List<*> get() = listOf(getChar(headPosition))
+    override fun getCurrentFilterValues(): List<*> = listOf(getChar(headPosition))
 
     val headPositionProperty = headPosition.toProperty()
     var headPosition by headPositionProperty

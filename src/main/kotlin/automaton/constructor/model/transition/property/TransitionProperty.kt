@@ -1,7 +1,6 @@
 package automaton.constructor.model.transition.property
 
-import javafx.beans.property.Property
-import tornadofx.*
+import javafx.beans.property.SimpleObjectProperty
 
 // If transition filter value is EPSILON_VALUE then the filter is considered to always be satisfied.
 //
@@ -11,16 +10,11 @@ import tornadofx.*
 val EPSILON_VALUE = null
 
 class TransitionProperty<T>(
-    delegate: Property<T>,
-    val descriptor: TransitionPropertyDescriptor<T>,
-) : Property<T> by delegate {
-    val isEpsilonProperty =
-        if (descriptor.canBeDeemedEpsilon) booleanBinding { value == EPSILON_VALUE }
-        else false.toProperty()
-    val isEpsilon by isEpsilonProperty
-    val stringValue: String get() = descriptor.stringifyValue(value)
+    val descriptor: TransitionPropertyDescriptor<T>
+) : SimpleObjectProperty<T>(descriptor.defaultValue) {
+    fun stringify(): String = descriptor.stringifyValue(value)
     override fun getName() = descriptor.name
 
     // TODO maybe return some sealed interface implementation that is mapped to control by view
-    fun createSettingControl() = descriptor.createSettingControl(this)
+    fun createSettingEditor() = descriptor.createSettingEditor(this)
 }

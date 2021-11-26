@@ -1,6 +1,7 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.Automaton
+import automaton.constructor.model.transition.property.EPSILON_VALUE
 import automaton.constructor.utils.countBinding
 import automaton.constructor.utils.filteredSet
 import javafx.beans.binding.Bindings.isNotEmpty
@@ -14,7 +15,10 @@ val Automaton.hasEpsilon get() = epsilonDetector.hasEpsilon
 
 class EpsilonDetector(automaton: Automaton) : AutomatonModule {
     val hasEpsilonBinding: BooleanBinding = isNotEmpty(automaton.transitions.filteredSet { transition ->
-        transition.allProperties.countBinding { it.isEpsilonProperty }.booleanBinding { it!!.toInt() > 0 }
+        transition.allProperties.countBinding { property ->
+            if (property.descriptor.canBeDeemedEpsilon) property.booleanBinding { it == EPSILON_VALUE }
+            else false.toProperty()
+        }.booleanBinding { it!!.toInt() > 0 }
     })
     val hasEpsilon by hasEpsilonBinding
 }
