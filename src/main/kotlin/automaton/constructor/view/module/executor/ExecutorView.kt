@@ -4,7 +4,7 @@ import automaton.constructor.controller.module.executor.ExecutorController
 import automaton.constructor.model.module.executor.ExecutionPath
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.STEPPING_STRATEGIES
-import automaton.constructor.view.memory.MemoryView
+import automaton.constructor.utils.SettingGroupEditor
 import automaton.constructor.view.memory.inputDataView
 import javafx.collections.SetChangeListener
 import javafx.scene.control.ScrollPane
@@ -37,7 +37,7 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
                 add(inputDataView(executor.automaton).apply { hiddenWhen(executor.startedProperty) })
                 hbox {
                     visibleWhen(executor.startedProperty)
-                    val exePathToViewMap = mutableMapOf<ExecutionPath, MemoryView>()
+                    val exePathToViewMap = mutableMapOf<ExecutionPath, SettingGroupEditor>()
                     fun registerExePath(exePath: ExecutionPath) {
                         val memoryView = executionPathView(exePath)
                         exePathToViewMap[exePath] = memoryView

@@ -30,9 +30,7 @@ class TransitionView(
             )
         )
     ) + transition.propertyGroups.map { (memoryUnit, filters, sideEffects) ->
-        SettingGroup(
-            memoryUnit.name.toProperty(),
-            (filters + sideEffects).map { Setting(it.name, it.createSettingEditor()) })
+        SettingGroup.fromEditables(memoryUnit.displayName.toProperty(), filters + sideEffects)
     }
 
     init {

@@ -8,22 +8,29 @@ import javafx.scene.control.TitledPane
 import javafx.scene.layout.VBox
 import tornadofx.*
 
-data class SettingGroup(val observableName: ObservableValue<String>, val settings: List<Setting>)
+data class SettingGroup(val observableName: ObservableValue<String>, val settings: List<Setting>) {
+    companion object {
+        fun fromEditables(observableName: ObservableValue<String>, editables: List<Editable>) =
+            SettingGroup(observableName, editables.mapNotNull { it.createSettingOrNull() })
+    }
+}
 
-data class Setting(val name: String, val editor: Node)
+fun Editable.createSettingOrNull() = createEditor()?.let { Setting(displayName, it) }
+
+data class Setting(val displayName: String, val editor: Node)
 
 interface SettingsHolder {
     fun getSettings(): List<SettingGroup>
 }
 
 class SettingsEditor : VBox() {
-    val settingsHolderProperty = objectProperty<SettingsHolder?>(null)
-    var settingsHolder: SettingsHolder? by settingsHolderProperty
+    val settingsProperty = objectProperty<List<SettingGroup>?>(null)
+    var settings by settingsProperty
 
     init {
-        settingsHolderProperty.onChange {
+        settingsProperty.onChange {
             clear()
-            settingsHolder?.getSettings()?.forEach {
+            settings?.forEach {
                 add(SettingGroupEditor(it))
             }
         }

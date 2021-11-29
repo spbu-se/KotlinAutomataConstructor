@@ -18,7 +18,6 @@ application {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("no.tornado:tornadofx:$tornadofxVersion")
-    implementation("org.fxmisc.richtext:richtextfx:$richtextfxVersion")
     testImplementation(kotlin("test-junit"))
 }
 

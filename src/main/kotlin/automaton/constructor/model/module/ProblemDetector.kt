@@ -1,9 +1,7 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.Automaton
-import javafx.beans.binding.Bindings.isEmpty
 import javafx.collections.SetChangeListener
-import org.reactfx.collection.LiveArrayList
 import tornadofx.*
 
 val problemDetectorFactory = { automaton: Automaton -> ProblemDetector(automaton) }

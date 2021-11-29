@@ -22,7 +22,9 @@ class Executor(val automaton: Automaton) : AutomatonModule {
         executionPaths.addAll(
             automaton.initialStates
                 .onEach { it.isCurrent = true }
-                .map { ExecutionPath(it, automaton.memory) }
+                .map { initState ->
+                    ExecutionPath(initState, automaton.memoryDescriptors.map { it.createMemoryUnit() })
+                }
         )
         status = calculateStatus()
         started = true
@@ -43,17 +45,22 @@ class Executor(val automaton: Automaton) : AutomatonModule {
         val runningPaths = executionPaths.filter { it.status == RUNNING }
         runningPaths.forEach { it.state.isCurrent = false }
         runningPaths.forEach { path ->
-            val transitions = steppingStrategy.transitionExtractor(automaton, path)
-            if (transitions.isEmpty()) path.fail()
-            else {
-                transitions
-                    .drop(1)
-                    .forEach { transition ->
-                        val fork = ExecutionPath(path)
-                        fork.takeTransition(transition)
-                        forks.add(fork)
+            steppingStrategy.closureExtractor(automaton, path).forEach { curPath ->
+                if (curPath !== path) forks.add(curPath)
+                if (curPath.status == RUNNING) {
+                    val transitions = steppingStrategy.transitionExtractor(automaton, curPath)
+                    if (transitions.isEmpty()) curPath.fail()
+                    else {
+                        transitions
+                            .drop(1)
+                            .forEach { transition ->
+                                val fork = ExecutionPath(curPath)
+                                fork.takeTransition(transition)
+                                forks.add(fork)
+                            }
+                        curPath.takeTransition(transitions.first())
                     }
-                path.takeTransition(transitions.first())
+                }
             }
         }
         (runningPaths + forks).filter { it.status == RUNNING }.forEach { it.state.isCurrent = true }

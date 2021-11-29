@@ -1,14 +1,19 @@
 package automaton.constructor.model
 
+import automaton.constructor.model.memory.MemoryUnit
+import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
+import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_TERMINATION
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.transition.property.EPSILON_VALUE
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorage
 import javafx.collections.ObservableSet
 import tornadofx.*
 
 class Automaton(
-    val memory: List<MemoryUnit>
+    val memoryDescriptors: List<MemoryUnitDescriptor>
 ) {
     private val transitionStorages = mutableMapOf<State, TransitionStorage>()
     private val outgoingTransitions = mutableMapOf<State, ObservableSet<Transition>>()
@@ -17,12 +22,12 @@ class Automaton(
     private var nextId = 0
 
     init {
-        val memoryCounts = mutableMapOf<String, Int>()
-        memory.forEach { memoryUnit ->
-            memoryCounts.compute(memoryUnit.name) { _, count ->
+        val memoryNameToCountMap = mutableMapOf<String, Int>()
+        memoryDescriptors.forEach { memoryUnitDescriptor ->
+            memoryNameToCountMap.compute(memoryUnitDescriptor.displayName) { _, count ->
                 if (count == null) 1
                 else {
-                    memoryUnit.name += " ${count + 1}"
+                    memoryUnitDescriptor.displayName += " ${count + 1}"
                     count + 1
                 }
             }
@@ -33,7 +38,11 @@ class Automaton(
     val states = observableSetOf<State>()
 
     fun getPossibleTransitions(state: State, memory: List<MemoryUnit>): Set<Transition> =
-        transitionStorages[state]?.getPossibleTransitions(memory.flatMap { it.getCurrentFilterValues() }) ?: emptySet()
+        transitionStorages[state]?.getPossibleTransitions(memory.flatMap {
+            if (it.status == REQUIRES_TERMINATION || it.status == REQUIRES_ACCEPTANCE)
+                it.descriptor.filters.map { EPSILON_VALUE }
+            else it.getCurrentFilterValues()
+        }) ?: emptySet()
 
     fun getPureTransitions(state: State): Set<Transition> =
         transitionStorages[state]?.getPureTransitions() ?: emptySet()
@@ -42,7 +51,7 @@ class Automaton(
 
     fun addState(state: State) {
         if (state.nameProperty.value == "") state.nameProperty.value = "S${nextId++}"
-        transitionStorages[state] = createTransitionStorage(memory)
+        transitionStorages[state] = createTransitionStorage(memoryDescriptors)
         outgoingTransitions[state] = observableSetOf()
         incomingTransitions[state] = mutableSetOf()
         states.add(state)
@@ -58,7 +67,7 @@ class Automaton(
     }
 
     fun addTransition(source: State, target: State): Transition {
-        val transition = Transition(source, target, memory)
+        val transition = Transition(source, target, memoryDescriptors)
         transitionStorages.getValue(source).addTransition(transition)
         outgoingTransitions.getValue(source).add(transition)
         incomingTransitions.getValue(target).add(transition)

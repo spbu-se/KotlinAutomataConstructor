@@ -10,8 +10,10 @@ val Automaton.descriptionBinding get() = automatonDescriptionProvider.descriptio
 // TODO include automaton type (e.g. "finite automaton", "turing machine with 2 tapes") based on memory units types
 class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
     val descriptionBinding =
-        if (automaton.memory.any { transition ->
-                (transition.filterDescriptors + transition.sideEffectDescriptors).any { it.canBeDeemedEpsilon }
+        if (automaton.memoryDescriptors.any { memoryUnitDescriptor ->
+                (memoryUnitDescriptor.filters + memoryUnitDescriptor.sideEffects).any {
+                    it.canBeDeemedEpsilon
+                }
             })
             nonNullObjectBinding(automaton.isDeterministicBinding, automaton.hasEpsilonBinding) {
                 (if (automaton.isDeterministic) "Deterministic " else "Non deterministic ") +

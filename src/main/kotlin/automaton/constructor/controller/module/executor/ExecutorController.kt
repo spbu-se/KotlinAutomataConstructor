@@ -17,9 +17,7 @@ class ExecutorController(val executorView: ExecutorView, val view: View) : Contr
             executor.run()
             val executionResult = executor.status
             executor.stop()
-            view.dialog("Execution result") {
-                label("Input ${executionResult!!.text.toLowerCase()}")
-            }
+            view.dialog("Input ${executionResult!!.displayName.toLowerCase()}") {}
         }
     }
 

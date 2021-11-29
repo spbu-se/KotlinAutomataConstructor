@@ -2,9 +2,11 @@ package automaton.constructor.view
 
 import automaton.constructor.controller.AutomatonController
 import automaton.constructor.model.Automaton
-import automaton.constructor.model.module.*
+import automaton.constructor.model.module.descriptionBinding
 import automaton.constructor.model.module.executor.executor
+import automaton.constructor.model.module.problems
 import automaton.constructor.utils.SettingsEditor
+import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.zoomScrollPane
 import automaton.constructor.view.module.executor.ExecutorView
 import javafx.scene.layout.Pane
@@ -32,7 +34,11 @@ class AutomatonView(val automaton: Automaton, val view: View) : Pane() {
             prefWidthProperty().bind(this@AutomatonView.widthProperty())
             prefHeightProperty().bind(this@AutomatonView.heightProperty())
         }
-        add(SettingsEditor().apply { settingsHolderProperty.bind(controller.selectedSettingsHolderProperty) })
+        add(SettingsEditor().apply {
+            settingsProperty.bind(controller.selectedSettingsHolderProperty.nonNullObjectBinding {
+                it?.getSettings()
+            })
+        })
         label {
             layoutXProperty().bind(this@AutomatonView.widthProperty() - widthProperty() - 10.0)
             layoutY = 10.0

@@ -1,5 +1,6 @@
 package automaton.constructor.model.transition.property
 
+import automaton.constructor.utils.Editable
 import javafx.beans.property.SimpleObjectProperty
 
 // If transition filter value is EPSILON_VALUE then the filter is considered to always be satisfied.
@@ -11,10 +12,10 @@ val EPSILON_VALUE = null
 
 class TransitionProperty<T>(
     val descriptor: TransitionPropertyDescriptor<T>
-) : SimpleObjectProperty<T>(descriptor.defaultValue) {
+) : SimpleObjectProperty<T>(descriptor.defaultValue), Editable {
     fun stringify(): String = descriptor.stringifyValue(value)
-    override fun getName() = descriptor.name
+    override val displayName get() = descriptor.displayName
 
     // TODO maybe return some sealed interface implementation that is mapped to control by view
-    fun createSettingEditor() = descriptor.createSettingEditor(this)
+    override fun createEditor() = descriptor.createEditor(this)
 }
