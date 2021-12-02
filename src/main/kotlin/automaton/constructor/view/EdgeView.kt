@@ -14,44 +14,42 @@ import javafx.scene.shape.Line
 import tornadofx.*
 import java.lang.Math.toDegrees
 import kotlin.math.atan
+import kotlin.math.sqrt
 
 class LoopEdgeRenderData(val state: State) : EdgeRenderData {
     companion object {
-        val LOOP_NORM: Vector2D = Vector2D(1.0, -1.0).normalize()
+        private const val ARROW_START_OFFSET_Y = -0.5 * STATE_RADIUS
+        private val ARROW_START_OFFSET_X = sqrt(STATE_RADIUS * STATE_RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
     }
 
-    override val normXProperty = LOOP_NORM.x.toProperty()
+    override val normXProperty = 0.0.toProperty()
     override val normX by normXProperty
-    override val midPointXProperty = state.positionProperty.doubleBinding {
-        state.position.x + (normX + 1) * STATE_RADIUS
-    }
+    override val midPointXProperty = state.positionProperty.x
     override val midPointX by midPointXProperty
-    override val normYProperty = LOOP_NORM.y.toProperty()
+    override val normYProperty = (-1.0).toProperty()
     override val normY by normYProperty
-    override val midPointYProperty = state.positionProperty.doubleBinding {
-        state.position.y + (normY - 1) * STATE_RADIUS
-    }
+    override val midPointYProperty = state.positionProperty.y - (2.0 * STATE_RADIUS)
     override val midPointY by midPointYProperty
-    override val textAngleInDegreesProperty = 45.0.toProperty()
+    override val textAngleInDegreesProperty = 0.0.toProperty()
     override val children = listOf(
         Circle().apply {
             radius = STATE_RADIUS
-            centerXProperty().bind(state.positionProperty.x + STATE_RADIUS)
+            centerXProperty().bind(state.positionProperty.x)
             centerYProperty().bind(state.positionProperty.y - STATE_RADIUS)
             fill = Color.TRANSPARENT
             stroke = Color.BLACK
         },
         Line().apply {
-            startXProperty().bind(state.positionProperty.x + STATE_RADIUS)
-            startYProperty().bind(state.positionProperty.y)
-            endXProperty().bind(state.positionProperty.x + STATE_RADIUS + 35.0)
-            endYProperty().bind(state.positionProperty.y + 5.0)
+            startXProperty().bind(state.positionProperty.x + ARROW_START_OFFSET_X)
+            startYProperty().bind(state.positionProperty.y + ARROW_START_OFFSET_Y)
+            endXProperty().bind(state.positionProperty.x + (ARROW_START_OFFSET_X + 25.0))
+            endYProperty().bind(state.positionProperty.y + (ARROW_START_OFFSET_Y - 25.0))
         },
         Line().apply {
-            startXProperty().bind(state.positionProperty.x + STATE_RADIUS)
-            startYProperty().bind(state.positionProperty.y)
-            endXProperty().bind(state.positionProperty.x + STATE_RADIUS + 30.0)
-            endYProperty().bind(state.positionProperty.y - 20.0)
+            startXProperty().bind(state.positionProperty.x + ARROW_START_OFFSET_X)
+            startYProperty().bind(state.positionProperty.y + ARROW_START_OFFSET_Y)
+            endXProperty().bind(state.positionProperty.x + (ARROW_START_OFFSET_X - 5.0))
+            endYProperty().bind(state.positionProperty.y + (ARROW_START_OFFSET_Y - 35.0))
         }
     )
 }
