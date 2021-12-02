@@ -1,7 +1,9 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.Automaton
-import javafx.collections.SetChangeListener
+import javafx.beans.binding.Bindings.isEmpty
+import javafx.beans.binding.Bindings.isNotEmpty
+import javafx.beans.value.ObservableBooleanValue
 import tornadofx.*
 
 val problemDetectorFactory = { automaton: Automaton -> ProblemDetector(automaton) }
@@ -12,23 +14,24 @@ data class Problem(val message: String)
 
 val NO_INIT_STATE_PROBLEM = Problem("Add initial state")
 val NO_FINAL_STATE_PROBLEM = Problem("Add final state")
+val FINAL_STATE_WITH_TRANSITION_PROBLEM = Problem("Remove transitions from final states")
 
 class ProblemDetector(val automaton: Automaton) : AutomatonModule {
     val problems = observableListOf<Problem>()
 
     init {
-        fun updateNoInitStateProblem() {
-            if (automaton.initialStates.isEmpty()) problems.add(NO_INIT_STATE_PROBLEM)
-            else problems.remove(NO_INIT_STATE_PROBLEM)
-        }
-        updateNoInitStateProblem()
-        automaton.initialStates.addListener(SetChangeListener { updateNoInitStateProblem() })
+        registerPotentialProblem(NO_INIT_STATE_PROBLEM, isEmpty(automaton.initialStates))
+        if (automaton.memoryDescriptors.none { it.mayRequireAcceptance })
+            registerPotentialProblem(NO_FINAL_STATE_PROBLEM, isEmpty(automaton.finalStates))
+        if (automaton.memoryDescriptors.all { it.isAlwaysReadyToTerminate })
+            registerPotentialProblem(
+                FINAL_STATE_WITH_TRANSITION_PROBLEM,
+                isNotEmpty(automaton.finalStatesWithTransitions)
+            )
+    }
 
-        fun updateNoFinalStateProblem() {
-            if (automaton.finalStates.isEmpty()) problems.add(NO_FINAL_STATE_PROBLEM)
-            else problems.remove(NO_FINAL_STATE_PROBLEM)
-        }
-        updateNoFinalStateProblem()
-        automaton.finalStates.addListener(SetChangeListener { updateNoFinalStateProblem() })
+    private fun registerPotentialProblem(problem: Problem, predicate: ObservableBooleanValue) {
+        if (predicate.value) problems.add(problem)
+        predicate.onChange { if (it) problems.add(problem) else problems.remove(problem) }
     }
 }

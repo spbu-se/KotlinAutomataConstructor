@@ -15,6 +15,7 @@ class StackDescriptor : MonospaceEditableString("z"), MemoryUnitDescriptor {
     override val filters = listOf(expectedChar)
     override val sideEffects = listOf(pushedString)
     override var displayName = "Stack"
+    override val mayRequireAcceptance get() = true
 
     val acceptsByEmptyStackProperty = false.toProperty()
     var acceptsByEmptyStack by acceptsByEmptyStackProperty

@@ -17,6 +17,7 @@ class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
     override val filters = listOf(expectedChar)
     override val sideEffects = emptyList<TransitionPropertyDescriptor<*>>()
     override var displayName = "Input tape"
+    override val isAlwaysReadyToTerminate get() = false
 
     override fun createMemoryUnit() = InputTape(this, Track(value))
 }
