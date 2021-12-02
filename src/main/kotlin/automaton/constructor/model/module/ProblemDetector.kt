@@ -4,34 +4,32 @@ import automaton.constructor.model.Automaton
 import javafx.beans.binding.Bindings.isEmpty
 import javafx.beans.binding.Bindings.isNotEmpty
 import javafx.beans.value.ObservableBooleanValue
+import javafx.collections.ObservableList
 import tornadofx.*
 
 val problemDetectorFactory = { automaton: Automaton -> ProblemDetector(automaton) }
 val Automaton.problemDetector get() = getModule(problemDetectorFactory)
 val Automaton.problems get() = problemDetector.problems
 
-data class Problem(val message: String)
-
-val NO_INIT_STATE_PROBLEM = Problem("Add initial state")
-val NO_FINAL_STATE_PROBLEM = Problem("Add final state")
-val FINAL_STATE_WITH_TRANSITION_PROBLEM = Problem("Remove transitions from final states")
+class PotentialProblem(
+    val message: String,
+    val predicate: ObservableBooleanValue
+)
 
 class ProblemDetector(val automaton: Automaton) : AutomatonModule {
-    val problems = observableListOf<Problem>()
+    private val potentialProblems = observableListOf<PotentialProblem> { arrayOf(it.predicate) }
+    val problems: ObservableList<PotentialProblem> = potentialProblems.filtered { it.predicate.value }
 
     init {
-        registerPotentialProblem(NO_INIT_STATE_PROBLEM, isEmpty(automaton.initialStates))
+        potentialProblems.add(PotentialProblem("Add initial state", isEmpty(automaton.initialStates)))
         if (automaton.memoryDescriptors.none { it.mayRequireAcceptance })
-            registerPotentialProblem(NO_FINAL_STATE_PROBLEM, isEmpty(automaton.finalStates))
+            potentialProblems.add(PotentialProblem("Add final state", isEmpty(automaton.finalStates)))
         if (automaton.memoryDescriptors.all { it.isAlwaysReadyToTerminate })
-            registerPotentialProblem(
-                FINAL_STATE_WITH_TRANSITION_PROBLEM,
-                isNotEmpty(automaton.finalStatesWithTransitions)
+            potentialProblems.add(
+                PotentialProblem(
+                    "Remove transitions from final states",
+                    isNotEmpty(automaton.finalStatesWithTransitions)
+                )
             )
-    }
-
-    private fun registerPotentialProblem(problem: Problem, predicate: ObservableBooleanValue) {
-        if (predicate.value) problems.add(problem)
-        predicate.onChange { if (it) problems.add(problem) else problems.remove(problem) }
     }
 }
