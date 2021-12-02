@@ -124,6 +124,10 @@ class AutomatonController(val automaton: Automaton) : Controller() {
             newTransitionSourceProperty.value = null
             automaton.addTransition(source.state, stateView.state)
         }
+        clearSelection()
+        selectedStateViews.add(stateView)
+        stateView.selected = true
+        selectedSettingsHolder = stateView
     }
 
     fun registerEdgeView(edgeView: EdgeView) {
@@ -162,6 +166,10 @@ class AutomatonController(val automaton: Automaton) : Controller() {
                     }
                 }
         }
+        clearSelection()
+        selectedTransitionViews.add(transitionView)
+        transitionView.selected = true
+        selectedSettingsHolder = transitionView
     }
 
     private fun clearSelection() {
