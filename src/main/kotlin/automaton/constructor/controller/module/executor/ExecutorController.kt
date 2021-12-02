@@ -1,12 +1,11 @@
 package automaton.constructor.controller.module.executor
 
+import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.SteppingStrategy
 import automaton.constructor.model.module.problems
-import automaton.constructor.view.module.executor.ExecutorView
 import tornadofx.*
 
-class ExecutorController(val executorView: ExecutorView, val view: View) : Controller() {
-    val executor = executorView.executor
+class ExecutorController(val executor: Executor, val view: View) : Controller() {
     val automaton = executor.automaton
 
     fun toggleRun() {
@@ -17,7 +16,7 @@ class ExecutorController(val executorView: ExecutorView, val view: View) : Contr
             executor.run()
             val executionResult = executor.status
             executor.stop()
-            view.dialog("Input ${executionResult!!.displayName.toLowerCase()}") {}
+            information("Execution result", "Input ${executionResult!!.displayName.toLowerCase()}")
         }
     }
 
@@ -28,9 +27,7 @@ class ExecutorController(val executorView: ExecutorView, val view: View) : Contr
 
     private fun tryStart(): Boolean {
         if (automaton.problems.isNotEmpty()) {
-            view.dialog("Execution failed") {
-                label(automaton.problems.joinToString("\n") { it.message })
-            }
+            error("Execution failed", automaton.problems.joinToString("\n") { it.message })
             return false
         }
         executor.start()

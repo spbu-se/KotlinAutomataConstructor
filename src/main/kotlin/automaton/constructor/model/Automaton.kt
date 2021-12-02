@@ -13,6 +13,7 @@ import javafx.collections.ObservableSet
 import tornadofx.*
 
 class Automaton(
+    val typeName: String,
     val memoryDescriptors: List<MemoryUnitDescriptor>
 ) {
     private val transitionStorages = mutableMapOf<State, TransitionStorage>()

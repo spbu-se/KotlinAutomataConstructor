@@ -41,7 +41,6 @@ class AutomatonView(val automaton: Automaton, val view: View) : Pane() {
         })
         label {
             layoutXProperty().bind(this@AutomatonView.widthProperty() - widthProperty() - 10.0)
-            layoutY = 10.0
             font = Font.font(16.0)
             textProperty().bind(automaton.descriptionBinding)
         }

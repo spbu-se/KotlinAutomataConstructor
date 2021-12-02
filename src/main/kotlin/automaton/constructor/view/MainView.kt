@@ -1,14 +1,26 @@
 package automaton.constructor.view
 
-import automaton.constructor.model.Automaton
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.controller.OpenedAutomatonController
+import automaton.constructor.utils.nonNullObjectBinding
 import tornadofx.*
 
 class MainView : View() {
-    private val automatonViewProperty = AutomatonView(Automaton(listOf(InputTapeDescriptor())), this).toProperty()
-    private val automatonView: AutomatonView by automatonViewProperty
+    private val openedAutomatonController = OpenedAutomatonController(this)
+    private val automatonViewBinding = openedAutomatonController.openedAutomatonProperty.nonNullObjectBinding {
+        AutomatonView(it, this)
+    }
+    private val automatonView: AutomatonView by automatonViewBinding
 
     override val root = borderpane {
-        centerProperty().bind(automatonViewProperty)
+        top = menubar {
+            menu("File") {
+                item("New") {
+                    action {
+                        openedAutomatonController.onNewClicked()
+                    }
+                }
+            }
+        }
+        centerProperty().bind(automatonViewBinding)
     }
 }

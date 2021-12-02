@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox
 import tornadofx.*
 
 class ExecutorView(val executor: Executor, val view: View) : VBox() {
-    val controller = ExecutorController(this, view)
+    val controller = ExecutorController(executor, view)
 
     init {
         hbox {
@@ -34,9 +34,13 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
         scrollpane {
             hbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
             content = pane {
-                add(inputDataView(executor.automaton).apply { hiddenWhen(executor.startedProperty) })
+                add(inputDataView(executor.automaton).apply {
+                    hiddenWhen(executor.startedProperty)
+                    managedWhen(visibleProperty())
+                })
                 hbox {
                     visibleWhen(executor.startedProperty)
+                    managedWhen(visibleProperty())
                     val exePathToViewMap = mutableMapOf<ExecutionPath, SettingGroupEditor>()
                     fun registerExePath(exePath: ExecutionPath) {
                         val memoryView = executionPathView(exePath)
