@@ -6,7 +6,7 @@ import automaton.constructor.model.transition.property.EPSILON_VALUE
 import automaton.constructor.model.transition.property.createStringOrEpsTransitionPropertyDescriptor
 import automaton.constructor.utils.MonospaceEditableString
 
-class RegisterDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
+class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
     val expectedValue = createStringOrEpsTransitionPropertyDescriptor("Expected value", canBeDeemedEpsilon = false)
     val newValue = createStringOrEpsTransitionPropertyDescriptor("New value", canBeDeemedEpsilon = false)
     override val filters = listOf(expectedValue)
