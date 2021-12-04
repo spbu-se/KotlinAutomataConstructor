@@ -43,7 +43,7 @@ Russian).
 ## Architecture
 
 Model core class diagram:
-![Model core class diagram](model core class diagram.svg)
+![Model core class diagram](model-core-class-diagram.svg)
 
 ## Build
 
