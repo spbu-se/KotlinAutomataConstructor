@@ -4,6 +4,6 @@ import automaton.constructor.model.memory.MemoryUnitDescriptor
 
 data class TransitionPropertyGroup(
     val memoryUnitDescriptor: MemoryUnitDescriptor,
-    val filterProperties: List<TransitionProperty<*>>,
-    val sideEffectProperties: List<TransitionProperty<*>>
+    val filters: List<TransitionProperty<*>>,
+    val sideEffects: List<TransitionProperty<*>>
 )

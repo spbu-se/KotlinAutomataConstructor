@@ -19,8 +19,8 @@ class Transition(
             memoryUnitDescriptor.sideEffects.map { registerProperty(it) }
         )
     }
-    val filters: List<TransitionProperty<*>> = propertyGroups.flatMap { it.filterProperties }
-    val sideEffects: List<TransitionProperty<*>> = propertyGroups.flatMap { it.sideEffectProperties }
+    val filters: List<TransitionProperty<*>> = propertyGroups.flatMap { it.filters }
+    val sideEffects: List<TransitionProperty<*>> = propertyGroups.flatMap { it.sideEffects }
     val allProperties: Collection<TransitionProperty<*>> get() = properties.values
 
     @Suppress("UNCHECKED_CAST")
