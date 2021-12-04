@@ -4,7 +4,7 @@ import automaton.constructor.controller.OpenedAutomatonController
 import automaton.constructor.utils.nonNullObjectBinding
 import tornadofx.*
 
-class MainView : View() {
+class MainView : View("Automaton constructor") {
     private val openedAutomatonController = OpenedAutomatonController(this)
     private val automatonViewBinding = openedAutomatonController.openedAutomatonProperty.nonNullObjectBinding {
         AutomatonView(it, this)
