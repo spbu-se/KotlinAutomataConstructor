@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.6.0"
     application
 }
 version = "1.0-SNAPSHOT"
