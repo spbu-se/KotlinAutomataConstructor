@@ -5,6 +5,7 @@ import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.transition.property.createCharOrBlankTransitionPropertyDescriptor
 import automaton.constructor.model.transition.property.createEnumTransitionPropertyDescriptor
+import automaton.constructor.utils.monospaced
 import javafx.scene.layout.VBox
 import tornadofx.*
 
@@ -24,7 +25,7 @@ class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     override fun createMemoryUnit() = MultiTrackTape(this, valueProperties.map { Track(it.value) })
 
     override fun createEditor() = VBox().apply {
-        valueProperties.forEach { textfield(it) }
+        valueProperties.forEach { textfield(it).monospaced() }
     }
 
     private fun getIndexSuffix(index: Int) = if (trackCount == 1) "" else " ${index + 1}"
