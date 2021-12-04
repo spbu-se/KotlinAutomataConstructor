@@ -1,5 +1,6 @@
 package automaton.constructor.controller.module.executor
 
+import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.SteppingStrategy
 import automaton.constructor.model.module.problems
@@ -13,10 +14,14 @@ class ExecutorController(val executor: Executor, val view: View) : Controller() 
             executor.stop()
         } else {
             if (!tryStart()) return
-            executor.run()
-            val executionResult = executor.status
+            executor.runFor(1_000)
+            val executionResult = when (executor.status!!) {
+                ACCEPTED -> "Input accepted"
+                REJECTED -> "Input rejected"
+                RUNNING -> "The automaton didn't halt in one second"
+            }
             executor.stop()
-            information("Execution result", "Input ${executionResult!!.displayName.toLowerCase()}")
+            information("Execution result", executionResult)
         }
     }
 
