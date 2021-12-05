@@ -3,6 +3,7 @@ package automaton.constructor.model.module
 import automaton.constructor.model.Automaton
 import javafx.beans.value.ObservableValue
 import tornadofx.*
+import java.util.*
 
 val automatonDescriptionProviderFactory = { automaton: Automaton -> AutomatonDescriptionProvider(automaton) }
 val Automaton.automatonDescriptionProvider get() = getModule(automatonDescriptionProviderFactory)
@@ -24,6 +25,6 @@ class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
 
     val descriptionBinding = stringBinding(determinicityPartBinding, epsilonPartBinding) {
         listOf(determinicityPart, automaton.typeName, epsilonPart).filter { it.isNotEmpty() }
-            .joinToString(" ").capitalize()
+            .joinToString(" ").replaceFirstChar { it.titlecase(Locale.getDefault()) }
     }
 }
