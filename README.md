@@ -9,7 +9,7 @@ Automaton editing, visualization, simulation and analyzing desktop software
 * [Features](#features)
 * [User guide](#user-guide)
 * [Architecture](#architecture)
-* [Build](#build)
+* [Build system](#build-system)
 * [Technologies](#technologies)
 * [License](#license)
 
@@ -45,23 +45,28 @@ Russian).
 Model core class diagram:
 ![Model core class diagram](model-core-class-diagram.svg)
 
-## Build
+## Build system
 
 To build this project, you must use JDK 1.8 with JavaFX (`jfxrt.jar`) package installed (e.g.
-[Oracle JDK 1.8](https://www.oracle.com/java/technologies/downloads/#java8)). 
+[Oracle JDK 1.8](https://www.oracle.com/java/technologies/downloads/#java8)).
 
-Build:
-```shell
-./gradlew build
-```  
-Run:
-```shell
-./gradlew run
-```  
+This project uses Gradle build system. Here are commands for some of its most important tasks:
+
+| Command                  | Description                 |
+|--------------------------|-----------------------------|
+| `./gradlew assemble`     | Builds without tests        |
+| `./gradlew run`          | Runs the application        |
+| `./gradlew test`         | Runs the unit tests         |
+| `./gradlew assembleDist` | Assembles the distributions |
+| `./gradlew tasks`        | Displays runnable tasks     |
 
 ## Technologies
 
 **UI:** JavaFX, TornadoFX
+
+**Build system:** Gradle
+
+**Tests:** JUnit5, MockK
 
 ## License
 

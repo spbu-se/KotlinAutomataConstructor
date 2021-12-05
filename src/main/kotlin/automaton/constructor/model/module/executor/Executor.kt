@@ -10,7 +10,7 @@ val executorFactory = { automaton: Automaton -> Executor(automaton) }
 val Automaton.executor get() = getModule(executorFactory)
 
 class Executor(val automaton: Automaton) : AutomatonModule {
-    val executionPaths = observableSetOf<ExecutionPath>()
+    val executionStates = observableSetOf<ExecutionState>()
     var status: ExecutionStatus? = null
 
     val startedProperty = false.toProperty()
@@ -18,12 +18,12 @@ class Executor(val automaton: Automaton) : AutomatonModule {
         private set
 
     fun start() {
-        executionPaths.clear()
-        executionPaths.addAll(
+        executionStates.clear()
+        executionStates.addAll(
             automaton.initialStates
                 .onEach { it.isCurrent = true }
                 .map { initState ->
-                    ExecutionPath(initState, automaton.memoryDescriptors.map { it.createMemoryUnit() })
+                    ExecutionState(initState, automaton.memoryDescriptors.map { it.createMemoryUnit() })
                 }
         )
         status = calculateStatus()
@@ -31,7 +31,7 @@ class Executor(val automaton: Automaton) : AutomatonModule {
     }
 
     fun stop() {
-        executionPaths.onEach { it.state.isCurrent = false }.clear()
+        executionStates.onEach { it.state.isCurrent = false }.clear()
         status = null
         started = false
     }
@@ -43,8 +43,8 @@ class Executor(val automaton: Automaton) : AutomatonModule {
     }
 
     fun step(steppingStrategy: SteppingStrategy) {
-        val forks = mutableListOf<ExecutionPath>()
-        val runningPaths = executionPaths.filter { it.status == RUNNING }
+        val forks = mutableListOf<ExecutionState>()
+        val runningPaths = executionStates.filter { it.status == RUNNING }
         runningPaths.forEach { it.state.isCurrent = false }
         runningPaths.forEach { path ->
             steppingStrategy.closureExtractor(automaton, path).forEach { curPath ->
@@ -56,7 +56,7 @@ class Executor(val automaton: Automaton) : AutomatonModule {
                         transitions
                             .drop(1)
                             .forEach { transition ->
-                                val fork = ExecutionPath(curPath)
+                                val fork = ExecutionState(curPath)
                                 fork.takeTransition(transition)
                                 forks.add(fork)
                             }
@@ -66,13 +66,13 @@ class Executor(val automaton: Automaton) : AutomatonModule {
             }
         }
         (runningPaths + forks).filter { it.status == RUNNING }.forEach { it.state.isCurrent = true }
-        executionPaths.addAll(forks)
+        executionStates.addAll(forks)
         status = calculateStatus()
     }
 
     private fun calculateStatus() = when {
-        executionPaths.any { it.status == ACCEPTED } -> ACCEPTED
-        executionPaths.any { it.status == RUNNING } -> RUNNING
+        executionStates.any { it.status == ACCEPTED } -> ACCEPTED
+        executionStates.any { it.status == RUNNING } -> RUNNING
         else -> REJECTED
     }
 }

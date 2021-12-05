@@ -8,7 +8,7 @@ import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.transition.Transition
 import tornadofx.*
 
-class ExecutionPath private constructor(
+class ExecutionState private constructor(
     state: State,
     val memory: List<MemoryUnit>,
     status: ExecutionStatus
@@ -23,7 +23,7 @@ class ExecutionPath private constructor(
         updateStatus()
     }
 
-    constructor(other: ExecutionPath) : this(other.state, other.memory.map { it.copy() }, other.status)
+    constructor(other: ExecutionState) : this(other.state, other.memory.map { it.copy() }, other.status)
 
     fun takeTransition(transition: Transition) {
         state = transition.target

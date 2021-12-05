@@ -7,38 +7,36 @@ import automaton.constructor.model.transition.property.EPSILON_VALUE
 
 class SteppingStrategy(
     val name: String,
-    val closureExtractor: (Automaton, ExecutionPath) -> Collection<ExecutionPath>,
-    val transitionExtractor: (Automaton, ExecutionPath) -> Collection<Transition>
+    val closureExtractor: (Automaton, ExecutionState) -> Collection<ExecutionState>,
+    val transitionExtractor: (Automaton, ExecutionState) -> Collection<Transition>
 )
 
 val STEP_BY_STATE_STRATEGY = SteppingStrategy(
     "Step by state",
-    closureExtractor = { _, executionPath -> listOf(executionPath) },
-    transitionExtractor = { automaton, executionPath ->
-        automaton.getPossibleTransitions(executionPath.state, executionPath.memory)
+    closureExtractor = { _, executionState -> listOf(executionState) },
+    transitionExtractor = { automaton, executionState ->
+        automaton.getPossibleTransitions(executionState.state, executionState.memory)
     }
 )
 
 val STEP_BY_CLOSURE_STRATEGY = SteppingStrategy(
     "Step by closure",
-    closureExtractor = { automaton, executionPath -> automaton.getClosure(executionPath) },
-    transitionExtractor = { automaton, executionPath ->
-        automaton.getPossibleTransitions(executionPath.state, executionPath.memory).filter { !it.isPure() }
+    closureExtractor = { automaton, executionState -> automaton.getClosure(executionState) },
+    transitionExtractor = { automaton, executionState ->
+        automaton.getPossibleTransitions(executionState.state, executionState.memory).filter { !it.isPure() }
     }
 )
 
 val STEPPING_STRATEGIES = listOf(STEP_BY_STATE_STRATEGY, STEP_BY_CLOSURE_STRATEGY)
 
-fun Transition.isPure() = allProperties.all { it.value == EPSILON_VALUE }
-
-fun Automaton.getClosure(executionPath: ExecutionPath): Collection<ExecutionPath> {
-    val closure = mutableMapOf(executionPath.state to executionPath)
-    val unhandledPaths = mutableListOf(executionPath)
+fun Automaton.getClosure(executionState: ExecutionState): Collection<ExecutionState> {
+    val closure = mutableMapOf(executionState.state to executionState)
+    val unhandledPaths = mutableListOf(executionState)
     while (unhandledPaths.isNotEmpty()) {
         val curPath = unhandledPaths.removeLast()
         getPureTransitions(curPath.state).forEach { pureTransition ->
             if (!closure.containsKey(pureTransition.target)) {
-                val fork = ExecutionPath(curPath)
+                val fork = ExecutionState(curPath)
                 fork.state = pureTransition.target
                 fork.updateStatus()
                 closure[pureTransition.target] = fork

@@ -1,6 +1,6 @@
 package automaton.constructor.view.module.executor
 
-import automaton.constructor.model.module.executor.ExecutionPath
+import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.model.module.executor.ExecutionStatus
 import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.SettingGroupEditor
@@ -12,16 +12,16 @@ import javafx.scene.layout.CornerRadii
 import javafx.scene.paint.Color
 import tornadofx.*
 
-fun executionPathView(executionPath: ExecutionPath) =
+fun executionStateView(executionState: ExecutionState) =
     SettingGroupEditor(
         SettingGroup.fromEditables(
-            executionPath.stateProperty.select { it.nameProperty }.stringBinding(executionPath.statusProperty) {
-                "$it [${executionPath.status}]"
+            executionState.stateProperty.select { it.nameProperty }.stringBinding(executionState.statusProperty) {
+                "$it [${executionState.status}]"
             },
-            executionPath.memory
+            executionState.memory
         )
     ).apply {
-        gridpane.backgroundProperty().bind(executionPath.statusProperty.nonNullObjectBinding {
+        gridpane.backgroundProperty().bind(executionState.statusProperty.nonNullObjectBinding {
             Background(
                 BackgroundFill(
                     when (it!!) {

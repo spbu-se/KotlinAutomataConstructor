@@ -1,11 +1,13 @@
 plugins {
     kotlin("jvm") version "1.6.0"
+    id("jacoco")
     application
 }
 version = "1.0-SNAPSHOT"
 
 val tornadofxVersion: String by rootProject
-val richtextfxVersion: String by rootProject
+val mockkVersion: String by rootProject
+val jacocoVersion: String by rootProject
 
 repositories {
     mavenCentral()
@@ -18,7 +20,13 @@ application {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("no.tornado:tornadofx:$tornadofxVersion")
-    testImplementation(kotlin("test-junit"))
+    testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+}
+
+jacoco {
+    toolVersion = jacocoVersion
 }
 
 tasks {
@@ -27,5 +35,17 @@ tasks {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
+    }
+    test {
+        finalizedBy("jacocoTestReport")
+        useJUnitPlatform()
+    }
+    jacocoTestReport {
+        dependsOn("test")
+        reports {
+            xml.required.set(false)
+            html.required.set(true)
+            csv.required.set(true)
+        }
     }
 }

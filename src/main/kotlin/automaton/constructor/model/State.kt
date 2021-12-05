@@ -5,6 +5,9 @@ import javafx.beans.property.Property
 import javafx.geometry.Point2D
 import tornadofx.*
 
+/**
+ * A state of the automaton
+ */
 class State(name: String = "", position: Point2D = Point2D.ZERO) {
     val nameProperty: Property<String> = name.toProperty()
     var name: String by nameProperty
@@ -12,6 +15,10 @@ class State(name: String = "", position: Point2D = Point2D.ZERO) {
     var isInitial by isInitialProperty
     val isFinalProperty: BooleanProperty = false.toProperty()
     var isFinal by isFinalProperty
+
+    /**
+     * `true` if there exists running execution state in this state
+     */
     val isCurrentProperty: BooleanProperty = false.toProperty()
     var isCurrent by isCurrentProperty
     val positionProperty: Property<Point2D> = position.toProperty()

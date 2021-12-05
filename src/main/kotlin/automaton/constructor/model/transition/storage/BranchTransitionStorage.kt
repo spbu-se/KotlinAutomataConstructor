@@ -32,9 +32,9 @@ class BranchTransitionStorage(
         subStorages[transition.filters[depth].value]!!.removeTransition(transition)
     }
 
-    override fun getPossibleTransitions(memoryState: List<*>): Set<Transition> =
-        (subStorages[EPSILON_VALUE]?.getPossibleTransitions(memoryState) ?: emptySet()) +
-                (subStorages[memoryState[depth]]?.getPossibleTransitions(memoryState) ?: emptySet())
+    override fun getPossibleTransitions(memoryData: List<*>): Set<Transition> =
+        (subStorages[EPSILON_VALUE]?.getPossibleTransitions(memoryData) ?: emptySet()) +
+                (subStorages[memoryData[depth]]?.getPossibleTransitions(memoryData) ?: emptySet())
 
     override fun getPureTransitions(): Set<Transition> =
         subStorages[EPSILON_VALUE]?.getPureTransitions() ?: emptySet()

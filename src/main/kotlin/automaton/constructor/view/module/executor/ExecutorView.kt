@@ -1,7 +1,7 @@
 package automaton.constructor.view.module.executor
 
 import automaton.constructor.controller.module.executor.ExecutorController
-import automaton.constructor.model.module.executor.ExecutionPath
+import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.STEPPING_STRATEGIES
 import automaton.constructor.utils.SettingGroupEditor
@@ -41,14 +41,14 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
                 hbox {
                     visibleWhen(executor.startedProperty)
                     managedWhen(visibleProperty())
-                    val exePathToViewMap = mutableMapOf<ExecutionPath, SettingGroupEditor>()
-                    fun registerExePath(exePath: ExecutionPath) {
-                        val memoryView = executionPathView(exePath)
+                    val exePathToViewMap = mutableMapOf<ExecutionState, SettingGroupEditor>()
+                    fun registerExePath(exePath: ExecutionState) {
+                        val memoryView = executionStateView(exePath)
                         exePathToViewMap[exePath] = memoryView
                         add(memoryView)
                     }
-                    executor.executionPaths.forEach { registerExePath(it) }
-                    executor.executionPaths.addListener(SetChangeListener {
+                    executor.executionStates.forEach { registerExePath(it) }
+                    executor.executionStates.addListener(SetChangeListener {
                         if (it.wasAdded()) registerExePath(it.elementAdded)
                         if (it.wasRemoved()) children.remove(exePathToViewMap.remove(it.elementRemoved)!!)
                     })

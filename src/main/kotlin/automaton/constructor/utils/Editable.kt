@@ -5,7 +5,14 @@ import javafx.scene.control.TextField
 import tornadofx.*
 
 interface Editable {
+    /**
+     * Human-readable name
+     */
     val displayName: String
+
+    /**
+     * Node for editing this instance or null if this instance can't be edited
+     */
     fun createEditor(): Node?
 }
 

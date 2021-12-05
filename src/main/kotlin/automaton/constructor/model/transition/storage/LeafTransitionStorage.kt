@@ -20,7 +20,7 @@ class LeafTransitionStorage : TransitionStorage {
         if (transitions.isEmpty()) isEmptyProperty.value = true
     }
 
-    override fun getPossibleTransitions(memoryState: List<*>) = transitions
+    override fun getPossibleTransitions(memoryData: List<*>) = transitions
 
     override fun getPureTransitions(): Set<Transition> =
         transitions.filterTo(mutableSetOf()) { transition -> transition.sideEffects.all { it.value == EPSILON_VALUE } }

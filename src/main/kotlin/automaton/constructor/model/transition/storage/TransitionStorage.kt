@@ -9,6 +9,6 @@ interface TransitionStorage {
 
     fun addTransition(transition: Transition)
     fun removeTransition(transition: Transition)
-    fun getPossibleTransitions(memoryState: List<*>): Set<Transition>
+    fun getPossibleTransitions(memoryData: List<*>): Set<Transition>
     fun getPureTransitions(): Set<Transition>
 }
