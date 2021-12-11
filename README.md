@@ -45,6 +45,9 @@ Russian).
 Model core class diagram:
 ![Model core class diagram](model-core-class-diagram.svg)
 
+Component diagram:
+![Component diagram](component-diagram.svg)
+
 ## Build system
 
 To build this project, you must use JDK 1.8 with JavaFX (`jfxrt.jar`) package installed (e.g.
