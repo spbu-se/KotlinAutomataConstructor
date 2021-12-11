@@ -1,6 +1,7 @@
 package automaton.constructor.view
 
-import automaton.constructor.controller.AutomatonController
+import automaton.constructor.controller.AutomatonGraphController
+import automaton.constructor.model.Automaton
 import automaton.constructor.model.State
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.subPane
@@ -8,11 +9,11 @@ import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
 import tornadofx.*
 
-class AutomatonGraphView(val controller: AutomatonController) : Pane() {
+class AutomatonGraphView(val automaton: Automaton) : Pane() {
     private val edgePane = subPane()
     val edgeViews = mutableMapOf<Pair<State, State>, EdgeView>()
     val stateToViewMap = mutableMapOf<State, StateView>()
-    private val automaton = controller.automaton
+    val controller: AutomatonGraphController = AutomatonGraphController(automaton)
 
     init {
         minWidth = GRAPH_PANE_INIT_SIZE.x

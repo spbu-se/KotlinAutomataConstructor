@@ -16,7 +16,7 @@ import javafx.scene.input.MouseButton
 import javafx.scene.shape.Line
 import tornadofx.*
 
-class AutomatonController(val automaton: Automaton) : Controller() {
+class AutomatonGraphController(val automaton: Automaton) : Controller() {
     private val newTransitionLine = Line().apply { isVisible = false }
     private var newTransitionSourceProperty = objectProperty<StateView?>(null).apply {
         onChange {

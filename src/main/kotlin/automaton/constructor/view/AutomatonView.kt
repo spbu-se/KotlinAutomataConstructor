@@ -1,6 +1,5 @@
 package automaton.constructor.view
 
-import automaton.constructor.controller.AutomatonController
 import automaton.constructor.model.Automaton
 import automaton.constructor.model.module.descriptionBinding
 import automaton.constructor.model.module.executor.executor
@@ -19,8 +18,7 @@ private const val DEFAULT_GRAPH_SCALE = 0.4
 
 // TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
 class AutomatonView(val automaton: Automaton, val view: View) : Pane() {
-    val controller = AutomatonController(automaton)
-    private val automatonGraphView = AutomatonGraphView(controller)
+    private val automatonGraphView = AutomatonGraphView(automaton)
 
     init {
         zoomScrollPane(automatonGraphView, DEFAULT_GRAPH_SCALE) {
@@ -35,7 +33,7 @@ class AutomatonView(val automaton: Automaton, val view: View) : Pane() {
             prefHeightProperty().bind(this@AutomatonView.heightProperty())
         }
         add(SettingsEditor().apply {
-            settingsProperty.bind(controller.selectedSettingsHolderProperty.nonNullObjectBinding {
+            settingsProperty.bind(automatonGraphView.controller.selectedSettingsHolderProperty.nonNullObjectBinding {
                 it?.getSettings()
             })
         })
