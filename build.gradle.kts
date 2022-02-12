@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.6.0"
     id("jacoco")
+    id("org.openjfx.javafxplugin") version "0.0.10"
     application
 }
 version = "1.0-SNAPSHOT"
@@ -11,10 +12,16 @@ val jacocoVersion: String by rootProject
 
 repositories {
     mavenCentral()
+    maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
 }
 
 application {
-    mainClassName = "automaton.constructor.AutomatonConstructorAppKt"
+    mainClass.set("automaton.constructor.AutomatonConstructorAppKt")
+}
+
+javafx {
+    version = "17"
+    modules("javafx.controls")
 }
 
 dependencies {
