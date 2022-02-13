@@ -1,6 +1,6 @@
 package automaton.constructor.model.memory.tape
 
-import automaton.constructor.model.transition.property.BLANK_CHAR
+import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHAR
 import automaton.constructor.utils.monospaced
 import automaton.constructor.utils.scrollToRightWhenUnfocused
 import automaton.constructor.utils.setControlNewText

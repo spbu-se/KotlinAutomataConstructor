@@ -33,7 +33,7 @@ class AutomatonView(val automaton: Automaton, val view: View) : Pane() {
             prefHeightProperty().bind(this@AutomatonView.heightProperty())
         }
         add(SettingsEditor().apply {
-            settingsProperty.bind(automatonGraphView.controller.selectedSettingsHolderProperty.nonNullObjectBinding {
+            settingsProperty.bind(automatonGraphView.controller.lastSelectedElementProperty.nonNullObjectBinding {
                 it?.getSettings()
             })
         })

@@ -1,5 +1,8 @@
 package automaton.constructor.model
 
+import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.property.AutomatonElement
+import automaton.constructor.model.property.DynamicPropertyDescriptorGroup
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
@@ -8,7 +11,14 @@ import tornadofx.*
 /**
  * A state of the automaton
  */
-class State(name: String = "", position: Point2D = Point2D.ZERO) {
+class State(name: String, position: Point2D, memoryDescriptors: List<MemoryUnitDescriptor>) :
+    AutomatonElement(memoryDescriptors.map {
+        DynamicPropertyDescriptorGroup(
+            it,
+            it.stateFilters,
+            it.stateSideEffects
+        )
+    }) {
     val nameProperty: Property<String> = name.toProperty()
     var name: String by nameProperty
     val isInitialProperty: BooleanProperty = false.toProperty()

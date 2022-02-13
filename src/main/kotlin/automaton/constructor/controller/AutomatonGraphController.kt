@@ -1,14 +1,9 @@
 package automaton.constructor.controller
 
 import automaton.constructor.model.Automaton
-import automaton.constructor.model.State
-import automaton.constructor.utils.SettingsHolder
 import automaton.constructor.utils.x
 import automaton.constructor.utils.y
-import automaton.constructor.view.AutomatonGraphView
-import automaton.constructor.view.EdgeView
-import automaton.constructor.view.StateView
-import automaton.constructor.view.TransitionView
+import automaton.constructor.view.*
 import javafx.geometry.Point2D
 import javafx.scene.control.ContextMenu
 import javafx.scene.input.KeyCode
@@ -30,8 +25,8 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
         }
     }
     private var newTransitionSource by newTransitionSourceProperty
-    val selectedSettingsHolderProperty = objectProperty<SettingsHolder?>(null)
-    var selectedSettingsHolder by selectedSettingsHolderProperty
+    val lastSelectedElementProperty = objectProperty<AutomatonElementView?>(null)
+    var lastSelectedElement by lastSelectedElementProperty
     private val selectedStateViews = mutableSetOf<StateView>()
     private val selectedTransitionViews = mutableSetOf<TransitionView>()
 
@@ -45,7 +40,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                 ContextMenu().apply {
                     item("Add state") {
                         action {
-                            automaton.addState(State(position = Point2D(it.x, it.y)))
+                            automaton.addState(position = Point2D(it.x, it.y))
                         }
                     }
                     show(graphView.scene.window, it.screenX, it.screenY)
@@ -73,11 +68,11 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
     }
 
     fun registerStateView(stateView: StateView) {
-        stateView.setOnMouseClicked {
+        stateView.group.setOnMouseClicked {
             it.consume()
-            stateView.requestFocus()
+            stateView.group.requestFocus()
             if (it.button == MouseButton.PRIMARY && it.isStillSincePress)
-                selectedSettingsHolder = when {
+                lastSelectedElement = when {
                     !it.isControlDown -> {
                         clearSelection()
                         selectedStateViews.add(stateView)
@@ -96,7 +91,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                     }
                 }
         }
-        stateView.setOnMouseDragged {
+        stateView.group.setOnMouseDragged {
             it.consume()
             if (it.button == MouseButton.PRIMARY && stateView.selected) {
                 val change = Point2D(it.x, it.y) - stateView.state.position
@@ -106,19 +101,19 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                 newTransitionLine.endY = it.y
             }
         }
-        stateView.setOnDragDetected {
+        stateView.group.setOnDragDetected {
             it.consume()
             if (it.button == MouseButton.PRIMARY) {
                 if (!it.isControlDown && !stateView.selected) clearSelection()
                 selectedStateViews.add(stateView)
                 stateView.selected = true
-                selectedSettingsHolder = stateView
+                lastSelectedElement = stateView
             } else if (it.button == MouseButton.SECONDARY) {
                 newTransitionSource = stateView
-                stateView.startFullDrag()
+                stateView.group.startFullDrag()
             }
         }
-        stateView.setOnMouseDragReleased {
+        stateView.group.setOnMouseDragReleased {
             it.consume()
             val source = newTransitionSourceProperty.value ?: return@setOnMouseDragReleased
             newTransitionSourceProperty.value = null
@@ -127,7 +122,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
         clearSelection()
         selectedStateViews.add(stateView)
         stateView.selected = true
-        selectedSettingsHolder = stateView
+        lastSelectedElement = stateView
     }
 
     fun registerEdgeView(edgeView: EdgeView) {
@@ -143,11 +138,11 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
     }
 
     private fun registerTransitionView(transitionView: TransitionView) {
-        transitionView.setOnMouseClicked {
+        transitionView.text.setOnMouseClicked {
             it.consume()
-            transitionView.requestFocus()
+            transitionView.text.requestFocus()
             if (it.button == MouseButton.PRIMARY)
-                selectedSettingsHolder = when {
+                lastSelectedElement = when {
                     !it.isControlDown -> {
                         clearSelection()
                         selectedTransitionViews.add(transitionView)
@@ -169,12 +164,12 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
         clearSelection()
         selectedTransitionViews.add(transitionView)
         transitionView.selected = true
-        selectedSettingsHolder = transitionView
+        lastSelectedElement = transitionView
     }
 
     private fun clearSelection() {
         selectedStateViews.onEach { it.selected = false }.clear()
         selectedTransitionViews.onEach { it.selected = false }.clear()
-        selectedSettingsHolder = null
+        lastSelectedElement = null
     }
 }

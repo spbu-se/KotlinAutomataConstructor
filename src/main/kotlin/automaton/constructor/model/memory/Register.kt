@@ -2,15 +2,15 @@ package automaton.constructor.model.memory
 
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.EPSILON_VALUE
-import automaton.constructor.model.transition.property.createStringOrEpsTransitionPropertyDescriptor
+import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.utils.MonospaceEditableString
 
 class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
-    val expectedValue = createStringOrEpsTransitionPropertyDescriptor("Expected value", canBeDeemedEpsilon = false)
-    val newValue = createStringOrEpsTransitionPropertyDescriptor("New value", canBeDeemedEpsilon = false)
-    override val filters = listOf(expectedValue)
-    override val sideEffects = listOf(newValue)
+    val expectedValue = DynamicPropertyDescriptors.stringOrEps("Expected value", canBeDeemedEpsilon = false)
+    val newValue = DynamicPropertyDescriptors.stringOrEps("New value", canBeDeemedEpsilon = false)
+    override val transitionFilters = listOf(expectedValue)
+    override val transitionSideEffects = listOf(newValue)
     override var displayName = "Register"
 
     override fun createMemoryUnit() = Register(this, value)

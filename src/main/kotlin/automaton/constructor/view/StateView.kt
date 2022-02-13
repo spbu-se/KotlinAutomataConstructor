@@ -10,10 +10,7 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import tornadofx.*
 
-class StateView(val state: State) : Group(), SettingsHolder {
-    val selectedProperty = false.toProperty()
-    var selected by selectedProperty
-
+class StateView(val state: State) : AutomatonElementView(state) {
     val colorProperty: Binding<Color> = nonNullObjectBinding(selectedProperty, state.isCurrentProperty) {
         when {
             selected && state.isCurrent -> Color.PURPLE
@@ -23,45 +20,50 @@ class StateView(val state: State) : Group(), SettingsHolder {
         }
     }
 
-    val initialStateMarker = polygon(0.0, 0.0, 0.0, 0.0, 0.0, 0.0) {
-        visibleWhen(state.isInitialProperty)
-        fun updatePosition() {
-            points[0] = state.position.x - STATE_RADIUS
-            points[1] = state.position.y
-            points[2] = state.position.x - 1.5 * STATE_RADIUS
-            points[3] = state.position.y - STATE_RADIUS / 2.0
-            points[4] = state.position.x - 1.5 * STATE_RADIUS
-            points[5] = state.position.y + STATE_RADIUS / 2.0
+    val group = Group().apply {
+        polygon(0.0, 0.0, 0.0, 0.0, 0.0, 0.0) {
+            visibleWhen(state.isInitialProperty)
+            fun updatePosition() {
+                points[0] = state.position.x - STATE_RADIUS
+                points[1] = state.position.y
+                points[2] = state.position.x - 1.5 * STATE_RADIUS
+                points[3] = state.position.y - STATE_RADIUS / 2.0
+                points[4] = state.position.x - 1.5 * STATE_RADIUS
+                points[5] = state.position.y + STATE_RADIUS / 2.0
+            }
+            updatePosition()
+            state.positionProperty.onChange { updatePosition() }
+            fill = Color.LIGHTGRAY
+            stroke = Color.BLACK
         }
-        updatePosition()
-        state.positionProperty.onChange { updatePosition() }
-        fill = Color.LIGHTGRAY
-        stroke = Color.BLACK
-    }
 
-    val circle = circle {
-        centerXProperty().bind(state.positionProperty.x)
-        centerYProperty().bind(state.positionProperty.y)
-        fillProperty().bind(colorProperty)
-        stroke = Color.BLACK
-        radius = STATE_RADIUS
-    }
+        circle {
+            centerXProperty().bind(state.positionProperty.x)
+            centerYProperty().bind(state.positionProperty.y)
+            fillProperty().bind(colorProperty)
+            stroke = Color.BLACK
+            radius = STATE_RADIUS
+        }
 
-    val finalOutline = circle {
-        visibleWhen(state.isFinalProperty)
-        centerXProperty().bind(state.positionProperty.x)
-        centerYProperty().bind(state.positionProperty.y)
-        fillProperty().bind(colorProperty)
-        stroke = Color.BLACK
-        radius = STATE_RADIUS - STATE_RADIUS / 5
-    }
+        circle {
+            visibleWhen(state.isFinalProperty)
+            centerXProperty().bind(state.positionProperty.x)
+            centerYProperty().bind(state.positionProperty.y)
+            fillProperty().bind(colorProperty)
+            stroke = Color.BLACK
+            radius = STATE_RADIUS - STATE_RADIUS / 5
+        }
 
-    val text = text {
-        font = Font.font(48.0) // TODO maybe dynamically adjust font size so text fits inside a circle
-        textProperty().bind(state.nameProperty)
-        translateToCenter()
-        xProperty().bind(state.positionProperty.x)
-        yProperty().bind(state.positionProperty.y)
+        text {
+            font = Font.font(48.0) // TODO maybe dynamically adjust font size so text fits inside a circle
+            textProperty().bind(stringBinding(state.nameProperty, settingsTextBinding) {
+                listOf(state.nameProperty.value, settingsTextBinding.value).filter { it.isNotEmpty() }
+                    .joinToString(separator = "/")
+            })
+            translateToCenter()
+            xProperty().bind(state.positionProperty.x)
+            yProperty().bind(state.positionProperty.y)
+        }
     }
 
     override fun getSettings() = listOf(
@@ -72,5 +74,5 @@ class StateView(val state: State) : Group(), SettingsHolder {
                 Setting("Final", CheckBox().apply { selectedProperty().bindBidirectional(state.isFinalProperty) }),
             )
         )
-    )
+    ) + super.getSettings()
 }

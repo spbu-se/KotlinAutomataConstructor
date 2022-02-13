@@ -1,6 +1,6 @@
 package automaton.constructor.model.memory
 
-import automaton.constructor.model.transition.property.EPSILON_VALUE
+import automaton.constructor.model.property.EPSILON_VALUE
 
 /**
  * A status of the [MemoryUnit] that is used to determine whether the execution state of the automaton

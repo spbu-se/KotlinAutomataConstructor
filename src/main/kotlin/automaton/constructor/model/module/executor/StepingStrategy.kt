@@ -3,7 +3,7 @@ package automaton.constructor.model.module.executor
 import automaton.constructor.model.Automaton
 import automaton.constructor.model.module.executor.ExecutionStatus.RUNNING
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.EPSILON_VALUE
+import automaton.constructor.model.property.EPSILON_VALUE
 
 class SteppingStrategy(
     val name: String,

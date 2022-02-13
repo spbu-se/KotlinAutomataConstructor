@@ -9,7 +9,6 @@ val automatonDescriptionProviderFactory = { automaton: Automaton -> AutomatonDes
 val Automaton.automatonDescriptionProvider get() = getModule(automatonDescriptionProviderFactory)
 val Automaton.descriptionBinding get() = automatonDescriptionProvider.descriptionBinding
 
-// TODO include automaton type (e.g. "finite automaton", "turing machine with 2 tapes") based on memory units types
 class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
     private val determinicityPartBinding = stringBinding(automaton.isDeterministicBinding) {
         if (value) "deterministic" else "nondeterministic"
@@ -18,7 +17,9 @@ class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
 
     private val epsilonPartBinding: ObservableValue<String> =
         if (automaton.memoryDescriptors.any { memoryUnitDescriptor ->
-                (memoryUnitDescriptor.filters + memoryUnitDescriptor.sideEffects).any { it.canBeDeemedEpsilon }
+                (memoryUnitDescriptor.transitionFilters + memoryUnitDescriptor.transitionSideEffects
+                        + memoryUnitDescriptor.stateFilters + memoryUnitDescriptor.stateSideEffects)
+                    .any { it.canBeDeemedEpsilon }
             }) stringBinding(automaton.hasEpsilonBinding) { (if (value) "with" else "without") + " epsilon transitions" }
         else "".toProperty()
     private val epsilonPart: String by epsilonPartBinding

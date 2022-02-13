@@ -1,11 +1,11 @@
-package automaton.constructor.model.transition.property
+package automaton.constructor.model.property
 
 import automaton.constructor.utils.Editable
 import automaton.constructor.model.transition.Transition
 import javafx.beans.property.SimpleObjectProperty
 
 /**
- * If transition filter value is [EPSILON_VALUE] then the filter is considered to always be satisfied
+ * If filter value is [EPSILON_VALUE] then the filter is considered to always be satisfied
  * @see Transition.isPure
  */
 val EPSILON_VALUE = null
@@ -13,17 +13,17 @@ val EPSILON_VALUE = null
 /**
  * A property of a [Transition] that is either a filter or a side effect
  */
-class TransitionProperty<T>(
-    val descriptor: TransitionPropertyDescriptor<T>
+class DynamicProperty<T>(
+    val descriptor: DynamicPropertyDescriptor<T>
 ) : SimpleObjectProperty<T>(descriptor.defaultValue), Editable {
     /**
      * Converts current [value] of the property to a human-readable string
-     * @see TransitionPropertyDescriptor.stringifyValue
+     * @see DynamicPropertyDescriptor.stringifyValue
      */
     fun stringify(): String = descriptor.stringifyValue(value)
 
     /**
-     * @see TransitionPropertyDescriptor.displayName
+     * @see DynamicPropertyDescriptor.displayName
      */
     override val displayName get() = descriptor.displayName
 

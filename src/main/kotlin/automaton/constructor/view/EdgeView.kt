@@ -19,7 +19,8 @@ import kotlin.math.sqrt
 class LoopEdgeRenderData(val state: State) : EdgeRenderData {
     companion object {
         private const val ARROW_START_OFFSET_Y = -0.5 * STATE_RADIUS
-        private val ARROW_START_OFFSET_X = sqrt(STATE_RADIUS * STATE_RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
+        private val ARROW_START_OFFSET_X =
+            sqrt(STATE_RADIUS * STATE_RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
     }
 
     override val normXProperty = 0.0.toProperty()
@@ -134,22 +135,24 @@ class EdgeView(val source: State, val target: State) : Group() {
     val transitionsGroup = group()
 
     fun addTransition(transition: Transition) = TransitionView(transition, transitionViews.size).apply {
-        rotateProperty().bind(edgeRenderData.textAngleInDegreesProperty)
-        translateToCenter()
-        xProperty().bind(edgeRenderData.midPointXProperty.doubleBinding(edgeRenderData.normXProperty, indexProperty) {
-            edgeRenderData.midPointX + 60 * (index + 0.5) * edgeRenderData.normX
-        })
-        yProperty().bind(edgeRenderData.midPointYProperty.doubleBinding(edgeRenderData.normYProperty, indexProperty) {
-            edgeRenderData.midPointY + 60 * (index + 0.5) * edgeRenderData.normY
-        })
-        transitionsGroup.add(this)
+        text.rotateProperty().bind(edgeRenderData.textAngleInDegreesProperty)
+        text.translateToCenter()
+        text.xProperty()
+            .bind(edgeRenderData.midPointXProperty.doubleBinding(edgeRenderData.normXProperty, indexProperty) {
+                edgeRenderData.midPointX + 60 * (index + 0.5) * edgeRenderData.normX
+            })
+        text.yProperty()
+            .bind(edgeRenderData.midPointYProperty.doubleBinding(edgeRenderData.normYProperty, indexProperty) {
+                edgeRenderData.midPointY + 60 * (index + 0.5) * edgeRenderData.normY
+            })
+        transitionsGroup.add(text)
         transitionViews.add(this)
     }
 
     fun removeTransition(transition: Transition) {
         transitionViews.removeIf { transitionView ->
             val matches = transitionView.transition === transition
-            if (matches) transitionsGroup.children.remove(transitionView)
+            if (matches) transitionsGroup.children.remove(transitionView.text)
             matches
         }
         transitionViews.forEachIndexed { i, transitionView -> transitionView.index = i }

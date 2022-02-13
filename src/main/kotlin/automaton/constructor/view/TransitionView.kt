@@ -1,7 +1,10 @@
 package automaton.constructor.view
 
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.utils.*
+import automaton.constructor.utils.Setting
+import automaton.constructor.utils.SettingGroup
+import automaton.constructor.utils.createUnmodifiableSettingControl
+import automaton.constructor.utils.nonNullObjectBinding
 import javafx.beans.binding.Binding
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -11,10 +14,7 @@ import tornadofx.*
 class TransitionView(
     val transition: Transition,
     index: Int
-) : Text(), SettingsHolder {
-    val selectedProperty = false.toProperty()
-    var selected by selectedProperty
-
+) : AutomatonElementView(transition) {
     val indexProperty = index.toProperty()
     var index by indexProperty
 
@@ -29,20 +29,11 @@ class TransitionView(
                 Setting("Target", createUnmodifiableSettingControl(transition.target.nameProperty))
             )
         )
-    ) + transition.propertyGroups.map { (memoryUnit, filters, sideEffects) ->
-        SettingGroup.fromEditables(memoryUnit.displayName.toProperty(), filters + sideEffects)
-    }
+    ) + super.getSettings()
 
-    init {
+    val text = Text().apply {
         fillProperty().bind(colorProperty)
         font = Font.font(48.0)
-        textProperty().bind(stringBinding(transition, *transition.allProperties.toTypedArray()) {
-            propertyGroups.joinToString(separator = ";") { (_, filters, sideEffects) ->
-                val filtersString = filters.joinToString(separator = ",") { it.stringify() }
-                val sideEffectsString = sideEffects.joinToString(separator = ",") { it.stringify() }
-                if (filtersString.isEmpty() || sideEffectsString.isEmpty()) filtersString + sideEffectsString
-                else "$filtersString/$sideEffectsString"
-            }
-        })
+        textProperty().bind(settingsTextBinding)
     }
 }

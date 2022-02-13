@@ -2,7 +2,8 @@ package automaton.constructor.model.memory
 
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
 import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
-import automaton.constructor.model.transition.property.TransitionPropertyDescriptor
+import automaton.constructor.model.property.DynamicPropertyDescriptor
+import automaton.constructor.model.property.DynamicPropertyDescriptorGroup
 import automaton.constructor.utils.Editable
 
 /**
@@ -10,15 +11,11 @@ import automaton.constructor.utils.Editable
  * and provides the way to set initial data of such memory unit
  */
 interface MemoryUnitDescriptor : Editable {
-    /**
-     * A list of filters that each transition in the automaton must have
-     */
-    val filters: List<TransitionPropertyDescriptor<*>>
+    val transitionSideEffects: List<DynamicPropertyDescriptor<*>>
+    val transitionFilters: List<DynamicPropertyDescriptor<*>>
 
-    /**
-     * A list of side effects that each transition in the automaton must have
-     */
-    val sideEffects: List<TransitionPropertyDescriptor<*>>
+    val stateSideEffects: List<DynamicPropertyDescriptor<*>> get() = emptyList()
+    val stateFilters: List<DynamicPropertyDescriptor<*>> get() = emptyList()
 
     /**
      * `true` if the memory unit described by this descriptor can't have [NOT_READY_TO_ACCEPT] status

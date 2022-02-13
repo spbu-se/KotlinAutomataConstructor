@@ -10,6 +10,7 @@ import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import io.mockk.*
 import javafx.collections.ObservableSet
+import javafx.geometry.Point2D
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -22,6 +23,7 @@ class AutomatonTest {
     private lateinit var states: ObservableSet<State>
     private lateinit var transitions: ObservableSet<Transition>
     private lateinit var memoryUnitDescriptorMockks: List<MemoryUnitDescriptor>
+    private lateinit var notAddedState: State
 
     companion object {
         const val MEMORY_UNIT_DESCRIPTOR_DISPLAY_NAME = "memory unit descriptor display name"
@@ -41,6 +43,7 @@ class AutomatonTest {
         automaton = Automaton("typeName", memoryUnitDescriptorMockks)
         transitions = automaton.transitions
         states = automaton.states
+        notAddedState = State("", Point2D.ZERO, memoryUnitDescriptorMockks)
     }
 
     @Test
@@ -52,10 +55,8 @@ class AutomatonTest {
 
     @Test
     fun `unnamed states should get default names`() {
-        val state1 = State()
-        val state2 = State()
-        automaton.addState(state1)
-        automaton.addState(state2)
+        val state1 = automaton.addState()
+        val state2 = automaton.addState()
         assertEquals("S0", state1.name)
         assertEquals("S1", state2.name)
     }
@@ -63,8 +64,7 @@ class AutomatonTest {
     @Test
     fun `named states shouldn't be renamed`() {
         val initName = "name"
-        val state = State(initName)
-        automaton.addState(state)
+        val state = automaton.addState(initName)
         assertEquals(initName, state.name)
     }
 
@@ -79,12 +79,12 @@ class AutomatonTest {
 
     @Test
     fun `there should be no possible transitions from not added state`() {
-        assertEquals(emptySet(), automaton.getPossibleTransitions(State(), mockk()))
+        assertEquals(emptySet(), automaton.getPossibleTransitions(notAddedState, mockk()))
     }
 
     @Test
     fun `there should be no pure transitions from not added state`() {
-        assertEquals(emptySet(), automaton.getPureTransitions(State()))
+        assertEquals(emptySet(), automaton.getPureTransitions(notAddedState))
     }
 
     @Test
@@ -105,11 +105,10 @@ class AutomatonTest {
 
         @BeforeEach
         fun init() {
-            state1 = State()
             state1TransitionStorageMockk = mockk(relaxed = true)
             mockkStatic(::createTransitionStorageTree) {
                 every { createTransitionStorageTree(memoryUnitDescriptorMockks) } returns state1TransitionStorageMockk
-                automaton.addState(state1)
+                state1 = automaton.addState()
             }
             transitionsFromState1 = automaton.getTransitions(state1)
         }
@@ -133,7 +132,7 @@ class AutomatonTest {
                     every { descriptor } returns memoryUnitDescriptorMockks[1]
                 }
             )
-            every { memoryUnitDescriptorMockks[1].filters } returns listOf(mockk(), mockk())
+            every { memoryUnitDescriptorMockks[1].transitionFilters } returns listOf(mockk(), mockk())
             val possibleTransitions = mockk<Set<Transition>>()
             every {
                 state1TransitionStorageMockk.getPossibleTransitions(listOf(1, 2, 3, null, null))
@@ -207,11 +206,10 @@ class AutomatonTest {
 
                 @BeforeEach
                 fun init() {
-                    state2 = State()
                     state2TransitionStorageMockk = mockk(relaxed = true)
                     mockkStatic(::createTransitionStorageTree) {
                         every { createTransitionStorageTree(memoryUnitDescriptorMockks) } returns state2TransitionStorageMockk
-                        automaton.addState(state2)
+                        state2 = automaton.addState()
                     }
                     state2ToState1Transition = automaton.addTransition(state2, state1)
                     transitionsFromState2 = automaton.getTransitions(state2)

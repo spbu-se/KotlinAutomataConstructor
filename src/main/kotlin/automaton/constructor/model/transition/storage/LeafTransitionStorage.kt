@@ -1,7 +1,7 @@
 package automaton.constructor.model.transition.storage
 
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.EPSILON_VALUE
+import automaton.constructor.model.property.EPSILON_VALUE
 import tornadofx.*
 
 class LeafTransitionStorage : TransitionStorage {

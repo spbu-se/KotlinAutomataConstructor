@@ -1,8 +1,8 @@
 package automaton.constructor.model.memory
 
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.EPSILON_VALUE
-import automaton.constructor.model.transition.property.TransitionPropertyGroup
+import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.property.DynamicPropertyGroup
 import automaton.constructor.utils.Editable
 
 /**
@@ -23,7 +23,7 @@ interface MemoryUnit : Editable {
 
     /**
      * [Transition]-s that have current filter values (or [EPSILON_VALUE]) in the filters of their
-     * [TransitionPropertyGroup] corresponding to this memory unit [descriptor] can be taken by the executor
+     * [DynamicPropertyGroup] corresponding to this memory unit [descriptor] can be taken by the executor
      */
     fun getCurrentFilterValues(): List<*>
 

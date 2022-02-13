@@ -1,7 +1,7 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.Automaton
-import automaton.constructor.model.transition.property.EPSILON_VALUE
+import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.utils.countBinding
 import automaton.constructor.utils.filteredSet
 import javafx.beans.binding.Bindings.isNotEmpty

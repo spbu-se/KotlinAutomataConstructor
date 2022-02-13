@@ -20,10 +20,6 @@ fun Editable.createSettingOrNull() = createEditor()?.let { Setting(displayName, 
 
 data class Setting(val displayName: String, val editor: Node)
 
-interface SettingsHolder {
-    fun getSettings(): List<SettingGroup>
-}
-
 class SettingsEditor : VBox() {
     val settingsProperty = objectProperty<List<SettingGroup>?>(null)
     var settings by settingsProperty
@@ -31,9 +27,9 @@ class SettingsEditor : VBox() {
     init {
         settingsProperty.onChange {
             clear()
-            settings?.forEach {
-                add(SettingGroupEditor(it))
-            }
+            settings
+                ?.filter { it.settings.isNotEmpty() }
+                ?.forEach { add(SettingGroupEditor(it)) }
         }
     }
 }

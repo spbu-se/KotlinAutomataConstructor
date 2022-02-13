@@ -4,10 +4,11 @@ import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.EPSILON_VALUE
+import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import javafx.collections.ObservableSet
+import javafx.geometry.Point2D
 import tornadofx.*
 
 /**
@@ -48,7 +49,7 @@ class Automaton(
      */
     fun getPossibleTransitions(state: State, memory: List<MemoryUnit>): Set<Transition> =
         transitionStorages[state]?.getPossibleTransitions(memory.flatMap {
-            if (it.status.noMoreDataAvailable) it.descriptor.filters.map { EPSILON_VALUE }
+            if (it.status.noMoreDataAvailable) (it.descriptor.transitionFilters + it.descriptor.stateFilters).map { EPSILON_VALUE }
             else it.getCurrentFilterValues()
         }) ?: emptySet()
 
@@ -66,12 +67,13 @@ class Automaton(
      */
     fun getTransitions(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
 
-    fun addState(state: State) {
-        if (state.nameProperty.value == "") state.nameProperty.value = "S${nextId++}"
+    fun addState(name: String? = null, position: Point2D = Point2D.ZERO): State {
+        val state = State(name ?: "S${nextId++}", position, memoryDescriptors)
         transitionStorages[state] = createTransitionStorageTree(memoryDescriptors)
         outgoingTransitions[state] = observableSetOf()
         incomingTransitions[state] = mutableSetOf()
         states.add(state)
+        return state
     }
 
     fun removeState(state: State) {

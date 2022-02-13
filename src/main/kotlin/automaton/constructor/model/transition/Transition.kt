@@ -2,10 +2,10 @@ package automaton.constructor.model.transition
 
 import automaton.constructor.model.State
 import automaton.constructor.model.memory.MemoryUnitDescriptor
-import automaton.constructor.model.transition.property.EPSILON_VALUE
-import automaton.constructor.model.transition.property.TransitionProperty
-import automaton.constructor.model.transition.property.TransitionPropertyDescriptor
-import automaton.constructor.model.transition.property.TransitionPropertyGroup
+import automaton.constructor.model.property.AutomatonElement
+import automaton.constructor.model.property.DynamicProperty
+import automaton.constructor.model.property.DynamicPropertyDescriptorGroup
+import automaton.constructor.model.property.EPSILON_VALUE
 
 /**
  * A transition between states of the automaton
@@ -17,41 +17,16 @@ class Transition(
      * Memory unit descriptors of the automaton that has this transition
      */
     memoryDescriptors: List<MemoryUnitDescriptor>
-) {
-    private val properties = mutableMapOf<TransitionPropertyDescriptor<*>, TransitionProperty<*>>()
-    val propertyGroups = memoryDescriptors.map { memoryUnitDescriptor ->
-        TransitionPropertyGroup(
-            memoryUnitDescriptor,
-            memoryUnitDescriptor.filters.map { registerProperty(it) },
-            memoryUnitDescriptor.sideEffects.map { registerProperty(it) }
-        )
-    }
-    val filters: List<TransitionProperty<*>> = propertyGroups.flatMap { it.filters }
-    val sideEffects: List<TransitionProperty<*>> = propertyGroups.flatMap { it.sideEffects }
-    val allProperties: Collection<TransitionProperty<*>> get() = properties.values
-
-    /**
-     * Returns property of this transition that is described by the given [descriptor]
-     * @see get
-     * @see set
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun <T> getProperty(descriptor: TransitionPropertyDescriptor<T>): TransitionProperty<T> =
-        properties.getValue(descriptor) as TransitionProperty<T>
-
-    /**
-     * Returns value of the property of this transition that is described by the given [descriptor]
-     * @see getProperty
-     */
-    operator fun <T> get(descriptor: TransitionPropertyDescriptor<T>): T = getProperty(descriptor).value
-
-    /**
-     * Assigns [value] to the value of the property of this transition that is described by the given [descriptor]
-     * @see getProperty
-     */
-    operator fun <T> set(descriptor: TransitionPropertyDescriptor<T>, value: T) {
-        getProperty(descriptor).value = value
-    }
+) : AutomatonElement(memoryDescriptors.map {
+    DynamicPropertyDescriptorGroup(
+        it,
+        it.transitionFilters,
+        it.transitionSideEffects
+    )
+}) {
+    override val filters: List<DynamicProperty<*>> = super.filters + target.filters
+    override val sideEffects: List<DynamicProperty<*>> = super.sideEffects + target.sideEffects
+    override val allProperties: Collection<DynamicProperty<*>> = super.allProperties + target.allProperties
 
     /**
      * Transition is pure if all its properties have [EPSILON_VALUE] (including both filters and sideEffects)
@@ -61,7 +36,4 @@ class Transition(
      * Executor may take pure transition without asking nor informing memory units
      */
     fun isPure() = allProperties.all { it.value == EPSILON_VALUE }
-
-    private fun <T> registerProperty(descriptor: TransitionPropertyDescriptor<T>): TransitionProperty<T> =
-        descriptor.createProperty().also { properties[descriptor] = it }
 }

@@ -1,8 +1,8 @@
 package automaton.constructor.model.transition.storage
 
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.EPSILON_VALUE
-import automaton.constructor.model.transition.property.TransitionProperty
+import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.property.DynamicProperty
 import javafx.beans.value.ChangeListener
 import tornadofx.*
 
@@ -39,7 +39,7 @@ class BranchTransitionStorage(
     override fun getPureTransitions(): Set<Transition> =
         subStorages[EPSILON_VALUE]?.getPureTransitions() ?: emptySet()
 
-    private fun getOrCreateSubStorage(filter: TransitionProperty<*>): TransitionStorage =
+    private fun getOrCreateSubStorage(filter: DynamicProperty<*>): TransitionStorage =
         getOrCreateSubStorageByValue(filter.value)
 
     private fun getOrCreateSubStorageByValue(filterValue: Any?): TransitionStorage = subStorages.getOrPut(filterValue) {

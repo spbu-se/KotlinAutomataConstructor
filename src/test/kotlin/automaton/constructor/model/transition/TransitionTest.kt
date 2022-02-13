@@ -2,12 +2,13 @@ package automaton.constructor.model.transition
 
 import automaton.constructor.model.State
 import automaton.constructor.model.memory.MemoryUnitDescriptor
-import automaton.constructor.model.transition.property.EPSILON_VALUE
-import automaton.constructor.model.transition.property.TransitionProperty
-import automaton.constructor.model.transition.property.TransitionPropertyDescriptor
-import automaton.constructor.model.transition.property.TransitionPropertyGroup
+import automaton.constructor.model.property.DynamicProperty
+import automaton.constructor.model.property.DynamicPropertyDescriptor
+import automaton.constructor.model.property.DynamicPropertyGroup
+import automaton.constructor.model.property.EPSILON_VALUE
 import io.mockk.every
 import io.mockk.mockk
+import javafx.geometry.Point2D
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -22,27 +23,31 @@ import kotlin.test.assertTrue
 class TransitionTest {
     private lateinit var transition: Transition
 
-    private val firstUnitFilters = emptyList<TransitionProperty<*>>()
-    private val firstUnitFilterDescriptors = emptyList<TransitionPropertyDescriptor<*>>()
+    private val firstUnitFilters = emptyList<DynamicProperty<*>>()
+    private val firstUnitFilterDescriptors = emptyList<DynamicPropertyDescriptor<*>>()
 
-    private val firstUnitSideEffects = listOf<TransitionProperty<*>>(mockk("s11"), mockk("s12"))
-    private val firstUnitSideEffectDescriptors = listOf<TransitionPropertyDescriptor<*>>(mockk("s11"), mockk("s12"))
+    private val firstUnitSideEffects = listOf<DynamicProperty<*>>(mockk("s11"), mockk("s12"))
+    private val firstUnitSideEffectDescriptors = listOf<DynamicPropertyDescriptor<*>>(mockk("s11"), mockk("s12"))
 
-    private val secondUnitFilters = listOf<TransitionProperty<*>>(mockk("f21"), mockk("f22"), mockk("f23"))
+    private val secondUnitFilters = listOf<DynamicProperty<*>>(mockk("f21"), mockk("f22"), mockk("f23"))
     private val secondUnitFilterDescriptors =
-        listOf<TransitionPropertyDescriptor<*>>(mockk("f21"), mockk("f22"), mockk("f23"))
+        listOf<DynamicPropertyDescriptor<*>>(mockk("f21"), mockk("f22"), mockk("f23"))
 
-    private val secondUnitSideEffects = listOf<TransitionProperty<*>>(mockk("s21"))
-    private val secondUnitSideEffectDescriptors = listOf<TransitionPropertyDescriptor<*>>(mockk("s21"))
+    private val secondUnitSideEffects = listOf<DynamicProperty<*>>(mockk("s21"))
+    private val secondUnitSideEffectDescriptors = listOf<DynamicPropertyDescriptor<*>>(mockk("s21"))
 
     private val firstMemoryUnitDescriptor = mockk<MemoryUnitDescriptor> {
-        every { filters } returns firstUnitFilterDescriptors
-        every { sideEffects } returns firstUnitSideEffectDescriptors
+        every { transitionFilters } returns firstUnitFilterDescriptors
+        every { transitionSideEffects } returns firstUnitSideEffectDescriptors
+        every { stateFilters } returns emptyList()
+        every { stateSideEffects } returns emptyList()
     }
 
     private val secondMemoryUnitDescriptor = mockk<MemoryUnitDescriptor> {
-        every { filters } returns secondUnitFilterDescriptors
-        every { sideEffects } returns secondUnitSideEffectDescriptors
+        every { transitionFilters } returns secondUnitFilterDescriptors
+        every { transitionSideEffects } returns secondUnitSideEffectDescriptors
+        every { stateFilters } returns emptyList()
+        every { stateSideEffects } returns emptyList()
     }
 
     private val allProperties get() = firstUnitFilters + secondUnitFilters + firstUnitSideEffects + secondUnitSideEffects
@@ -54,15 +59,20 @@ class TransitionTest {
         allPropertyAndDescriptorPairs.forEach { (property, descriptor) ->
             every { descriptor.createProperty() } returns property andThenAnswer { fail("Unexpected second property creation") }
         }
-        transition = Transition(State(), State(), listOf(firstMemoryUnitDescriptor, secondMemoryUnitDescriptor))
+        val memoryDescriptors = listOf(firstMemoryUnitDescriptor, secondMemoryUnitDescriptor)
+        transition = Transition(
+            State("", Point2D.ZERO, memoryDescriptors),
+            State("", Point2D.ZERO, memoryDescriptors),
+            memoryDescriptors
+        )
     }
 
     @Test
     fun `propertyGroups should have expected value`() {
         assertEquals(
             listOf(
-                TransitionPropertyGroup(firstMemoryUnitDescriptor, firstUnitFilters, firstUnitSideEffects),
-                TransitionPropertyGroup(secondMemoryUnitDescriptor, secondUnitFilters, secondUnitSideEffects)
+                DynamicPropertyGroup(firstMemoryUnitDescriptor, firstUnitFilters, firstUnitSideEffects),
+                DynamicPropertyGroup(secondMemoryUnitDescriptor, secondUnitFilters, secondUnitSideEffects)
             ),
             transition.propertyGroups
         )
@@ -94,7 +104,7 @@ class TransitionTest {
 
     @ParameterizedTest
     @MethodSource("getAllPropertyAndDescriptorPairs")
-    fun `getProperty should return expected property`(propertyAndDescriptor: Pair<TransitionProperty<*>, TransitionPropertyDescriptor<*>>) {
+    fun `getProperty should return expected property`(propertyAndDescriptor: Pair<DynamicProperty<*>, DynamicPropertyDescriptor<*>>) {
         assertSame(propertyAndDescriptor.first, transition.getProperty(propertyAndDescriptor.second))
     }
 
@@ -108,7 +118,7 @@ class TransitionTest {
 
     @ParameterizedTest
     @MethodSource("getAllProperties")
-    fun `when any property has non EPSILON_VALUE then isPure should be false`(property: TransitionProperty<*>) {
+    fun `when any property has non EPSILON_VALUE then isPure should be false`(property: DynamicProperty<*>) {
         allProperties.forEach {
             every { it.value } returns EPSILON_VALUE
         }

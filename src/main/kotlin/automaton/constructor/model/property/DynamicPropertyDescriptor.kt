@@ -1,13 +1,13 @@
-package automaton.constructor.model.transition.property
+package automaton.constructor.model.property
 
 import automaton.constructor.model.Automaton
 import javafx.scene.Node
 
 /**
- * Describes a kind of [TransitionProperty]-s that all transitions of some [Automaton] must have
- * @see TransitionProperty
+ * Describes a kind of [DynamicProperty]-s that all transitions or states of some [Automaton] must have
+ * @see DynamicProperty
  */
-class TransitionPropertyDescriptor<T>(
+class DynamicPropertyDescriptor<T>(
     val displayName: String,
     val defaultValue: T,
     /**
@@ -20,7 +20,7 @@ class TransitionPropertyDescriptor<T>(
      * Creates control for editing the `value` of the given property described by this descriptor
      * @see createEditor
      */
-    private val editorFactory: (TransitionProperty<T>) -> Node,
+    private val editorFactory: (DynamicProperty<T>) -> Node,
     /**
      * Converts given value to a human-readable string
      * @see stringifyValue
@@ -28,14 +28,14 @@ class TransitionPropertyDescriptor<T>(
     private val stringifier: (T) -> String
 ) {
     /**
-     * Creates [TransitionProperty] described by this descriptor with [defaultValue]
+     * Creates [DynamicProperty] described by this descriptor with [defaultValue]
      */
-    fun createProperty() = TransitionProperty(this)
+    fun createProperty() = DynamicProperty(this)
 
     /**
      * Creates control for editing the `value` of the given [property] described by this descriptor
      */
-    fun createEditor(property: TransitionProperty<T>): Node = editorFactory(property)
+    fun createEditor(property: DynamicProperty<T>): Node = editorFactory(property)
 
     /**
      * Converts given [value] to a human-readable string

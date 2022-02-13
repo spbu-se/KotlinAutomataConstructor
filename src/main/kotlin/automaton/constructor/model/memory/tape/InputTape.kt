@@ -4,18 +4,18 @@ import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.MemoryUnitStatus
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
 import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_TERMINATION
+import automaton.constructor.model.property.DynamicPropertyDescriptor
+import automaton.constructor.model.property.DynamicPropertyDescriptors
+import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHAR
+import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.BLANK_CHAR
-import automaton.constructor.model.transition.property.EPSILON_VALUE
-import automaton.constructor.model.transition.property.TransitionPropertyDescriptor
-import automaton.constructor.model.transition.property.createCharOrEpsTransitionPropertyDescriptor
 import automaton.constructor.utils.MonospaceEditableString
 
 class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
-    val expectedChar = createCharOrEpsTransitionPropertyDescriptor("Expected char", canBeDeemedEpsilon = true)
+    val expectedChar = DynamicPropertyDescriptors.charOrEps("Expected char", canBeDeemedEpsilon = true)
 
-    override val filters = listOf(expectedChar)
-    override val sideEffects = emptyList<TransitionPropertyDescriptor<*>>()
+    override val transitionFilters = listOf(expectedChar)
+    override val transitionSideEffects = emptyList<DynamicPropertyDescriptor<*>>()
     override var displayName = "Input tape"
     override val isAlwaysReadyToTerminate get() = false
 

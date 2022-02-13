@@ -35,11 +35,11 @@ class AutomatonGraphView(val automaton: Automaton) : Pane() {
         val stateView = StateView(state)
         controller.registerStateView(stateView)
         stateToViewMap[state] = stateView
-        add(stateView)
+        add(stateView.group)
     }
 
     private fun unregisterState(state: State) {
-        children.remove(stateToViewMap.remove(state))
+        children.remove(stateToViewMap.remove(state)!!.group)
     }
 
     private fun registerTransition(transition: Transition) {

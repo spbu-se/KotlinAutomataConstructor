@@ -1,19 +1,18 @@
 package automaton.constructor.model.memory
 
 import automaton.constructor.model.memory.MemoryUnitStatus.*
+import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.transition.property.EPSILON_VALUE
-import automaton.constructor.model.transition.property.createCharOrEpsTransitionPropertyDescriptor
-import automaton.constructor.model.transition.property.createStringOrEpsTransitionPropertyDescriptor
+import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.utils.MonospaceEditableString
 import javafx.scene.layout.VBox
 import tornadofx.*
 
 class StackDescriptor : MonospaceEditableString("z"), MemoryUnitDescriptor {
-    val expectedChar = createCharOrEpsTransitionPropertyDescriptor("Expected char", canBeDeemedEpsilon = false)
-    val pushedString = createStringOrEpsTransitionPropertyDescriptor("Pushed string", canBeDeemedEpsilon = false)
-    override val filters = listOf(expectedChar)
-    override val sideEffects = listOf(pushedString)
+    val expectedChar = DynamicPropertyDescriptors.charOrEps("Expected char", canBeDeemedEpsilon = false)
+    val pushedString = DynamicPropertyDescriptors.stringOrEps("Pushed string", canBeDeemedEpsilon = false)
+    override val transitionFilters = listOf(expectedChar)
+    override val transitionSideEffects = listOf(pushedString)
     override var displayName = "Stack"
     override val mayRequireAcceptance get() = true
 
