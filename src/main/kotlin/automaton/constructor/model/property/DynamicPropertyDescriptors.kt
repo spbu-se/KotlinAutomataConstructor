@@ -32,11 +32,7 @@ object DynamicPropertyDescriptors {
         canBeDeemedEpsilon = canBeDeemedEpsilon,
         editorFactory = { property ->
             TextField().apply {
-                textFormatter = TextFormatter(object : StringConverter<T>() {
-                    override fun toString(obj: T): String = property.descriptor.stringifyValue(obj)
-                    override fun fromString(string: String): T =
-                        if (string == emptyChar.toString()) emptyValue else charConverter(string.single())
-                }, emptyValue) { change ->
+                textFormatter = TextFormatter(property.descriptor.stringConverter, emptyValue) { change ->
                     change.apply {
                         if (text.length == 1) setControlNewText(text)
                         else if (controlNewText.length != 1) setControlNewText(emptyChar.toString())
@@ -44,7 +40,13 @@ object DynamicPropertyDescriptors {
                 }.apply { valueProperty().bindBidirectional(property) }
             }
         },
-        stringifier = { if (it == EPSILON_VALUE) emptyChar.toString() else it.toString() }
+        stringConverter = object : StringConverter<T>() {
+            override fun toString(obj: T): String =
+                if (obj == EPSILON_VALUE) emptyChar.toString() else obj.toString()
+
+            override fun fromString(string: String): T =
+                if (string == emptyChar.toString()) emptyValue else charConverter(string.single())
+        }
     )
 
     inline fun <reified E : Enum<E>> enum(name: String) =
@@ -62,15 +64,15 @@ object DynamicPropertyDescriptors {
             canBeDeemedEpsilon = canBeDeemedEpsilon,
             editorFactory = { property ->
                 ChoiceBox<T>().apply {
-                    converter = object : StringConverter<T>() {
-                        override fun toString(obj: T): String = property.descriptor.stringifyValue(obj)
-                        override fun fromString(string: String): T = stringToValueMap.getValue(string)
-                    }
+                    converter = property.descriptor.stringConverter
                     items.setAll(stringToValueMap.values)
                     valueProperty().bindBidirectional(property)
                 }
             },
-            stringifier = { it.toString() }
+            stringConverter = object : StringConverter<T>() {
+                override fun toString(obj: T): String = obj.toString()
+                override fun fromString(string: String): T = stringToValueMap.getValue(string)
+            }
         )
     }
 
@@ -83,10 +85,7 @@ object DynamicPropertyDescriptors {
         defaultValue = null,
         editorFactory = { property ->
             TextField().apply {
-                textFormatter = TextFormatter(object : StringConverter<String?>() {
-                    override fun toString(obj: String?) = property.descriptor.stringifyValue(obj)
-                    override fun fromString(string: String) = if (string == EPSILON_STRING) EPSILON_VALUE else string
-                }, EPSILON_VALUE) { change ->
+                textFormatter = TextFormatter(property.descriptor.stringConverter, EPSILON_VALUE) { change ->
                     change.apply {
                         if (controlNewText.isEmpty()) setControlNewText(EPSILON_STRING)
                         else if (controlText == EPSILON_STRING && text.isNotEmpty()) setControlNewText(text)
@@ -94,6 +93,9 @@ object DynamicPropertyDescriptors {
                 }.apply { valueProperty().bindBidirectional(property) }
             }
         },
-        stringifier = { if (it == EPSILON_VALUE) EPSILON_STRING else it }
+        stringConverter = object : StringConverter<String?>() {
+            override fun toString(obj: String?): String = if (obj == EPSILON_VALUE) EPSILON_STRING else obj
+            override fun fromString(string: String): String? = if (string == EPSILON_STRING) EPSILON_VALUE else string
+        }
     )
 }

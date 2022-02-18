@@ -2,6 +2,7 @@ package automaton.constructor.model.property
 
 import automaton.constructor.model.Automaton
 import javafx.scene.Node
+import javafx.util.StringConverter
 
 /**
  * Describes a kind of [DynamicProperty]-s that all transitions or states of some [Automaton] must have
@@ -23,9 +24,8 @@ class DynamicPropertyDescriptor<T>(
     private val editorFactory: (DynamicProperty<T>) -> Node,
     /**
      * Converts given value to a human-readable string
-     * @see stringifyValue
      */
-    private val stringifier: (T) -> String
+    val stringConverter: StringConverter<T>
 ) {
     /**
      * Creates [DynamicProperty] described by this descriptor with [defaultValue]
@@ -36,9 +36,4 @@ class DynamicPropertyDescriptor<T>(
      * Creates control for editing the `value` of the given [property] described by this descriptor
      */
     fun createEditor(property: DynamicProperty<T>): Node = editorFactory(property)
-
-    /**
-     * Converts given [value] to a human-readable string
-     */
-    fun stringifyValue(value: T): String = stringifier(value)
 }

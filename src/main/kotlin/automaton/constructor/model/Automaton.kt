@@ -3,12 +3,13 @@ package automaton.constructor.model
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
-import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
+import kotlinx.serialization.Serializable
 import tornadofx.*
 
 /**
@@ -18,6 +19,7 @@ import tornadofx.*
  *  - Fixed list of [MemoryUnitDescriptor]-s
  *  - Dynamically extendable set of [AutomatonModule]-s
  */
+@Serializable(with = AutomatonSerializer::class)
 class Automaton(
     val typeName: String,
     val memoryDescriptors: List<MemoryUnitDescriptor>
@@ -26,7 +28,7 @@ class Automaton(
     private val outgoingTransitions = mutableMapOf<State, ObservableSet<Transition>>()
     private val incomingTransitions = mutableMapOf<State, MutableSet<Transition>>()
     private val modules = mutableMapOf<(Automaton) -> AutomatonModule, AutomatonModule>()
-    private var nextId = 0
+    private var nextStateSuffix = 0
 
     init {
         val memoryNameToCountMap = mutableMapOf<String, Int>()
@@ -68,7 +70,7 @@ class Automaton(
     fun getTransitions(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
 
     fun addState(name: String? = null, position: Point2D = Point2D.ZERO): State {
-        val state = State(name ?: "S${nextId++}", position, memoryDescriptors)
+        val state = State(name ?: "S${nextStateSuffix++}", position, memoryDescriptors)
         transitionStorages[state] = createTransitionStorageTree(memoryDescriptors)
         outgoingTransitions[state] = observableSetOf()
         incomingTransitions[state] = mutableSetOf()

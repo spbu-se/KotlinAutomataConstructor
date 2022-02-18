@@ -22,8 +22,8 @@ open class AutomatonElementView(
         ) {
             propertyGroups.asSequence()
                 .map { (_, filters, sideEffects) ->
-                    val filtersString = filters.joinToString(separator = ",") { it.stringify() }
-                    val sideEffectsString = sideEffects.joinToString(separator = ",") { it.stringify() }
+                    val filtersString = filters.joinToString(separator = ",")
+                    val sideEffectsString = sideEffects.joinToString(separator = ",")
                     if (filtersString.isEmpty() || sideEffectsString.isEmpty()) filtersString + sideEffectsString
                     else "$filtersString/$sideEffectsString"
                 }.filter { it.isNotEmpty() }

@@ -40,6 +40,11 @@ open class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDescri
         getProperty(descriptor).value = value
     }
 
+    fun readProperties(): List<String> = properties.values.map { it.toString() }
+    fun writeProperties(values: List<String>) = properties.values.zip(values).forEach { (property, value) ->
+        property.value = property.descriptor.stringConverter.fromString(value)
+    }
+
     private fun <T> registerProperty(descriptor: DynamicPropertyDescriptor<T>): DynamicProperty<T> =
         descriptor.createProperty().also { properties[descriptor] = it }
 }
