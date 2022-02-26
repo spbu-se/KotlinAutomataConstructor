@@ -167,7 +167,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
         lastSelectedElement = transitionView
     }
 
-    private fun clearSelection() {
+    fun clearSelection() {
         selectedStateViews.onEach { it.selected = false }.clear()
         selectedTransitionViews.onEach { it.selected = false }.clear()
         lastSelectedElement = null

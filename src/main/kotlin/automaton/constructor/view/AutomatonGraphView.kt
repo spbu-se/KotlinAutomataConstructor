@@ -29,6 +29,7 @@ class AutomatonGraphView(val automaton: Automaton) : Pane() {
             if (it.wasAdded()) registerTransition(it.elementAdded)
             if (it.wasRemoved()) unregisterTransition(it.elementRemoved)
         })
+        controller.clearSelection()
     }
 
     private fun registerState(state: State) {
