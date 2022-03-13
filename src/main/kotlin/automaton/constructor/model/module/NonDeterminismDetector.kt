@@ -29,13 +29,14 @@ class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
             }
         }
         recheckDeterminism()
+        val listener = ChangeListener<Any?> { _, _, _ -> recheckDeterminism() }
+        fun registerTransition(transition: Transition) = transition.filters.forEach { it.addListener(listener) }
+        fun unregisterTransition(transition: Transition) = transition.filters.forEach { it.removeListener(listener) }
 
-        fun registerTransition(transition: Transition) {
-            transition.filters.forEach { it.onChange { recheckDeterminism() } }
-        }
         transitions.forEach { registerTransition(it) }
         transitions.addListener(SetChangeListener {
             if (it.wasAdded()) registerTransition(it.elementAdded)
+            if (it.wasRemoved()) unregisterTransition(it.elementRemoved)
             recheckDeterminism()
         })
         isNonDeterministic
