@@ -33,4 +33,11 @@ class State(name: String, position: Point2D, memoryDescriptors: List<MemoryUnitD
     var isCurrent by isCurrentProperty
     val positionProperty: Property<Point2D> = position.toProperty()
     var position: Point2D by positionProperty
+    val lastReleasePositionProperty: Property<Point2D> = position.toProperty().apply {
+        onChange { this@State.position = it!! }
+    }
+    var lastReleasePosition: Point2D by lastReleasePositionProperty
+    override val undoRedoProperties
+        get() = super.undoRedoProperties +
+                listOf(nameProperty, isInitialProperty, isFinalProperty, lastReleasePositionProperty)
 }

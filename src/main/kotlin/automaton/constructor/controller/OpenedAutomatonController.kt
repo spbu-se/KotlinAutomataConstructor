@@ -10,6 +10,8 @@ import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.runAsyncWithDialog
 import javafx.concurrent.Task
 import javafx.geometry.Pos
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import tornadofx.*
 import java.io.File
 
@@ -20,12 +22,26 @@ class OpenedAutomatonController(val view: View) {
     val openedAutomatonProperty = getAllAutomatonFactories().first().createAutomaton().toProperty()
     var openedAutomaton: Automaton by openedAutomatonProperty
 
-    val openedAutomatonTitleBinding = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
+    private val nameBinding = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
         it?.toString() ?: "Untitled ${openedAutomaton.typeName}"
+    }
+    private val name: String by nameBinding
+
+    val openedAutomatonTitleBinding = nameBinding.nonNullObjectBinding(
+        openedAutomatonProperty.select { it.undoRedoManager.wasModifiedProperty }
+    ) {
+        (if (openedAutomaton.undoRedoManager.wasModified) "*" else "") + name
     }
     val openedAutomatonTitle: String by openedAutomatonTitleBinding
 
+    init {
+        view.primaryStage.setOnCloseRequest {
+            if (!suggestSavingChanges()) it.consume()
+        }
+    }
+
     fun onNew() {
+        suggestSavingChanges()
         view.dialog("New automaton") {
             clear()
             stage.x = 100.0
@@ -58,14 +74,25 @@ class OpenedAutomatonController(val view: View) {
     }
 
     fun onOpen() {
+        suggestSavingChanges()
         val file = chooseFile("Open", FileChooserMode.Single) ?: return
         findFileAutomatonSerializer(file).loadAsync(file)
     }
 
-    fun onSave() = openedFile?.let { saveAs(it) } ?: onSaveAs()
+    /**
+     * @return false if CANCEL is pressed
+     */
+    fun onSave() = openedFile?.let {
+        saveAs(it)
+        true
+    } ?: onSaveAs()
 
-    fun onSaveAs() {
-        saveAs(chooseFile("Save As", FileChooserMode.Save) ?: return)
+    /**
+     * @return false if CANCEL is pressed
+     */
+    fun onSaveAs(): Boolean {
+        saveAs(chooseFile("Save As", FileChooserMode.Save) ?: return false)
+        return true
     }
 
     private fun saveAs(file: File) {
@@ -78,7 +105,8 @@ class OpenedAutomatonController(val view: View) {
             filters = fileAutomatonSerializers().map { it.extensionFilter }.toTypedArray(),
             initialDirectory = openedFile?.parentFile ?: defaultDirectory(),
             mode = mode,
-            owner = view.currentWindow
+            owner = view.currentWindow,
+            initialFileName = openedFile?.name ?: name
         ).firstOrNull()
 
     private fun defaultDirectory() = runCatching {
@@ -95,6 +123,7 @@ class OpenedAutomatonController(val view: View) {
             serialize(file, openedAutomaton)
         } addOnSuccess {
             openedFile = file
+            openedAutomaton.undoRedoManager.wasModified = false
         } addOnFail {
             throw RuntimeException("Unable to save graph to $file", it)
         }
@@ -109,4 +138,22 @@ class OpenedAutomatonController(val view: View) {
         } addOnFail {
             throw RuntimeException("Unable to load automaton from $file", it)
         }
+
+    /**
+     * @return false if CANCEL is pressed
+     */
+    private fun suggestSavingChanges(): Boolean {
+        if (!openedAutomaton.undoRedoManager.wasModified) return true
+        val result = alert(
+            Alert.AlertType.CONFIRMATION,
+            "Do you want to save $name?",
+            null,
+            ButtonType.YES,
+            ButtonType.NO,
+            ButtonType.CANCEL,
+            owner = view.currentWindow
+        ).result
+        return if (result == ButtonType.YES) onSave()
+        else result != ButtonType.CANCEL
+    }
 }

@@ -1,5 +1,7 @@
 package automaton.constructor.model.property
 
+import javafx.beans.property.Property
+
 /**
  * State or transition
  */
@@ -16,6 +18,7 @@ open class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDescri
     open val filters: List<DynamicProperty<*>> = propertyGroups.flatMap { it.filters }
     open val sideEffects: List<DynamicProperty<*>> = propertyGroups.flatMap { it.sideEffects }
     open val allProperties: Collection<DynamicProperty<*>> get() = properties.values
+    open val undoRedoProperties: Collection<Property<*>> get() = allProperties
 
     /**
      * Returns property of this automaton element that is described by the given [descriptor]

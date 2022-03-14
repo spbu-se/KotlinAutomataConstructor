@@ -55,8 +55,10 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
         graphView.setOnKeyPressed { event ->
             event.consume()
             if (event.code == KeyCode.DELETE) {
-                selectedTransitionViews.forEach { transitionView -> automaton.removeTransition(transitionView.transition) }
-                selectedStateViews.forEach { stateView -> automaton.removeState(stateView.state) }
+                automaton.undoRedoManager.group {
+                    selectedTransitionViews.forEach { transitionView -> automaton.removeTransition(transitionView.transition) }
+                    selectedStateViews.forEach { stateView -> automaton.removeState(stateView.state) }
+                }
                 clearSelection()
             } else if (event.code == KeyCode.A && event.isControlDown) {
                 clearSelection()
@@ -111,6 +113,12 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
             } else if (it.button == MouseButton.SECONDARY) {
                 newTransitionSource = stateView
                 stateView.group.startFullDrag()
+            }
+        }
+        stateView.group.setOnMouseReleased { event ->
+            event.consume()
+            if (!event.isStillSincePress) automaton.undoRedoManager.group {
+                selectedStateViews.forEach { it.state.lastReleasePosition = it.state.position }
             }
         }
         stateView.group.setOnMouseDragReleased {

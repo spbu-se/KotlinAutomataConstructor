@@ -18,7 +18,7 @@ private const val DEFAULT_GRAPH_SCALE = 0.4
 
 // TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
 class AutomatonView(val automaton: Automaton, val view: View) : Pane() {
-    private val automatonGraphView = AutomatonGraphView(automaton)
+    val automatonGraphView = AutomatonGraphView(automaton)
 
     init {
         zoomScrollPane(automatonGraphView, DEFAULT_GRAPH_SCALE) {

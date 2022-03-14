@@ -46,6 +46,7 @@ object AutomatonSerializer : KSerializer<Automaton> by surrogateSerializer(
                     writeProperties(it.properties)
                 }
             }
+            automaton.undoRedoManager.reset()
         }
     }
 )

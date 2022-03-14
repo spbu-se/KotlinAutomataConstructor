@@ -7,6 +7,7 @@ import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
+import automaton.constructor.utils.UndoRedoManager
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
@@ -29,6 +30,8 @@ class Automaton(
     private val incomingTransitions = mutableMapOf<State, MutableSet<Transition>>()
     private val modules = mutableMapOf<(Automaton) -> AutomatonModule, AutomatonModule>()
     private var nextStateSuffix = 0
+
+    val undoRedoManager = UndoRedoManager()
 
     init {
         val memoryNameToCountMap = mutableMapOf<String, Int>()
@@ -71,19 +74,28 @@ class Automaton(
 
     fun addState(name: String? = null, position: Point2D = Point2D.ZERO): State {
         val state = State(name ?: "S${nextStateSuffix++}", position, memoryDescriptors)
-        transitionStorages[state] = createTransitionStorageTree(memoryDescriptors)
-        outgoingTransitions[state] = observableSetOf()
-        incomingTransitions[state] = mutableSetOf()
-        states.add(state)
+        undoRedoManager.perform({ doAddState(state) }, { doRemoveState(state) })
         return state
     }
 
-    fun removeState(state: State) {
+    fun removeState(state: State) = undoRedoManager.perform({ doRemoveState(state) }, { doAddState(state) })
+
+
+    private fun doAddState(state: State) {
+        transitionStorages[state] = createTransitionStorageTree(memoryDescriptors)
+        outgoingTransitions[state] = observableSetOf()
+        incomingTransitions[state] = mutableSetOf()
+        state.undoRedoProperties.forEach { undoRedoManager.registerProperty(it) }
+        states.add(state)
+    }
+
+    private fun doRemoveState(state: State) {
         outgoingTransitions.getValue(state).toList().forEach { removeTransition(it) }
         incomingTransitions.getValue(state).toList().forEach { removeTransition(it) }
         transitionStorages.remove(state)
         outgoingTransitions.remove(state)
         incomingTransitions.remove(state)
+        state.undoRedoProperties.forEach { undoRedoManager.unregisterProperty(it) }
         states.remove(state)
     }
 
@@ -93,17 +105,26 @@ class Automaton(
      */
     fun addTransition(source: State, target: State): Transition {
         val transition = Transition(source, target, memoryDescriptors)
-        transitionStorages.getValue(source).addTransition(transition)
-        outgoingTransitions.getValue(source).add(transition)
-        incomingTransitions.getValue(target).add(transition)
-        transitions.add(transition)
+        undoRedoManager.perform({ doAddTransition(transition) }, { doRemoveTransition(transition) })
         return transition
     }
 
-    fun removeTransition(transition: Transition) {
+    fun removeTransition(transition: Transition) =
+        undoRedoManager.perform({ doRemoveTransition(transition) }, { doAddTransition(transition) })
+
+    private fun doAddTransition(transition: Transition) {
+        transitionStorages.getValue(transition.source).addTransition(transition)
+        outgoingTransitions.getValue(transition.source).add(transition)
+        incomingTransitions.getValue(transition.target).add(transition)
+        transition.undoRedoProperties.forEach { undoRedoManager.registerProperty(it) }
+        transitions.add(transition)
+    }
+
+    private fun doRemoveTransition(transition: Transition) {
         transitionStorages.getValue(transition.source).removeTransition(transition)
         outgoingTransitions.getValue(transition.source).remove(transition)
         incomingTransitions.getValue(transition.target).remove(transition)
+        transition.undoRedoProperties.forEach { undoRedoManager.unregisterProperty(it) }
         transitions.remove(transition)
     }
 
