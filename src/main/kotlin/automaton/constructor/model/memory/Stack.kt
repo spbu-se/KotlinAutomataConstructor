@@ -5,7 +5,9 @@ import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
+import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.surrogateSerializer
+import javafx.beans.value.ObservableValue
 import javafx.scene.layout.VBox
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -42,12 +44,16 @@ class Stack(
     initValue: String
 ) : MonospaceEditableString(initValue), MemoryUnit {
     override fun getCurrentFilterValues() = listOf(value.first())
-    override val status: MemoryUnitStatus
-        get() = when {
-            value.isNotEmpty() -> READY_TO_ACCEPT
-            descriptor.acceptsByEmptyStack -> REQUIRES_ACCEPTANCE
-            else -> REQUIRES_TERMINATION
+
+    override val observableStatus: ObservableValue<MemoryUnitStatus>
+        get() = valueProperty.nonNullObjectBinding(descriptor.acceptsByEmptyStackProperty) {
+            when {
+                value.isNotEmpty() -> READY_TO_ACCEPT
+                descriptor.acceptsByEmptyStack -> REQUIRES_ACCEPTANCE
+                else -> REQUIRES_TERMINATION
+            }
         }
+    override val status: MemoryUnitStatus by observableStatus
 
     override fun takeTransition(transition: Transition) {
         var pushedString = transition[descriptor.pushedString]

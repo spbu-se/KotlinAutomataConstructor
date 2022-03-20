@@ -5,7 +5,9 @@ import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.*
 import javafx.beans.value.ObservableBooleanValue
 import javafx.beans.value.ObservableDoubleValue
+import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
+import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.paint.Color
@@ -16,89 +18,101 @@ import java.lang.Math.toDegrees
 import kotlin.math.atan
 import kotlin.math.sqrt
 
-class LoopEdgeRenderData(val state: State) : EdgeRenderData {
+enum class TransitionLabelPosition {
+    COUNTER_CLOCKWISE,
+    ABOVE
+}
+
+class LoopEdgeRenderData(val center: ObservableValue<Point2D>) : EdgeRenderData {
     companion object {
-        private const val ARROW_START_OFFSET_Y = -0.5 * STATE_RADIUS
+        private const val ARROW_START_OFFSET_Y = -0.5 * StateView.RADIUS
         private val ARROW_START_OFFSET_X =
-            sqrt(STATE_RADIUS * STATE_RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
+            sqrt(StateView.RADIUS * StateView.RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
     }
 
     override val normXProperty = 0.0.toProperty()
     override val normX by normXProperty
-    override val midPointXProperty = state.positionProperty.x
+    override val midPointXProperty = center.x
     override val midPointX by midPointXProperty
     override val normYProperty = (-1.0).toProperty()
     override val normY by normYProperty
-    override val midPointYProperty = state.positionProperty.y - (2.0 * STATE_RADIUS)
+    override val midPointYProperty = center.y - (2.0 * StateView.RADIUS)
     override val midPointY by midPointYProperty
     override val textAngleInDegreesProperty = 0.0.toProperty()
     override val children = listOf(
         Circle().apply {
-            radius = STATE_RADIUS
-            centerXProperty().bind(state.positionProperty.x)
-            centerYProperty().bind(state.positionProperty.y - STATE_RADIUS)
+            radius = StateView.RADIUS
+            centerXProperty().bind(center.x)
+            centerYProperty().bind(center.y - StateView.RADIUS)
             fill = Color.TRANSPARENT
             stroke = Color.BLACK
         },
         Line().apply {
-            startXProperty().bind(state.positionProperty.x + ARROW_START_OFFSET_X)
-            startYProperty().bind(state.positionProperty.y + ARROW_START_OFFSET_Y)
-            endXProperty().bind(state.positionProperty.x + (ARROW_START_OFFSET_X + 25.0))
-            endYProperty().bind(state.positionProperty.y + (ARROW_START_OFFSET_Y - 25.0))
+            startXProperty().bind(center.x + ARROW_START_OFFSET_X)
+            startYProperty().bind(center.y + ARROW_START_OFFSET_Y)
+            endXProperty().bind(center.x + (ARROW_START_OFFSET_X + 25.0))
+            endYProperty().bind(center.y + (ARROW_START_OFFSET_Y - 25.0))
         },
         Line().apply {
-            startXProperty().bind(state.positionProperty.x + ARROW_START_OFFSET_X)
-            startYProperty().bind(state.positionProperty.y + ARROW_START_OFFSET_Y)
-            endXProperty().bind(state.positionProperty.x + (ARROW_START_OFFSET_X - 5.0))
-            endYProperty().bind(state.positionProperty.y + (ARROW_START_OFFSET_Y - 35.0))
+            startXProperty().bind(center.x + ARROW_START_OFFSET_X)
+            startYProperty().bind(center.y + ARROW_START_OFFSET_Y)
+            endXProperty().bind(center.x + (ARROW_START_OFFSET_X - 5.0))
+            endYProperty().bind(center.y + (ARROW_START_OFFSET_Y - 35.0))
         }
     )
 }
 
 class NonLoopEdgeRenderData(
-    val source: State,
-    val target: State,
-    val hasOppositeProperty: ObservableBooleanValue
+    val sourceCenter: ObservableValue<Point2D>,
+    val targetCenter: ObservableValue<Point2D>,
+    val hasOppositeProperty: ObservableBooleanValue,
+    labelPosition: TransitionLabelPosition
 ) : EdgeRenderData {
-    override val normXProperty = source.positionProperty.doubleBinding(target.positionProperty) {
-        (target.position.y - source.position.y) / source.position.distance(target.position)
+    private val isLabelMirroredProperty: ObservableValue<Boolean> = when (labelPosition) {
+        TransitionLabelPosition.ABOVE -> sourceCenter.x.greaterThan(targetCenter.x)
+        TransitionLabelPosition.COUNTER_CLOCKWISE -> false.toProperty()
+    }
+    private val isLabelMirrored: Boolean by isLabelMirroredProperty
+    private val normFactor get() = if (isLabelMirrored) -1.0 else 1.0
+    override val normXProperty = sourceCenter.doubleBinding(targetCenter, isLabelMirroredProperty) {
+        normFactor * (targetCenter.value.y - sourceCenter.value.y) / sourceCenter.value.distance(targetCenter.value)
     }
     override val normX by normXProperty
     override val midPointXProperty =
-        normXProperty.doubleBinding(hasOppositeProperty, source.positionProperty, target.positionProperty) {
-            if (hasOppositeProperty.value) (source.position.x + target.position.x) / 2 + 80.0 * normX
-            else (source.position.x + target.position.x) / 2
+        normXProperty.doubleBinding(hasOppositeProperty, sourceCenter, targetCenter) {
+            if (hasOppositeProperty.value) (sourceCenter.value.x + targetCenter.value.x) / 2 + 80.0 * normX
+            else (sourceCenter.value.x + targetCenter.value.x) / 2
         }
     override val midPointX by midPointXProperty
-    override val normYProperty = source.positionProperty.doubleBinding(target.positionProperty) {
-        (source.position.x - target.position.x) / source.position.distance(target.position)
+    override val normYProperty = sourceCenter.doubleBinding(targetCenter, isLabelMirroredProperty) {
+        normFactor * (sourceCenter.value.x - targetCenter.value.x) / sourceCenter.value.distance(targetCenter.value)
     }
     override val normY by normYProperty
     override val midPointYProperty =
-        normYProperty.doubleBinding(hasOppositeProperty, source.positionProperty, target.positionProperty) {
-            if (hasOppositeProperty.value) (source.position.y + target.position.y) / 2 + 80.0 * normY
-            else (source.position.y + target.position.y) / 2
+        normYProperty.doubleBinding(hasOppositeProperty, sourceCenter, targetCenter) {
+            if (hasOppositeProperty.value) (sourceCenter.value.y + targetCenter.value.y) / 2 + 80.0 * normY
+            else (sourceCenter.value.y + targetCenter.value.y) / 2
         }
     override val midPointY by midPointYProperty
-    override val textAngleInDegreesProperty = source.positionProperty.doubleBinding(target.positionProperty) {
-        toDegrees(atan((target.position.y - source.position.y) / (target.position.x - source.position.x)))
+    override val textAngleInDegreesProperty = sourceCenter.doubleBinding(targetCenter) {
+        toDegrees(atan((targetCenter.value.y - sourceCenter.value.y) / (targetCenter.value.x - sourceCenter.value.x)))
             .toInt().toDouble().roundTo(3)
     }
 
     override val children = listOf(
         Line().apply {
-            startXProperty().bind(source.positionProperty.x)
-            startYProperty().bind(source.positionProperty.y)
+            startXProperty().bind(sourceCenter.x)
+            startYProperty().bind(sourceCenter.y)
             endXProperty().bind(midPointXProperty)
             endYProperty().bind(midPointYProperty)
         },
         Arrow(Line(), 50.0, 20.0).apply {
             line.startXProperty().bind(midPointXProperty)
             line.startYProperty().bind(midPointYProperty)
-            val endProperty = target.positionProperty.nonNullObjectBinding(midPointXProperty, midPointYProperty) {
-                target.position - STATE_RADIUS * Vector2D(
-                    target.position.x - midPointX,
-                    target.position.y - midPointY
+            val endProperty = targetCenter.nonNullObjectBinding(midPointXProperty, midPointYProperty) {
+                targetCenter.value - StateView.RADIUS * Vector2D(
+                    targetCenter.value.x - midPointX,
+                    targetCenter.value.y - midPointY
                 ).normalize()
             }
             line.endXProperty().bind(endProperty.x)
@@ -120,13 +134,19 @@ interface EdgeRenderData {
     val children: List<Node>
 }
 
-class EdgeView(val source: State, val target: State) : Group() {
+class EdgeView(
+    sourceCenter: ObservableValue<Point2D>,
+    targetCenter: ObservableValue<Point2D>,
+    labelPosition: TransitionLabelPosition = TransitionLabelPosition.COUNTER_CLOCKWISE
+) : Group() {
+    constructor(source: State, target: State) : this(source.positionProperty, target.positionProperty)
+
     val transitionViews: ObservableList<TransitionView> = observableListOf()
     val oppositeEdgeProperty = objectProperty<EdgeView?>(null)
     var oppositeEdge by oppositeEdgeProperty
     private val edgeRenderData =
-        if (source === target) LoopEdgeRenderData(source)
-        else NonLoopEdgeRenderData(source, target, oppositeEdgeProperty.isNotNull)
+        if (sourceCenter === targetCenter) LoopEdgeRenderData(sourceCenter)
+        else NonLoopEdgeRenderData(sourceCenter, targetCenter, oppositeEdgeProperty.isNotNull, labelPosition)
 
     init {
         edgeRenderData.children.forEach { add(it) }

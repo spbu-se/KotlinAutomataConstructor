@@ -2,8 +2,10 @@ package automaton.constructor.view
 
 import automaton.constructor.model.State
 import automaton.constructor.utils.*
-import javafx.beans.binding.Binding
+import javafx.beans.property.Property
+import javafx.geometry.Point2D
 import javafx.scene.Group
+import javafx.scene.Node
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.paint.Color
@@ -11,47 +13,56 @@ import javafx.scene.text.Font
 import tornadofx.*
 
 class StateView(val state: State) : AutomatonElementView(state) {
-    val colorProperty: Binding<Color> = nonNullObjectBinding(selectedProperty, state.isCurrentProperty) {
-        when {
-            selected && state.isCurrent -> Color.PURPLE
-            !selected && state.isCurrent -> Color.SADDLEBROWN
-            selected && !state.isCurrent -> Color.AQUA
-            else -> Color.YELLOW
-        }
+
+    companion object {
+        const val RADIUS = 50.0
+        val DEFAULT_COLOR: Color get() = Color.YELLOW
     }
 
+    val positionProperty: Property<Point2D> = state.position.toProperty().apply { bind(state.positionProperty) }
+    val colorProperty: Property<Color> = DEFAULT_COLOR.toProperty().apply {
+        bind(selectedProperty.nonNullObjectBinding(state.isCurrentBinding) {
+            when {
+                selected && state.isCurrent -> Color.PURPLE
+                !selected && state.isCurrent -> Color.SADDLEBROWN
+                selected && !state.isCurrent -> Color.AQUA
+                else -> DEFAULT_COLOR
+            }
+        })
+    }
+    val initMarker: Node
     val group = Group().apply {
-        polygon(0.0, 0.0, 0.0, 0.0, 0.0, 0.0) {
+        initMarker = polygon(0.0, 0.0, 0.0, 0.0, 0.0, 0.0) {
             visibleWhen(state.isInitialProperty)
             fun updatePosition() {
-                points[0] = state.position.x - STATE_RADIUS
-                points[1] = state.position.y
-                points[2] = state.position.x - 1.5 * STATE_RADIUS
-                points[3] = state.position.y - STATE_RADIUS / 2.0
-                points[4] = state.position.x - 1.5 * STATE_RADIUS
-                points[5] = state.position.y + STATE_RADIUS / 2.0
+                points[0] = positionProperty.value.x - RADIUS
+                points[1] = positionProperty.value.y
+                points[2] = positionProperty.value.x - 1.5 * RADIUS
+                points[3] = positionProperty.value.y - RADIUS / 2.0
+                points[4] = positionProperty.value.x - 1.5 * RADIUS
+                points[5] = positionProperty.value.y + RADIUS / 2.0
             }
             updatePosition()
-            state.positionProperty.onChange { updatePosition() }
+            positionProperty.onChange { updatePosition() }
             fill = Color.LIGHTGRAY
             stroke = Color.BLACK
         }
 
         circle {
-            centerXProperty().bind(state.positionProperty.x)
-            centerYProperty().bind(state.positionProperty.y)
+            centerXProperty().bind(positionProperty.x)
+            centerYProperty().bind(positionProperty.y)
             fillProperty().bind(colorProperty)
             stroke = Color.BLACK
-            radius = STATE_RADIUS
+            radius = RADIUS
         }
 
         circle {
             visibleWhen(state.isFinalProperty)
-            centerXProperty().bind(state.positionProperty.x)
-            centerYProperty().bind(state.positionProperty.y)
+            centerXProperty().bind(positionProperty.x)
+            centerYProperty().bind(positionProperty.y)
             fillProperty().bind(colorProperty)
             stroke = Color.BLACK
-            radius = STATE_RADIUS - STATE_RADIUS / 5
+            radius = RADIUS - RADIUS / 5
         }
 
         text {
@@ -61,8 +72,8 @@ class StateView(val state: State) : AutomatonElementView(state) {
                     .joinToString(separator = "/")
             })
             translateToCenter()
-            xProperty().bind(state.positionProperty.x)
-            yProperty().bind(state.positionProperty.y)
+            xProperty().bind(positionProperty.x)
+            yProperty().bind(positionProperty.y)
         }
     }
 

@@ -8,6 +8,7 @@ import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.noPropertiesSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import tornadofx.*
 
 private const val NAME = "Register"
 
@@ -26,7 +27,8 @@ class Register(
     override val descriptor: RegisterDescriptor,
     initValue: String
 ) : MonospaceEditableString(initValue), MemoryUnit {
-    override val status get() = READY_TO_ACCEPT
+    override val observableStatus = READY_TO_ACCEPT.toProperty()
+    override val status: MemoryUnitStatus by observableStatus
 
     override fun getCurrentFilterValues() = listOf(value)
 

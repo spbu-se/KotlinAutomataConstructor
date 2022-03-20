@@ -1,7 +1,6 @@
 package automaton.constructor.view.module.executor
 
 import automaton.constructor.model.module.executor.ExecutionState
-import automaton.constructor.model.module.executor.ExecutionStatus
 import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.SettingGroupEditor
 import automaton.constructor.utils.nonNullObjectBinding
@@ -12,10 +11,10 @@ import javafx.scene.layout.CornerRadii
 import javafx.scene.paint.Color
 import tornadofx.*
 
-fun executionStateView(executionState: ExecutionState) =
+fun executionLeafView(executionState: ExecutionState) =
     SettingGroupEditor(
         SettingGroup.fromEditables(
-            executionState.stateProperty.select { it.nameProperty }.stringBinding(executionState.statusProperty) {
+            executionState.state.nameProperty.stringBinding(executionState.statusProperty) {
                 "$it [${executionState.status}]"
             },
             executionState.memory
@@ -24,11 +23,7 @@ fun executionStateView(executionState: ExecutionState) =
         gridpane.backgroundProperty().bind(executionState.statusProperty.nonNullObjectBinding {
             Background(
                 BackgroundFill(
-                    when (it!!) {
-                        ExecutionStatus.RUNNING -> Color.TRANSPARENT
-                        ExecutionStatus.ACCEPTED -> Color.LIGHTGREEN
-                        ExecutionStatus.REJECTED -> Color.DEEPPINK
-                    },
+                    it.color ?: Color.TRANSPARENT,
                     CornerRadii.EMPTY,
                     Insets.EMPTY
                 )

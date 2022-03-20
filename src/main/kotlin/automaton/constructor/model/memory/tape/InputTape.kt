@@ -11,8 +11,11 @@ import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.noPropertiesSerializer
+import javafx.beans.binding.Bindings.`when`
+import javafx.beans.value.ObservableValue
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import tornadofx.*
 
 private const val NAME = "Input tape"
 
@@ -32,12 +35,15 @@ class InputTape(
     override val descriptor: InputTapeDescriptor,
     val track: Track
 ) : AbstractTape(listOf(track)) {
-    override val status: MemoryUnitStatus
-        get() = if (track.currentChar == BLANK_CHAR) REQUIRES_TERMINATION else NOT_READY_TO_ACCEPT
+    override val observableStatus: ObservableValue<MemoryUnitStatus> =
+        `when`(track.currentProperty.isEqualTo(BLANK_CHAR))
+            .then(REQUIRES_TERMINATION)
+            .otherwise(NOT_READY_TO_ACCEPT)
+    override val status: MemoryUnitStatus by observableStatus
 
     override fun takeTransition(transition: Transition) {
         if (transition[descriptor.expectedChar] != EPSILON_VALUE)
-            track.shiftHead(1)
+            track.moveHead(HeadMoveDirection.RIGHT)
     }
 
     override fun copy() = InputTape(descriptor, Track(track))

@@ -6,38 +6,35 @@ import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
 import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
 import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.transition.Transition
+import automaton.constructor.utils.nonNullObjectBinding
 import tornadofx.*
 
-class ExecutionState private constructor(
-    state: State,
-    val memory: List<MemoryUnit>,
-    status: ExecutionStatus
+class ExecutionState(
+    val state: State,
+    val lastTransition: Transition?,
+    val memory: List<MemoryUnit>
 ) {
-    val stateProperty = state.toProperty()
-    var state: State by stateProperty
-
-    val statusProperty = status.toProperty()
+    val statusProperty = RUNNING.toProperty().apply {
+        bind(state.isFinalProperty.nonNullObjectBinding(*memory.map { it.observableStatus }.toTypedArray()) {
+            if ((state.isFinal || memory.any { it.status == REQUIRES_ACCEPTANCE }) &&
+                memory.all { it.status != NOT_READY_TO_ACCEPT }
+            ) ACCEPTED else RUNNING
+        })
+    }
     var status: ExecutionStatus by statusProperty
+    val children = observableSetOf<ExecutionState>()
 
-    constructor(initState: State, memory: List<MemoryUnit>) : this(initState, memory, RUNNING) {
-        updateStatus()
-    }
-
-    constructor(other: ExecutionState) : this(other.state, other.memory.map { it.copy() }, other.status)
-
-    fun takeTransition(transition: Transition) {
-        state = transition.target
-        memory.forEach { it.takeTransition(transition) }
-        updateStatus()
-    }
-
-    fun updateStatus() {
-        if ((state.isFinal || memory.any { it.status == REQUIRES_ACCEPTANCE }) &&
-            memory.all { it.status != NOT_READY_TO_ACCEPT }
-        ) status = ACCEPTED
-    }
+    fun takeTransition(transition: Transition) =
+        ExecutionState(
+            transition.target,
+            transition,
+            memory.map { it.copy().apply { takeTransition(transition) } }
+        ).also { children.add(it) }
 
     fun fail() {
+        statusProperty.unbind()
         status = REJECTED
     }
+
+    fun collapse() = children.clear()
 }

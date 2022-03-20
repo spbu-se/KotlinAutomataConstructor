@@ -18,7 +18,7 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
         hbox {
             fitToWidth(this@ExecutorView)
             button {
-                textProperty().bind(executor.startedProperty.stringBinding { if (it!!) "Stop" else "Run" })
+                textProperty().bind(executor.startedBinding.stringBinding { if (it!!) "Stop" else "Run" })
                 action {
                     controller.toggleRun()
                 }
@@ -35,20 +35,20 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
             hbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
             content = pane {
                 add(inputDataView(executor.automaton).apply {
-                    hiddenWhen(executor.startedProperty)
+                    hiddenWhen(executor.startedBinding)
                     managedWhen(visibleProperty())
                 })
                 hbox {
-                    visibleWhen(executor.startedProperty)
+                    visibleWhen(executor.startedBinding)
                     managedWhen(visibleProperty())
                     val exePathToViewMap = mutableMapOf<ExecutionState, SettingGroupEditor>()
                     fun registerExePath(exePath: ExecutionState) {
-                        val memoryView = executionStateView(exePath)
+                        val memoryView = executionLeafView(exePath)
                         exePathToViewMap[exePath] = memoryView
                         add(memoryView)
                     }
-                    executor.executionStates.forEach { registerExePath(it) }
-                    executor.executionStates.addListener(SetChangeListener {
+                    executor.leafExecutionStates.forEach { registerExePath(it) }
+                    executor.leafExecutionStates.addListener(SetChangeListener {
                         if (it.wasAdded()) registerExePath(it.elementAdded)
                         if (it.wasRemoved()) children.remove(exePathToViewMap.remove(it.elementRemoved)!!)
                     })

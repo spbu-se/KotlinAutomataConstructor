@@ -1,6 +1,7 @@
 package automaton.constructor.model.memory.tape
 
 import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.memory.MemoryUnitStatus
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.transition.Transition
@@ -39,12 +40,13 @@ class MultiTrackTape(
     override val descriptor: MultiTrackTapeDescriptor,
     tracks: List<Track>
 ) : AbstractTape(tracks) {
-    override val status get() = READY_TO_ACCEPT
+    override val observableStatus = READY_TO_ACCEPT.toProperty()
+    override val status: MemoryUnitStatus by observableStatus
 
     override fun takeTransition(transition: Transition) {
         tracks.forEachIndexed { i, track ->
-            track.currentChar = transition[descriptor.newChars[i]]
-            track.shiftHead(transition[descriptor.headMoveDirection].shift)
+            track.current = transition[descriptor.newChars[i]]
+            track.moveHead(transition[descriptor.headMoveDirection])
         }
     }
 

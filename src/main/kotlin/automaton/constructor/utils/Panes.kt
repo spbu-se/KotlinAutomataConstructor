@@ -30,9 +30,10 @@ import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.Pane
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
-import tornadofx.add
-import tornadofx.attachTo
+import javafx.scene.paint.Color
+import tornadofx.*
 import kotlin.math.exp
 
 fun Pane.subPane(subPane: Pane) {
@@ -97,5 +98,19 @@ class ZoomScrollPane(
         val updatedInnerBounds = zoomGroup.boundsInLocal
         hvalue = (valX + adjustment.x) / (updatedInnerBounds.width - viewportBounds.width)
         vvalue = (valY + adjustment.y) / (updatedInnerBounds.height - viewportBounds.height)
+    }
+}
+
+fun Region.customizedZoomScrollPane(op: Pane.() -> Unit): ZoomScrollPane {
+    val innerPane = Pane()
+    return zoomScrollPane(innerPane, 0.4) {
+        style { focusColor = Color.TRANSPARENT }
+        hvalue = 0.5
+        vvalue = 0.5
+        fitToWidth(this@customizedZoomScrollPane)
+        fitToHeight(this@customizedZoomScrollPane)
+        prefWidthProperty().bind(this@customizedZoomScrollPane.widthProperty())
+        prefHeightProperty().bind(this@customizedZoomScrollPane.heightProperty())
+        innerPane.op()
     }
 }

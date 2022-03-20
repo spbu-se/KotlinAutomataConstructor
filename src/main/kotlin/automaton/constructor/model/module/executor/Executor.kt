@@ -4,37 +4,60 @@ import automaton.constructor.model.Automaton
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.module.initialStates
+import automaton.constructor.utils.filteredSet
+import javafx.beans.binding.Binding
+import javafx.beans.binding.Bindings.*
+import javafx.beans.binding.BooleanBinding
+import javafx.collections.SetChangeListener
 import tornadofx.*
 
 val executorFactory = { automaton: Automaton -> Executor(automaton) }
 val Automaton.executor get() = getModule(executorFactory)
 
 class Executor(val automaton: Automaton) : AutomatonModule {
-    val executionStates = observableSetOf<ExecutionState>()
-    var status: ExecutionStatus? = null
+    private val childrenChangeListener: SetChangeListener<ExecutionState> = SetChangeListener<ExecutionState> {
+        if (it.wasAdded()) executionStates.add(it.elementAdded)
+        if (it.wasRemoved()) executionStates.remove(it.elementRemoved)
+    }
 
-    val startedProperty = false.toProperty()
-    var started by startedProperty
-        private set
+    val roots = observableSetOf<ExecutionState>().apply { addListener(childrenChangeListener) }
+
+    val executionStates = observableSetOf<ExecutionState>().apply {
+        addListener(SetChangeListener { change ->
+            if (change.wasAdded())
+                change.elementAdded.children.onEach { add(it) }.addListener(childrenChangeListener)
+            if (change.wasRemoved())
+                change.elementRemoved.children.onEach { remove(it) }.removeListener(childrenChangeListener)
+        })
+    }
+
+    val leafExecutionStates = executionStates.filteredSet { isEmpty(it.children) }
+    val acceptedStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(ACCEPTED) }
+    val activeExecutionStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(RUNNING) }
+        .apply {
+            addListener(SetChangeListener {
+                if (it.wasAdded()) it.elementAdded.state.executionStateCount++
+                if (it.wasRemoved()) it.elementRemoved.state.executionStateCount--
+            })
+        }
+
+    var statusBinding: Binding<ExecutionStatus> =
+        `when`(isNotEmpty(acceptedStates)).then(ACCEPTED).otherwise(
+            `when`(isNotEmpty(activeExecutionStates)).then(RUNNING).otherwise(REJECTED)
+        )
+    val status: ExecutionStatus by statusBinding
+
+    val startedBinding: BooleanBinding = isNotEmpty(roots)
+    val started by startedBinding
 
     fun start() {
-        executionStates.clear()
-        executionStates.addAll(
-            automaton.initialStates
-                .onEach { it.isCurrent = true }
-                .map { initState ->
-                    ExecutionState(initState, automaton.memoryDescriptors.map { it.createMemoryUnit() })
-                }
-        )
-        status = calculateStatus()
-        started = true
+        roots.clear()
+        roots.addAll(automaton.initialStates.map { root ->
+            ExecutionState(root, null, automaton.memoryDescriptors.map { it.createMemoryUnit() })
+        })
     }
 
-    fun stop() {
-        executionStates.onEach { it.state.isCurrent = false }.clear()
-        status = null
-        started = false
-    }
+    fun stop() = roots.clear()
 
     fun runFor(millis: Long) {
         val deadlineMillis = System.currentTimeMillis() + millis
@@ -42,37 +65,7 @@ class Executor(val automaton: Automaton) : AutomatonModule {
             step(STEP_BY_CLOSURE_STRATEGY)
     }
 
-    fun step(steppingStrategy: SteppingStrategy) {
-        val forks = mutableListOf<ExecutionState>()
-        val runningPaths = executionStates.filter { it.status == RUNNING }
-        runningPaths.forEach { it.state.isCurrent = false }
-        runningPaths.forEach { path ->
-            steppingStrategy.closureExtractor(automaton, path).forEach { curPath ->
-                if (curPath !== path) forks.add(curPath)
-                if (curPath.status == RUNNING) {
-                    val transitions = steppingStrategy.transitionExtractor(automaton, curPath)
-                    if (transitions.isEmpty()) curPath.fail()
-                    else {
-                        transitions
-                            .drop(1)
-                            .forEach { transition ->
-                                val fork = ExecutionState(curPath)
-                                fork.takeTransition(transition)
-                                forks.add(fork)
-                            }
-                        curPath.takeTransition(transitions.first())
-                    }
-                }
-            }
-        }
-        (runningPaths + forks).filter { it.status == RUNNING }.forEach { it.state.isCurrent = true }
-        executionStates.addAll(forks)
-        status = calculateStatus()
-    }
-
-    private fun calculateStatus() = when {
-        executionStates.any { it.status == ACCEPTED } -> ACCEPTED
-        executionStates.any { it.status == RUNNING } -> RUNNING
-        else -> REJECTED
-    }
+    fun step(steppingStrategy: SteppingStrategy) =
+        leafExecutionStates.toList() // `toList()` avoids ConcurrentModification
+            .forEach { steppingStrategy.step(automaton, it) }
 }

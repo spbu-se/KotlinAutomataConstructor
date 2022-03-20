@@ -1,9 +1,10 @@
 package automaton.constructor.model.memory
 
-import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.property.DynamicPropertyGroup
+import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.Editable
+import javafx.beans.value.ObservableValue
 
 /**
  * One of the memory units belonging to some execution state of the automaton
@@ -14,6 +15,7 @@ interface MemoryUnit : Editable {
     /**
      * @see MemoryUnitStatus
      */
+    val observableStatus: ObservableValue<MemoryUnitStatus>
     val status: MemoryUnitStatus
 
     /**

@@ -3,6 +3,7 @@ package automaton.constructor.model
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.property.AutomatonElement
 import automaton.constructor.model.property.DynamicPropertyDescriptorGroup
+import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
@@ -26,11 +27,6 @@ class State(name: String, position: Point2D, memoryDescriptors: List<MemoryUnitD
     val isFinalProperty: BooleanProperty = false.toProperty()
     var isFinal by isFinalProperty
 
-    /**
-     * `true` if there exists running execution state in this state
-     */
-    val isCurrentProperty: BooleanProperty = false.toProperty()
-    var isCurrent by isCurrentProperty
     val positionProperty: Property<Point2D> = position.toProperty()
     var position: Point2D by positionProperty
     val lastReleasePositionProperty: Property<Point2D> = position.toProperty().apply {
@@ -40,4 +36,13 @@ class State(name: String, position: Point2D, memoryDescriptors: List<MemoryUnitD
     override val undoRedoProperties
         get() = super.undoRedoProperties +
                 listOf(nameProperty, isInitialProperty, isFinalProperty, lastReleasePositionProperty)
+
+    val executionStateCountProperty = 0.toProperty()
+    var executionStateCount by executionStateCountProperty
+
+    /**
+     * `true` if there exists running execution state in this state
+     */
+    val isCurrentBinding: BooleanBinding = executionStateCountProperty.greaterThan(0)
+    val isCurrent by isCurrentBinding
 }

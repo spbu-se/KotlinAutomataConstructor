@@ -1,50 +1,48 @@
 package automaton.constructor.model.memory.tape
 
+import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHAR
 import automaton.constructor.utils.monospaced
 import automaton.constructor.utils.scrollToRightWhenUnfocused
-import automaton.constructor.utils.setControlNewText
 import automaton.constructor.utils.withoutPadding
 import javafx.geometry.Pos
 import javafx.scene.control.TextField
-import javafx.scene.control.TextFormatter
-import javafx.util.converter.CharacterStringConverter
 import tornadofx.*
 
 const val DISPLAYED_CHARS_ON_EACH_SIDE = 7
 
 class Track private constructor(
-    processedChars: List<Char>,
-    unprocessedChars: List<Char>
+    processed: String,
+    current: Char,
+    unprocessed: String
 ) {
-    val processedChars = processedChars.toObservable()
-    val unprocessedChars = unprocessedChars.toObservable()
-    var currentChar
-        get() = unprocessedChars.firstOrNull() ?: BLANK_CHAR
-        set(value) {
-            if (unprocessedChars.isEmpty()) unprocessedChars.add(value)
-            else unprocessedChars[0] = value
+    val processedProperty = processed.toProperty()
+    var processed: String by processedProperty
+
+    // dynamic property is used to reuse charOrBlank editor implementation
+    val currentProperty = DynamicPropertyDescriptors.charOrBlank("current").createProperty().apply { value = current }
+    var current: Char by currentProperty
+
+    // without current
+    val unprocessedProperty = unprocessed.toProperty()
+    var unprocessed: String by unprocessedProperty
+
+    constructor(initValue: String) : this("", initValue.firstOrNull() ?: BLANK_CHAR, initValue.drop(1))
+
+    constructor(other: Track) : this(other.processed, other.current, other.unprocessed)
+
+    fun moveHead(direction: HeadMoveDirection) = when (direction) {
+        HeadMoveDirection.RIGHT -> {
+            processed += current
+            current = unprocessed.firstOrNull() ?: BLANK_CHAR
+            unprocessed = unprocessed.drop(1)
         }
-
-    constructor(initValue: String) : this(emptyList(), initValue.toList())
-
-    constructor(other: Track) : this(other.processedChars, other.unprocessedChars)
-
-    fun shiftHead(shift: Int) {
-        if (shift > 0) {
-            processedChars.addAll(
-                (unprocessedChars.take(shift) + List((shift - unprocessedChars.size).coerceAtLeast(0)) { BLANK_CHAR }).toMutableList()
-            )
-            unprocessedChars.remove(0, shift.coerceAtMost(unprocessedChars.size))
-        } else if (shift < 0) {
-            unprocessedChars.addAll(0,
-                (List((-shift - processedChars.size).coerceAtLeast(0)) { BLANK_CHAR } + processedChars.takeLast(-shift)).toMutableList()
-            )
-            processedChars.remove(
-                processedChars.size - (-shift).coerceAtMost(processedChars.size),
-                processedChars.size
-            )
+        HeadMoveDirection.LEFT -> {
+            unprocessed = current + unprocessed
+            current = processed.lastOrNull() ?: BLANK_CHAR
+            processed = processed.dropLast(1)
         }
+        HeadMoveDirection.STAGNATE -> Unit
     }
 
     fun createProcessedCharsEditor() = TextField().apply {
@@ -53,12 +51,7 @@ class Track private constructor(
         withoutPadding()
         monospaced()
         scrollToRightWhenUnfocused()
-        text = processedChars.toCharArray().concatToString()
-        processedChars.onChange { text = processedChars.toCharArray().concatToString() }
-        textProperty().onChange {
-            val newProcessed = text.toMutableList()
-            if (newProcessed != processedChars) processedChars.setAll(newProcessed)
-        }
+        textProperty().bindBidirectional(processedProperty)
     }
 
     fun createUnprocessedCharsEditor() = TextField().apply {
@@ -66,22 +59,13 @@ class Track private constructor(
         prefColumnCount = DISPLAYED_CHARS_ON_EACH_SIDE
         withoutPadding()
         monospaced()
-        text = unprocessedChars.drop(1).toCharArray().concatToString()
-        unprocessedChars.onChange { text = unprocessedChars.drop(1).toCharArray().concatToString() }
-        textProperty().onChange {
-            val newUnprocessed = text.toMutableList().apply { add(0, currentChar) }
-            if (newUnprocessed != unprocessedChars) unprocessedChars.setAll(newUnprocessed)
-        }
+        textProperty().bindBidirectional(unprocessedProperty)
     }
 
-    fun createCurrentCharEditor() = TextField(currentChar.toString()).apply {
+    fun createCurrentCharEditor() = (currentProperty.createEditor() as TextField).apply {
         alignment = Pos.CENTER
         prefColumnCount = 1
         withoutPadding()
         monospaced()
-        textFormatter = TextFormatter(CharacterStringConverter(), currentChar) { change ->
-            change.takeIf { it.text.length == 1 }?.apply { setControlNewText(change.text) }
-        }.apply { valueProperty().onChange { if (currentChar != value) currentChar = value } }
-        unprocessedChars.onChange { text = currentChar.toString() }
     }
 }
