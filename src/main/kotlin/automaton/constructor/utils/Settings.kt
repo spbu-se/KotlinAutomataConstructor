@@ -1,10 +1,12 @@
 package automaton.constructor.utils
 
+import javafx.beans.binding.DoubleBinding
 import javafx.beans.property.Property
 import javafx.beans.value.ObservableValue
 import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.control.TitledPane
+import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
 import tornadofx.*
@@ -27,9 +29,15 @@ class SettingsEditor : VBox() {
     init {
         settingsProperty.onChange {
             clear()
-            settings
-                ?.filter { it.settings.isNotEmpty() }
-                ?.forEach { add(SettingGroupEditor(it)) }
+            val groupEditors = (settings ?: return@onChange)
+                .filter { it.settings.isNotEmpty() }
+                .map { SettingGroupEditor(it) }
+                .onEach { add(it) }
+            doubleBinding(Unit, *groupEditors.map { it.gridpane.nameColumnWidthBinding }.toTypedArray()) {
+                groupEditors.maxOf { it.gridpane.nameColumnWidth }
+            }.onChange { width ->
+                groupEditors.forEach { it.gridpane.setNameColumnMinWidth(width) }
+            }
         }
     }
 }
@@ -43,14 +51,29 @@ open class SettingGroupEditor(val group: SettingGroup) : TitledPane() {
 }
 
 class SettingListEditor(val settings: List<Setting>) : GridPane() {
+    val nameColumnWidthBinding: DoubleBinding
+    val nameColumnWidth: Double get() = nameColumnWidthBinding.value
+
     init {
         paddingAll = 5.0
         hgap = 25.0
         vgap = 5.0
-        settings.forEachIndexed { i, (name, control) ->
-            add(Label(name), 0, i)
-            add(control, 1, i)
+        val labels = mutableListOf<Label>()
+        settings.forEach { (name, control) ->
+            row {
+                val label = Label(name)
+                labels.add(label)
+                add(label)
+                add(control)
+            }
         }
+        nameColumnWidthBinding =
+            doubleBinding(Unit, *labels.map { it.widthProperty() }.toTypedArray()) { labels.maxOf { it.width } }
+    }
+
+    fun setNameColumnMinWidth(minWidth: Double) {
+        if (columnConstraints.isEmpty()) columnConstraints.add(ColumnConstraints())
+        columnConstraints[0].minWidth = maxOf(minWidth, columnConstraints[0].minWidth)
     }
 }
 
