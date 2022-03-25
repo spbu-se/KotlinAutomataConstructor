@@ -2,12 +2,11 @@ package automaton.constructor.controller
 
 import automaton.constructor.model.Automaton
 import automaton.constructor.model.factory.getAllAutomatonFactories
-import automaton.constructor.model.serializers.FileAutomatonSerializer
-import automaton.constructor.model.serializers.fileAutomatonSerializers
-import automaton.constructor.utils.addOnFail
-import automaton.constructor.utils.addOnSuccess
-import automaton.constructor.utils.nonNullObjectBinding
-import automaton.constructor.utils.runAsyncWithDialog
+import automaton.constructor.model.serializers.AutomatonSerializer
+import automaton.constructor.model.serializers.automatonSerializers
+import automaton.constructor.model.toAutomaton
+import automaton.constructor.model.toData
+import automaton.constructor.utils.*
 import javafx.concurrent.Task
 import javafx.geometry.Pos
 import javafx.scene.control.Alert
@@ -102,7 +101,7 @@ class OpenedAutomatonController(val view: View) {
     private fun chooseFile(title: String, mode: FileChooserMode): File? =
         chooseFile(
             title = title,
-            filters = fileAutomatonSerializers().map { it.extensionFilter }.toTypedArray(),
+            filters = automatonSerializers().map { it.extensionFilter }.toTypedArray(),
             initialDirectory = openedFile?.parentFile ?: defaultDirectory(),
             mode = mode,
             owner = view.currentWindow,
@@ -114,24 +113,28 @@ class OpenedAutomatonController(val view: View) {
     }.getOrNull()
 
     private fun findFileAutomatonSerializer(file: File) =
-        fileAutomatonSerializers().find { serializer ->
+        automatonSerializers().find { serializer ->
             serializer.extensionFilter.extensions.any { file.path.endsWith(it.drop(1)) }
         } ?: throw IllegalArgumentException("Unknown file extension \"${file.extension}\" of $file")
 
-    private fun FileAutomatonSerializer.saveAsync(file: File): Task<Unit> {
+    private fun AutomatonSerializer.saveAsync(file: File): Task<Unit> {
+        val automatonData = openedAutomaton.toData()
+        openedAutomaton.undoRedoManager.wasModified = false
         return view.runAsyncWithDialog("Saving automaton to $file", daemon = false) {
-            serialize(file, openedAutomaton)
+            serialize(file, automatonData)
         } addOnSuccess {
             openedFile = file
-            openedAutomaton.undoRedoManager.wasModified = false
         } addOnFail {
-            throw RuntimeException("Unable to save graph to $file", it)
+            openedAutomaton.undoRedoManager.wasModified = true
+            throw RuntimeException("Unable to save automaton to $file", it)
+        } addOnCancel {
+            openedAutomaton.undoRedoManager.wasModified = true
         }
     }
 
-    private fun FileAutomatonSerializer.loadAsync(file: File): Task<Automaton> =
+    private fun AutomatonSerializer.loadAsync(file: File): Task<Automaton> =
         view.runAsyncWithDialog("Loading automaton from $file", daemon = true) {
-            deserialize(file)
+            deserialize(file).toAutomaton()
         } addOnSuccess {
             openedAutomaton = it
             openedFile = file

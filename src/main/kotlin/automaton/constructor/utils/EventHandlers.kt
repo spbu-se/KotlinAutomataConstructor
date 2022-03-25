@@ -34,3 +34,4 @@ operator fun <T : Event> EventHandler<T>?.plus(other: EventHandler<T>) = EventHa
 
 infix fun <T> Task<T>.addOnSuccess(func: (T) -> Unit) = apply { onSucceeded += { func(value) } }
 infix fun <T> Task<T>.addOnFail(func: (Throwable) -> Unit) = apply { onFailed += { func(exception) } }
+infix fun <T> Task<T>.addOnCancel(func: () -> Unit) = apply { onCancelled += { func() } }

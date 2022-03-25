@@ -10,7 +10,6 @@ import automaton.constructor.model.transition.storage.createTransitionStorageTre
 import automaton.constructor.utils.UndoRedoManager
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
-import kotlinx.serialization.Serializable
 import tornadofx.*
 
 /**
@@ -20,7 +19,6 @@ import tornadofx.*
  *  - Fixed list of [MemoryUnitDescriptor]-s
  *  - Dynamically extendable set of [AutomatonModule]-s
  */
-@Serializable(with = AutomatonSerializer::class)
 class Automaton(
     val typeName: String,
     val memoryDescriptors: List<MemoryUnitDescriptor>
