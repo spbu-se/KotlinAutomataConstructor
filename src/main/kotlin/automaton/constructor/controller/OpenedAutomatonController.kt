@@ -41,7 +41,7 @@ class OpenedAutomatonController(val view: View) {
     }
 
     fun onNew() {
-        suggestSavingChanges()
+        if (!suggestSavingChanges()) return
         view.dialog("New automaton") {
             clear()
             stage.x = 100.0
@@ -74,7 +74,7 @@ class OpenedAutomatonController(val view: View) {
     }
 
     fun onOpen() {
-        suggestSavingChanges()
+        if (!suggestSavingChanges()) return
         val file = chooseFile("Open", FileChooserMode.Single) ?: return
         findFileAutomatonSerializer(file).loadAsync(file)
     }
