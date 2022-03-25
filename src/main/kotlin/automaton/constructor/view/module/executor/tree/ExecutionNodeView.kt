@@ -17,7 +17,6 @@ import javafx.scene.Parent
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
-import javafx.stage.Popup
 import tornadofx.*
 
 fun EventTarget.executionNodeView(
@@ -69,6 +68,7 @@ class ExecutionNodeView(
         stateView.initMarker.translateXProperty().bind(observableCenterInDecorNode.x)
         stateView.initMarker.translateYProperty().bind(observableCenterInDecorNode.y)
         decorNode.add(stateView.initMarker)
+        stateView.group.hoverableTooltip { SettingListEditor(executionState.memory.mapNotNull { it.createSettingOrNull() }) }
         stateView.group.setOnMouseClicked { event ->
             if (event.button == MouseButton.PRIMARY && event.isStillSincePress) {
                 event.consume()
@@ -79,17 +79,6 @@ class ExecutionNodeView(
                 val posInTreeParentDelta = posInTreeParent() - posInTreeParentBefore
                 treeParent.translateX -= posInTreeParentDelta.x
                 treeParent.translateY -= posInTreeParentDelta.y
-            } else if (event.button == MouseButton.SECONDARY && event.isStillSincePress) {
-                event.consume()
-                Popup().apply {
-                    content.add(SettingListEditor(executionState.memory.mapNotNull { it.createSettingOrNull() }).apply {
-                        styleClass.setAll("context-menu")
-                    })
-                    isAutoHide = true
-                    consumeAutoHidingEvents = false
-                    show(this@ExecutionNodeView.scene.window, event.screenX, event.screenY)
-                    content.first().requestFocus()
-                }
             }
         }
         childrenBox = hbox(HORIZONTAL_SPACING)
