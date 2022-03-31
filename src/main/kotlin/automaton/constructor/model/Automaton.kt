@@ -27,7 +27,6 @@ class Automaton(
     private val outgoingTransitions = mutableMapOf<State, ObservableSet<Transition>>()
     private val incomingTransitions = mutableMapOf<State, MutableSet<Transition>>()
     private val modules = mutableMapOf<(Automaton) -> AutomatonModule, AutomatonModule>()
-    private var nextStateSuffix = 0
 
     val undoRedoManager = UndoRedoManager()
 
@@ -46,6 +45,20 @@ class Automaton(
 
     val transitions = observableSetOf<Transition>()
     val states = observableSetOf<State>()
+
+    private val nextStateSuffix: Int
+        get() {
+            val takenSuffixes = states
+                .mapNotNull { GENERATED_STATE_NAME_REGEX.matchEntire(it.name) }
+                .mapNotNull { it.groupValues[1].toIntOrNull() }
+                .toSet()
+            return generateSequence(0) { it + 1 }.first { it !in takenSuffixes }
+        }
+
+    companion object {
+        private const val STATE_NAME_PREFIX = "S"
+        private val GENERATED_STATE_NAME_REGEX = Regex("$STATE_NAME_PREFIX(\\d+)")
+    }
 
     /**
      * Returns all possible transitions from a given [state] given [memory] data
@@ -71,13 +84,12 @@ class Automaton(
     fun getTransitions(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
 
     fun addState(name: String? = null, position: Point2D = Point2D.ZERO): State {
-        val state = State(name ?: "S${nextStateSuffix++}", position, memoryDescriptors)
+        val state = State(name ?: (STATE_NAME_PREFIX + nextStateSuffix), position, memoryDescriptors)
         undoRedoManager.perform({ doAddState(state) }, { doRemoveState(state) })
         return state
     }
 
     fun removeState(state: State) = undoRedoManager.perform({ doRemoveState(state) }, { doAddState(state) })
-
 
     private fun doAddState(state: State) {
         transitionStorages[state] = createTransitionStorageTree(memoryDescriptors)
