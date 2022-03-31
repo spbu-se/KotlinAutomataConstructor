@@ -11,16 +11,13 @@ import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
 import tornadofx.*
 
-data class SettingGroup(val observableName: ObservableValue<String>, val settings: List<Setting>) {
-    companion object {
-        fun fromEditables(observableName: ObservableValue<String>, editables: List<Editable>) =
-            SettingGroup(observableName, editables.mapNotNull { it.createSettingOrNull() })
-    }
-}
+data class SettingGroup(val observableName: ObservableValue<String>, val settings: List<Setting>)
+
+data class Setting(val displayName: String, val editor: Node)
 
 fun Editable.createSettingOrNull() = createEditor()?.let { Setting(displayName, it) }
 
-data class Setting(val displayName: String, val editor: Node)
+fun List<Editable>.createSettings() = mapNotNull { it.createSettingOrNull() }
 
 class SettingsEditor : VBox() {
     val settingsProperty = objectProperty<List<SettingGroup>?>(null)
@@ -62,6 +59,8 @@ class SettingListEditor(val settings: List<Setting>) : GridPane() {
         settings.forEach { (name, control) ->
             row {
                 val label = Label(name)
+                label.visibleWhen(control.visibleProperty())
+                label.managedWhen(control.managedProperty())
                 labels.add(label)
                 add(label)
                 add(control)

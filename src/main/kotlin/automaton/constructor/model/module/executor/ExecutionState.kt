@@ -14,12 +14,21 @@ class ExecutionState(
     val lastTransition: Transition?,
     val memory: List<MemoryUnit>
 ) {
+    val isFrozenProperty = false.toProperty()
+    var isFrozen by isFrozenProperty
     val statusProperty = RUNNING.toProperty().apply {
-        bind(state.isFinalProperty.nonNullObjectBinding(*memory.map { it.observableStatus }.toTypedArray()) {
-            if ((state.isFinal || memory.any { it.status == REQUIRES_ACCEPTANCE }) &&
-                memory.all { it.status != NOT_READY_TO_ACCEPT }
-            ) ACCEPTED else RUNNING
-        })
+        bind(
+            state.isFinalProperty.nonNullObjectBinding(
+                isFrozenProperty,
+                *memory.map { it.observableStatus }.toTypedArray()
+            ) {
+                when {
+                    (state.isFinal || memory.any { it.status == REQUIRES_ACCEPTANCE }) &&
+                            memory.all { it.status != NOT_READY_TO_ACCEPT } -> ACCEPTED
+                    isFrozen -> FROZEN
+                    else -> RUNNING
+                }
+            })
     }
     var status: ExecutionStatus by statusProperty
     val children = observableSetOf<ExecutionState>()

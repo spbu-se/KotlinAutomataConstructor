@@ -33,6 +33,7 @@ class Executor(val automaton: Automaton) : AutomatonModule {
 
     val leafExecutionStates = executionStates.filteredSet { isEmpty(it.children) }
     val acceptedStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(ACCEPTED) }
+    val frozenStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(FROZEN) }
     val activeExecutionStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(RUNNING) }
         .apply {
             addListener(SetChangeListener {
@@ -43,7 +44,9 @@ class Executor(val automaton: Automaton) : AutomatonModule {
 
     var statusBinding: Binding<ExecutionStatus> =
         `when`(isNotEmpty(acceptedStates)).then(ACCEPTED).otherwise(
-            `when`(isNotEmpty(activeExecutionStates)).then(RUNNING).otherwise(REJECTED)
+            `when`(isNotEmpty(activeExecutionStates)).then(RUNNING).otherwise(
+                `when`(isNotEmpty(frozenStates)).then(FROZEN).otherwise(REJECTED)
+            )
         )
     val status: ExecutionStatus by statusBinding
 

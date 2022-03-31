@@ -13,11 +13,11 @@ import tornadofx.*
 
 fun executionLeafView(executionState: ExecutionState) =
     SettingGroupEditor(
-        SettingGroup.fromEditables(
+        SettingGroup(
             executionState.state.nameProperty.stringBinding(executionState.statusProperty) {
                 "$it [${executionState.status}]"
             },
-            executionState.memory
+            executionState.createSettings()
         )
     ).apply {
         gridpane.backgroundProperty().bind(executionState.statusProperty.nonNullObjectBinding {

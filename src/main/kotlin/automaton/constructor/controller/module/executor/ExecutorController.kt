@@ -15,9 +15,10 @@ class ExecutorController(val executor: Executor, val view: View) : Controller() 
         } else {
             if (!tryStart()) return
             executor.runFor(1_000)
-            val executionResult = when (executor.status!!) {
+            val executionResult = when (executor.status) {
                 ACCEPTED -> "Input accepted"
                 REJECTED -> "Input rejected"
+                FROZEN -> "Execution has been frozen"
                 RUNNING -> "The automaton didn't halt in one second"
             }
             executor.stop()

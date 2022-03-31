@@ -2,6 +2,7 @@ package automaton.constructor.view
 
 import automaton.constructor.model.property.AutomatonElement
 import automaton.constructor.utils.SettingGroup
+import automaton.constructor.utils.createSettings
 import tornadofx.*
 
 open class AutomatonElementView(
@@ -12,7 +13,7 @@ open class AutomatonElementView(
 
     open fun getSettings(): List<SettingGroup> =
         automatonElement.propertyGroups.map { (memoryUnit, filters, sideEffects) ->
-            SettingGroup.fromEditables(memoryUnit.displayName.toProperty(), filters + sideEffects)
+            SettingGroup(memoryUnit.displayName.toProperty(), (filters + sideEffects).createSettings())
         }
 
     protected var settingsTextBinding =
