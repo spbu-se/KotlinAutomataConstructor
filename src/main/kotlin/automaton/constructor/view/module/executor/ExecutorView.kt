@@ -8,16 +8,21 @@ import automaton.constructor.utils.SettingGroupEditor
 import automaton.constructor.view.memory.inputDataView
 import javafx.collections.SetChangeListener
 import javafx.scene.control.ScrollPane
-import javafx.scene.layout.VBox
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
 import tornadofx.*
 
-class ExecutorView(val executor: Executor, val view: View) : VBox() {
+class ExecutorView(val executor: Executor, val view: View) : HBox() {
     val controller = ExecutorController(executor, view)
 
     init {
-        hbox {
-            fitToWidth(this@ExecutorView)
+        vbox {
+            minWidth = USE_PREF_SIZE
             button {
+                maxWidth = Double.MAX_VALUE
+                maxHeight = Double.MAX_VALUE
+                hgrow = Priority.ALWAYS
+                vgrow = Priority.ALWAYS
                 textProperty().bind(executor.startedBinding.stringBinding { if (it!!) "Stop" else "Run" })
                 action {
                     controller.toggleRun()
@@ -25,6 +30,10 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
             }
             STEPPING_STRATEGIES.forEach { steppingStrategy ->
                 button(steppingStrategy.name) {
+                    maxWidth = Double.MAX_VALUE
+                    maxHeight = Double.MAX_VALUE
+                    hgrow = Priority.ALWAYS
+                    vgrow = Priority.ALWAYS
                     action {
                         controller.step(steppingStrategy)
                     }
@@ -32,8 +41,10 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
             }
         }
         scrollpane {
+            maxWidth = Double.MAX_VALUE
+            hgrow = Priority.SOMETIMES
             hbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
-            content = pane {
+            content = group {
                 add(inputDataView(executor.automaton).apply {
                     hiddenWhen(executor.startedBinding)
                     managedWhen(visibleProperty())
@@ -46,6 +57,7 @@ class ExecutorView(val executor: Executor, val view: View) : VBox() {
                         val memoryView = executionLeafView(exePath)
                         exePathToViewMap[exePath] = memoryView
                         add(memoryView)
+                        memoryView.minHeightProperty().bind(this@hbox.heightProperty())
                     }
                     executor.leafExecutionStates.forEach { registerExePath(it) }
                     executor.leafExecutionStates.addListener(SetChangeListener {
