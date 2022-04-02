@@ -9,7 +9,7 @@ class UndoRedoController(val automatonView: AutomatonView) {
     }
 
     fun onRedo() {
-        automatonView.automaton.undoRedoManager.undo()
+        automatonView.automaton.undoRedoManager.redo()
         automatonView.automatonGraphView.controller.clearSelection()
     }
 }
