@@ -7,8 +7,16 @@ import javafx.scene.input.MouseEvent
 import javafx.stage.Popup
 import javafx.util.Duration
 
-fun Node.hoverableTooltip(activationDelay: Duration = Duration(500.0), tooltipNodeFactory: () -> Node) =
-    HoverableTooltips.install(this, activationDelay, tooltipNodeFactory)
+interface HoverableTooltipScope {
+    var onHide: () -> Unit
+    fun hide()
+    fun restartTimer()
+}
+
+fun Node.hoverableTooltip(
+    activationDelay: Duration = Duration(500.0),
+    tooltipNodeFactory: HoverableTooltipScope.() -> Node?
+) = HoverableTooltips.install(this, activationDelay, tooltipNodeFactory)
 
 object HoverableTooltips {
     private const val POPUP_OFFSET = 15.0
@@ -21,33 +29,35 @@ object HoverableTooltips {
     private var tooltipShower: (() -> Unit)? = null
     private val timer = Timeline().apply { setOnFinished { tooltipShower?.invoke() } }
 
-    fun install(node: Node, activationDelay: Duration, tooltipNodeFactory: () -> Node) {
-        fun onMouseExited() {
-            if (node == hoveredTool && !node.isHover && shownTooltipNode?.isHover != true) {
+    fun install(node: Node, activationDelay: Duration, tooltipNodeFactory: HoverableTooltipScope.() -> Node?) {
+        val scope = object : HoverableTooltipScope {
+            override var onHide = {}
+
+            override fun hide() {
                 timer.stop()
                 shownTooltip?.hide()
                 shownTooltip = null
                 shownTooltipNode = null
                 hoveredTool = null
                 tooltipShower = null
+                onHide()
             }
-        }
-        node.addEventHandler(MouseEvent.MOUSE_EXITED) { onMouseExited() }
-        node.addEventHandler(MouseEvent.MOUSE_MOVED) {
-            lastScreenX = it.screenX
-            lastScreenY = it.screenY
-            if (node != hoveredTool) {
-                timer.stop()
-                shownTooltip?.hide()
-                shownTooltip = null
-                shownTooltipNode = null
+
+            fun onMouseExited() {
+                if (node == hoveredTool && !node.isHover && shownTooltipNode?.isHover != true)
+                    hide()
+            }
+
+            override fun restartTimer() {
+                hide()
                 hoveredTool = node
                 tooltipShower = {
-                    shownTooltipNode = tooltipNodeFactory().apply {
+                    shownTooltipNode = tooltipNodeFactory()?.apply {
                         styleClass.setAll(STYLE_CLASS)
                         addEventHandler(MouseEvent.MOUSE_EXITED) { onMouseExited() }
                     }
-                    shownTooltip = Popup().apply {
+                    if (shownTooltipNode == null) restartTimer()
+                    else shownTooltip = Popup().apply {
                         content.add(shownTooltipNode)
                         isAutoHide = true
                         consumeAutoHidingEvents = false
@@ -59,13 +69,13 @@ object HoverableTooltips {
                 timer.playFromStart()
             }
         }
-        node.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            timer.stop()
-            shownTooltip?.hide()
-            shownTooltip = null
-            shownTooltipNode = null
-            hoveredTool = null
-            tooltipShower = null
+
+        node.addEventHandler(MouseEvent.MOUSE_EXITED) { scope.onMouseExited() }
+        node.addEventHandler(MouseEvent.MOUSE_MOVED) {
+            lastScreenX = it.screenX
+            lastScreenY = it.screenY
+            if (node != hoveredTool) scope.restartTimer()
         }
+        node.addEventHandler(MouseEvent.MOUSE_CLICKED) { scope.hide() }
     }
 }
