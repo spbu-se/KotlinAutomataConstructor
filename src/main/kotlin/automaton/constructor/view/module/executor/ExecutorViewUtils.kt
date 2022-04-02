@@ -3,9 +3,15 @@ package automaton.constructor.view.module.executor
 import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.model.module.executor.ExecutionStatus
 import automaton.constructor.utils.Setting
+import automaton.constructor.utils.SettingListEditor
 import automaton.constructor.utils.createSettings
+import automaton.constructor.utils.nonNullObjectBinding
 import javafx.beans.binding.Bindings.isEmpty
+import javafx.geometry.Insets
 import javafx.scene.control.CheckBox
+import javafx.scene.layout.Background
+import javafx.scene.layout.BackgroundFill
+import javafx.scene.layout.CornerRadii
 import javafx.scene.paint.Color
 import tornadofx.*
 
@@ -17,8 +23,21 @@ val ExecutionStatus.color
         ExecutionStatus.FROZEN -> Color.DEEPSKYBLUE
     }
 
+val ExecutionState.backgroundBinding
+    get() = statusProperty.nonNullObjectBinding {
+        Background(
+            BackgroundFill(
+                it.color ?: Color.TRANSPARENT,
+                CornerRadii.EMPTY,
+                Insets.EMPTY
+            )
+        )
+    }
+
 fun ExecutionState.createSettings() = memory.createSettings() + Setting("Frozen", CheckBox().apply {
     visibleWhen(isEmpty(children).and(statusProperty.booleanBinding { it == ExecutionStatus.RUNNING || it == ExecutionStatus.FROZEN }))
     managedWhen(visibleProperty())
     selectedProperty().bindBidirectional(isFrozenProperty)
 })
+
+fun ExecutionState.tooltipContent() = SettingListEditor(createSettings())

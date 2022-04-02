@@ -31,16 +31,15 @@ class Executor(val automaton: Automaton) : AutomatonModule {
         })
     }
 
-    val leafExecutionStates = executionStates.filteredSet { isEmpty(it.children) }
+    val leafExecutionStates = executionStates.filteredSet { isEmpty(it.children) }.apply {
+        addListener(SetChangeListener {
+            if (it.wasAdded()) it.elementAdded.state.executionStates.add(it.elementAdded)
+            if (it.wasRemoved()) it.elementRemoved.state.executionStates.remove(it.elementRemoved)
+        })
+    }
     val acceptedStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(ACCEPTED) }
     val frozenStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(FROZEN) }
     val activeExecutionStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(RUNNING) }
-        .apply {
-            addListener(SetChangeListener {
-                if (it.wasAdded()) it.elementAdded.state.executionStateCount++
-                if (it.wasRemoved()) it.elementRemoved.state.executionStateCount--
-            })
-        }
 
     var statusBinding: Binding<ExecutionStatus> =
         `when`(isNotEmpty(acceptedStates)).then(ACCEPTED).otherwise(

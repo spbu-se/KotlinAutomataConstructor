@@ -5,6 +5,7 @@ import automaton.constructor.model.Automaton
 import automaton.constructor.model.State
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.subPane
+import automaton.constructor.view.module.executor.installExecutionStateTooltip
 import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
 import tornadofx.*
@@ -36,6 +37,7 @@ class AutomatonGraphView(val automaton: Automaton) : Pane() {
         val stateView = StateView(state)
         controller.registerStateView(stateView)
         stateToViewMap[state] = stateView
+        stateView.installExecutionStateTooltip()
         add(stateView.group)
     }
 

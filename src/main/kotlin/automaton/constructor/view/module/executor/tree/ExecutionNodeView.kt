@@ -7,7 +7,7 @@ import automaton.constructor.view.EdgeView
 import automaton.constructor.view.StateView
 import automaton.constructor.view.TransitionLabelPosition
 import automaton.constructor.view.module.executor.color
-import automaton.constructor.view.module.executor.createSettings
+import automaton.constructor.view.module.executor.tooltipContent
 import javafx.beans.value.ObservableValue
 import javafx.collections.SetChangeListener
 import javafx.event.EventTarget
@@ -69,7 +69,7 @@ class ExecutionNodeView(
         stateView.initMarker.translateXProperty().bind(observableCenterInDecorNode.x)
         stateView.initMarker.translateYProperty().bind(observableCenterInDecorNode.y)
         decorNode.add(stateView.initMarker)
-        stateView.group.hoverableTooltip { SettingListEditor(executionState.createSettings()) }
+        stateView.group.hoverableTooltip { executionState.tooltipContent() }
         stateView.group.setOnMouseClicked { event ->
             if (event.button == MouseButton.PRIMARY && event.isStillSincePress) {
                 event.consume()

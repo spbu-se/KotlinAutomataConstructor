@@ -1,8 +1,12 @@
 package automaton.constructor.model
 
 import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.module.executor.ExecutionState
+import automaton.constructor.model.module.executor.ExecutionStatus
 import automaton.constructor.model.property.AutomatonElement
 import automaton.constructor.model.property.DynamicPropertyDescriptorGroup
+import automaton.constructor.utils.filteredSet
+import javafx.beans.binding.Bindings.isNotEmpty
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.Property
@@ -37,12 +41,13 @@ class State(name: String, position: Point2D, memoryDescriptors: List<MemoryUnitD
         get() = super.undoRedoProperties +
                 listOf(nameProperty, isInitialProperty, isFinalProperty, lastReleasePositionProperty)
 
-    val executionStateCountProperty = 0.toProperty()
-    var executionStateCount by executionStateCountProperty
+    val executionStates = observableSetOf<ExecutionState>()
 
     /**
      * `true` if there exists running execution state in this state
      */
-    val isCurrentBinding: BooleanBinding = executionStateCountProperty.greaterThan(0)
+    val isCurrentBinding: BooleanBinding = isNotEmpty(executionStates.filteredSet {
+        it.statusProperty.isEqualTo(ExecutionStatus.RUNNING)
+    })
     val isCurrent by isCurrentBinding
 }
