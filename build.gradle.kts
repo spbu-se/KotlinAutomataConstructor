@@ -58,5 +58,13 @@ tasks {
             html.required.set(true)
             csv.required.set(true)
         }
+        classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    include("**/model/**")
+                    exclude("**/**/*serializer*.*") // exclude generated serializers
+                }
+            })
+        )
     }
 }
