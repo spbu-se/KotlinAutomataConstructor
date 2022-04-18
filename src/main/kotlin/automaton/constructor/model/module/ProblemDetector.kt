@@ -16,18 +16,24 @@ class PotentialProblem(
     val predicate: ObservableBooleanValue
 )
 
-class ProblemDetector(val automaton: Automaton) : AutomatonModule {
+class ProblemDetector(automaton: Automaton) : AutomatonModule {
     private val potentialProblems = observableListOf<PotentialProblem> { arrayOf(it.predicate) }
     val problems: ObservableList<PotentialProblem> = potentialProblems.filtered { it.predicate.value }
 
+    companion object {
+        const val ADD_INIT_STATE_MESSAGE = "Add initial state"
+        const val ADD_FINAL_STATE_MESSAGE = "Add final state"
+        const val REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE = "Remove transitions from final states"
+    }
+
     init {
-        potentialProblems.add(PotentialProblem("Add initial state", isEmpty(automaton.initialStates)))
+        potentialProblems.add(PotentialProblem(ADD_INIT_STATE_MESSAGE, isEmpty(automaton.initialStates)))
         if (automaton.memoryDescriptors.none { it.mayRequireAcceptance })
-            potentialProblems.add(PotentialProblem("Add final state", isEmpty(automaton.finalStates)))
+            potentialProblems.add(PotentialProblem(ADD_FINAL_STATE_MESSAGE, isEmpty(automaton.finalStates)))
         if (automaton.memoryDescriptors.all { it.isAlwaysReadyToTerminate })
             potentialProblems.add(
                 PotentialProblem(
-                    "Remove transitions from final states",
+                    REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE,
                     isNotEmpty(automaton.finalStatesWithTransitions)
                 )
             )
