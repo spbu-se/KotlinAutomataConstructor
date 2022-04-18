@@ -1,0 +1,120 @@
+{
+  "typeName": "Turing machine",
+  "memoryDescriptors": [
+    {
+      "type": "Multi-track tape",
+      "trackCount": 1
+    }
+  ],
+  "states": [
+    {
+      "id": 0,
+      "name": "S0",
+      "isInitial": true,
+      "x": 499567.5,
+      "y": 499957.5
+    },
+    {
+      "id": 1,
+      "name": "S2",
+      "x": 500299.9880546928,
+      "y": 499959.9880546928
+    },
+    {
+      "id": 2,
+      "name": "S1",
+      "x": 499929.9880546928,
+      "y": 499959.9880546928
+    },
+    {
+      "id": 3,
+      "name": "S3",
+      "isFinal": true,
+      "x": 500654.9880546928,
+      "y": 499962.4880546928
+    }
+  ],
+  "transitions": [
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "0",
+        "0",
+        "R"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 2,
+      "properties": [
+        "□",
+        "□",
+        "L"
+      ]
+    },
+    {
+      "source": 2,
+      "target": 2,
+      "properties": [
+        "1",
+        "0",
+        "L"
+      ]
+    },
+    {
+      "source": 2,
+      "target": 1,
+      "properties": [
+        "0",
+        "1",
+        "S"
+      ]
+    },
+    {
+      "source": 1,
+      "target": 1,
+      "properties": [
+        "0",
+        "0",
+        "L"
+      ]
+    },
+    {
+      "source": 1,
+      "target": 1,
+      "properties": [
+        "1",
+        "1",
+        "L"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "1",
+        "1",
+        "R"
+      ]
+    },
+    {
+      "source": 1,
+      "target": 3,
+      "properties": [
+        "□",
+        "□",
+        "R"
+      ]
+    },
+    {
+      "source": 2,
+      "target": 1,
+      "properties": [
+        "□",
+        "1",
+        "S"
+      ]
+    }
+  ]
+}

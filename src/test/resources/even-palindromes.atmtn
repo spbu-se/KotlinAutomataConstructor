@@ -1,0 +1,126 @@
+{
+  "typeName": "pushdown automaton",
+  "memoryDescriptors": [
+    {
+      "type": "Input tape"
+    },
+    {
+      "type": "Stack",
+      "acceptsByEmptyStack": false
+    }
+  ],
+  "states": [
+    {
+      "id": 0,
+      "name": "S0",
+      "isInitial": true,
+      "x": 499605.01201377803,
+      "y": 499750.01201377803
+    },
+    {
+      "id": 1,
+      "name": "S2",
+      "isFinal": true,
+      "x": 499619.9899082334,
+      "y": 500127.4899082334
+    },
+    {
+      "id": 2,
+      "name": "S1",
+      "x": 500087.4678711593,
+      "y": 499869.9678711593
+    }
+  ],
+  "transitions": [
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "1",
+        "z",
+        "1z"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 2,
+      "properties": [
+        "ε",
+        "ε",
+        "ε"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "0",
+        "z",
+        "0z"
+      ]
+    },
+    {
+      "source": 2,
+      "target": 1,
+      "properties": [
+        "ε",
+        "z",
+        "z"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "1",
+        "1",
+        "11"
+      ]
+    },
+    {
+      "source": 2,
+      "target": 2,
+      "properties": [
+        "0",
+        "0",
+        "ε"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "0",
+        "0",
+        "00"
+      ]
+    },
+    {
+      "source": 2,
+      "target": 2,
+      "properties": [
+        "1",
+        "1",
+        "ε"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "1",
+        "0",
+        "10"
+      ]
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "0",
+        "1",
+        "01"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "typeName": "Turing machine",
+  "memoryDescriptors": [
+    {
+      "type": "Multi-track tape",
+      "trackCount": 1
+    }
+  ],
+  "states": [
+    {
+      "id": 0,
+      "name": "S0",
+      "isInitial": true,
+      "isFinal": true,
+      "x": 500017.5,
+      "y": 499932.5
+    }
+  ],
+  "transitions": [
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "□",
+        "□",
+        "R"
+      ]
+    }
+  ]
+}

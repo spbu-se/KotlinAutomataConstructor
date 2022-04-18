@@ -1,0 +1,83 @@
+{
+    "typeName": "BFS",
+    "memoryDescriptors": [],
+    "states": [
+        {
+            "id": 0,
+            "name": "S0",
+            "isInitial": true,
+            "x": 500042.4660176187,
+            "y": 499569.9660176187
+        },
+        {
+            "id": 1,
+            "name": "S3",
+            "x": 500284.9660176187,
+            "y": 499694.9660176187
+        },
+        {
+            "id": 2,
+            "name": "S5",
+            "x": 499879.9660176187,
+            "y": 500147.4660176187
+        },
+        {
+            "id": 3,
+            "name": "S4",
+            "x": 500252.4660176187,
+            "y": 499939.9660176187
+        },
+        {
+            "id": 4,
+            "name": "S1",
+            "isInitial": true,
+            "x": 499634.9660176187,
+            "y": 499559.9660176187
+        },
+        {
+            "id": 5,
+            "name": "S2",
+            "x": 499884.9660176187,
+            "y": 499902.4660176187
+        },
+        {
+            "id": 6,
+            "name": "S6",
+            "isFinal": true,
+            "x": 500502.4660176187,
+            "y": 500202.4660176187
+        }
+    ],
+    "transitions": [
+        {
+            "source": 3,
+            "target": 2,
+            "properties": []
+        },
+        {
+            "source": 4,
+            "target": 5,
+            "properties": []
+        },
+        {
+            "source": 5,
+            "target": 3,
+            "properties": []
+        },
+        {
+            "source": 5,
+            "target": 2,
+            "properties": []
+        },
+        {
+            "source": 0,
+            "target": 1,
+            "properties": []
+        },
+        {
+            "source": 3,
+            "target": 6,
+            "properties": []
+        }
+    ]
+}

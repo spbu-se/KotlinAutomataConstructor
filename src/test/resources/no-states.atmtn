@@ -1,0 +1,12 @@
+{
+  "typeName": "finite automaton",
+  "memoryDescriptors": [
+    {
+      "type": "Input tape"
+    }
+  ],
+  "states": [
+  ],
+  "transitions": [
+  ]
+}
