@@ -62,7 +62,10 @@ class OpenedAutomatonController(val view: View) {
                     button("OK") {
                         enableWhen(listview.selectionModel.selectedItemProperty().isNotNull)
                         action {
-                            listview.selectedItem?.let { openedAutomaton = it.createAutomaton() }
+                            listview.selectedItem?.let {
+                                openedAutomaton = it.createAutomaton()
+                                openedFile = null
+                            }
                             close()
                         }
                     }
