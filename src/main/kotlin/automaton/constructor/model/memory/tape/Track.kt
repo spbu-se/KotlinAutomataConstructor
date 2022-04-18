@@ -33,12 +33,12 @@ class Track private constructor(
 
     fun moveHead(direction: HeadMoveDirection) = when (direction) {
         HeadMoveDirection.RIGHT -> {
-            processed += current
+            if (processed.isNotEmpty() || current != BLANK_CHAR) processed += current
             current = unprocessed.firstOrNull() ?: BLANK_CHAR
             unprocessed = unprocessed.drop(1)
         }
         HeadMoveDirection.LEFT -> {
-            unprocessed = current + unprocessed
+            if (unprocessed.isNotEmpty() || current != BLANK_CHAR) unprocessed = current + unprocessed
             current = processed.lastOrNull() ?: BLANK_CHAR
             processed = processed.dropLast(1)
         }
