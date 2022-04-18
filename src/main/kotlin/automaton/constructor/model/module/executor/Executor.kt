@@ -61,10 +61,10 @@ class Executor(val automaton: Automaton) : AutomatonModule {
 
     fun stop() = roots.clear()
 
-    fun runFor(millis: Long) {
+    fun runFor(millis: Long, steppingStrategy: SteppingStrategy = STEP_BY_CLOSURE_STRATEGY) {
         val deadlineMillis = System.currentTimeMillis() + millis
         while (status == RUNNING && System.currentTimeMillis() < deadlineMillis)
-            step(STEP_BY_CLOSURE_STRATEGY)
+            step(steppingStrategy)
     }
 
     fun step(steppingStrategy: SteppingStrategy) =
