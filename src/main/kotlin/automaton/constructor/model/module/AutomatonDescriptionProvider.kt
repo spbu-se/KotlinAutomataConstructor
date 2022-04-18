@@ -8,6 +8,7 @@ import java.util.*
 val automatonDescriptionProviderFactory = { automaton: Automaton -> AutomatonDescriptionProvider(automaton) }
 val Automaton.automatonDescriptionProvider get() = getModule(automatonDescriptionProviderFactory)
 val Automaton.descriptionBinding get() = automatonDescriptionProvider.descriptionBinding
+val Automaton.description: String get() = descriptionBinding.value
 
 class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
     private val determinicityPartBinding = stringBinding(automaton.isDeterministicBinding) {
