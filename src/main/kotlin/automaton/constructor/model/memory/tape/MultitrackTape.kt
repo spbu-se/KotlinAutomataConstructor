@@ -5,6 +5,7 @@ import automaton.constructor.model.memory.MemoryUnitStatus
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.transition.Transition
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.monospaced
 import automaton.constructor.utils.surrogateSerializer
 import javafx.scene.layout.VBox
@@ -55,6 +56,7 @@ class MultiTrackTape(
 
 @Serializable
 @SerialName("Multi-track tape")
+@MostlyGeneratedOrInline
 data class MultiTrackTapeDescriptorData(val trackCount: Int)
 
 object MultiTrackTapeDescriptorSerializer : KSerializer<MultiTrackTapeDescriptor> by surrogateSerializer(

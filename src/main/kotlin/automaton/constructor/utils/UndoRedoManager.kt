@@ -27,6 +27,7 @@ class UndoRedoManager(val maxUndo: Int = 20) {
         if (inGroups == 0) group = null
     }
 
+    @MostlyGeneratedOrInline
     inline fun perform(crossinline act: () -> Unit, crossinline undo: () -> Unit) = perform(object : UndoableAction {
         override fun act() = act()
         override fun undo() = undo()

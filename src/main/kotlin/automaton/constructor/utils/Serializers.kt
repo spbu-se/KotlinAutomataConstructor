@@ -9,6 +9,7 @@ import kotlinx.serialization.serializer
 /**
  * [Composite serializer via surrogate](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serializers.md#composite-serializer-via-surrogate)
  */
+@MostlyGeneratedOrInline
 inline fun <T, reified U> surrogateSerializer(
     crossinline toSurrogate: (T) -> (U),
     crossinline fromSurrogate: (U) -> T

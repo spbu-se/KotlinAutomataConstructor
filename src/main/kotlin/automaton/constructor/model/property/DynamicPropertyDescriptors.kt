@@ -1,5 +1,6 @@
 package automaton.constructor.model.property
 
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.setControlNewText
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.TextField
@@ -20,6 +21,7 @@ object DynamicPropertyDescriptors {
     fun charOrBlank(name: String): DynamicPropertyDescriptor<Char> =
         charOrElse(name, false, BLANK_CHAR, BLANK_CHAR) { it }
 
+    @MostlyGeneratedOrInline
     private inline fun <T> charOrElse(
         name: String,
         canBeDeemedEpsilon: Boolean,
@@ -49,6 +51,7 @@ object DynamicPropertyDescriptors {
         }
     )
 
+    @MostlyGeneratedOrInline
     inline fun <reified E : Enum<E>> enum(name: String) =
         choice(name, false, *enumValues<E>())
 

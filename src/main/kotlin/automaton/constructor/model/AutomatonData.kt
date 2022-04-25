@@ -1,6 +1,7 @@
 package automaton.constructor.model
 
 import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
 
@@ -47,6 +48,7 @@ fun Automaton.toData(): AutomatonData {
     )
 }
 
+@MostlyGeneratedOrInline
 @Serializable
 data class AutomatonData(
     val typeName: String,
@@ -55,6 +57,7 @@ data class AutomatonData(
     val transitions: List<TransitionData>
 )
 
+@MostlyGeneratedOrInline
 @Serializable
 data class StateData(
     val id: Int,
@@ -66,6 +69,7 @@ data class StateData(
     val properties: List<String> = emptyList()
 )
 
+@MostlyGeneratedOrInline
 @Serializable
 data class TransitionData(
     val source: Int,

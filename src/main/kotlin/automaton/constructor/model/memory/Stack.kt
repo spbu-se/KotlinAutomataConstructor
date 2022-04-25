@@ -5,6 +5,7 @@ import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.surrogateSerializer
 import javafx.beans.value.ObservableValue
@@ -66,6 +67,7 @@ class Stack(
 
 @Serializable
 @SerialName(NAME)
+@MostlyGeneratedOrInline
 data class StackDescriptorData(val acceptsByEmptyStack: Boolean)
 
 object StackDescriptorSerializer : KSerializer<StackDescriptor> by surrogateSerializer(
