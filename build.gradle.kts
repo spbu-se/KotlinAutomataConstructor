@@ -12,6 +12,7 @@ val kotlinxSerializationJsonVersion: String by rootProject
 val tornadofxVersion: String by rootProject
 val mockkVersion: String by rootProject
 val testfxVersion: String by rootProject
+val monocleVersion: String by rootProject
 val jacocoVersion: String by rootProject
 
 repositories {
@@ -38,6 +39,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.testfx:testfx-core:$testfxVersion")
     testImplementation("org.testfx:testfx-junit5:$testfxVersion")
+    testImplementation("org.testfx:openjfx-monocle:$monocleVersion")
 }
 
 jacoco {
@@ -54,6 +56,12 @@ tasks {
     test {
         finalizedBy("jacocoTestReport")
         useJUnitPlatform()
+        if (project.hasProperty("headless") && project.property("headless").toString().toBoolean()) {
+            systemProperty("testfx.robot", "glass")
+            systemProperty("testfx.headless", "true")
+            systemProperty("prism.order", "sw")
+            systemProperty("prism.text", "t2k")
+        }
     }
     jacocoTestReport {
         dependsOn("test")
