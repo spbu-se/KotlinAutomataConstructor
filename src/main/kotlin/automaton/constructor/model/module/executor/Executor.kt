@@ -41,7 +41,7 @@ class Executor(val automaton: Automaton) : AutomatonModule {
     val frozenStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(FROZEN) }
     val activeExecutionStates = leafExecutionStates.filteredSet { it.statusProperty.isEqualTo(RUNNING) }
 
-    var statusBinding: Binding<ExecutionStatus> =
+    val statusBinding: Binding<ExecutionStatus> =
         `when`(isNotEmpty(acceptedStates)).then(ACCEPTED).otherwise(
             `when`(isNotEmpty(activeExecutionStates)).then(RUNNING).otherwise(
                 `when`(isNotEmpty(frozenStates)).then(FROZEN).otherwise(REJECTED)
@@ -53,7 +53,7 @@ class Executor(val automaton: Automaton) : AutomatonModule {
     val started by startedBinding
 
     fun start() {
-        roots.clear()
+        stop()
         roots.addAll(automaton.initialStates.map { root ->
             ExecutionState(root, null, automaton.memoryDescriptors.map { it.createMemoryUnit() })
         })

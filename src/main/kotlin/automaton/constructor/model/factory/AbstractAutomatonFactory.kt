@@ -4,7 +4,7 @@ import automaton.constructor.model.Automaton
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.SettingListEditor
-import java.util.*
+import automaton.constructor.utils.capitalize
 
 abstract class AbstractAutomatonFactory(override val displayName: String) : AutomatonFactory {
     abstract fun createMemoryDescriptors(): List<MemoryUnitDescriptor>
@@ -13,5 +13,5 @@ abstract class AbstractAutomatonFactory(override val displayName: String) : Auto
     override fun createAutomaton() = Automaton(displayName, createMemoryDescriptors())
     override fun createEditor() = createSettings().takeIf { it.isNotEmpty() }?.let { SettingListEditor(it) }
 
-    override fun toString() = displayName.replaceFirstChar { it.titlecase(Locale.getDefault()) }
+    override fun toString() = displayName.capitalize()
 }

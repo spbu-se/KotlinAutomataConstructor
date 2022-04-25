@@ -11,9 +11,7 @@ import tornadofx.*
 
 val nonDeterminismDetectorFactory = { automaton: Automaton -> NonDeterminismDetector(automaton) }
 val Automaton.nonDeterminismDetector get() = getModule(nonDeterminismDetectorFactory)
-val Automaton.nonDeterministicStates get() = nonDeterminismDetector.nonDeterministicStates
 val Automaton.isDeterministicBinding get() = nonDeterminismDetector.isDeterministicBinding
-val Automaton.isDeterministic get() = nonDeterminismDetector.isDeterministic
 
 class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
     val nonDeterministicStates = automaton.states.filteredSet { state ->
@@ -45,5 +43,4 @@ class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
         isEmpty(nonDeterministicStates).and(size(automaton.initialStates).booleanBinding {
             automaton.initialStates.size <= 1
         })
-    val isDeterministic by isDeterministicBinding
 }
