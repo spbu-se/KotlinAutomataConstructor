@@ -62,10 +62,15 @@ class AutomatonTest {
     }
 
     @Test
-    fun `named states shouldn't be renamed`() {
-        val initName = "name"
-        val state = automaton.addState(initName)
-        assertEquals(initName, state.name)
+    fun `named states shouldn't be renamed and should not affect automatic naming`() {
+        val name1 = "name"
+        val name2 = "S" + "9".repeat(100) // test for out of bounds
+        val state1 = automaton.addState(name1)
+        val state2 = automaton.addState(name2)
+        val state3 = automaton.addState()
+        assertEquals(name1, state1.name)
+        assertEquals(name2, state2.name)
+        assertEquals("S0", state3.name)
     }
 
     @Test
@@ -294,6 +299,14 @@ class AutomatonTest {
                     @Test
                     fun `state2ToState1Transition should be removed from state2TransitionStorageMockk`() {
                         verify { state2TransitionStorageMockk.removeTransition(state2ToState1Transition) }
+                    }
+
+                    @Test
+                    fun `unnamed states should get default names`() {
+                        val state1 = automaton.addState()
+                        val state2 = automaton.addState()
+                        assertEquals("S0", state1.name)
+                        assertEquals("S1", state2.name)
                     }
                 }
             }
