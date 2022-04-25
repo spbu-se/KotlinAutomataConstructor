@@ -11,6 +11,7 @@ version = "1.0-SNAPSHOT"
 val kotlinxSerializationJsonVersion: String by rootProject
 val tornadofxVersion: String by rootProject
 val mockkVersion: String by rootProject
+val testfxVersion: String by rootProject
 val jacocoVersion: String by rootProject
 
 repositories {
@@ -31,9 +32,12 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
     implementation("no.tornado:tornadofx:$tornadofxVersion")
+
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("org.testfx:testfx-core:$testfxVersion")
+    testImplementation("org.testfx:testfx-junit5:$testfxVersion")
 }
 
 jacoco {
