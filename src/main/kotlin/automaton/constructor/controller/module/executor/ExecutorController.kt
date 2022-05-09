@@ -4,6 +4,7 @@ import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.SteppingStrategy
 import automaton.constructor.model.module.problems
+import automaton.constructor.view.module.executor.executionLeafView
 import tornadofx.*
 
 class ExecutorController(val executor: Executor, val view: View) : Controller() {
@@ -21,8 +22,9 @@ class ExecutorController(val executor: Executor, val view: View) : Controller() 
                 FROZEN -> "Execution has been frozen"
                 RUNNING -> "The automaton didn't halt in one second"
             }
+            val graphic = executor.acceptedStates.firstOrNull()?.let { executionLeafView(it) }
             executor.stop()
-            information("Execution result", executionResult)
+            information("Execution result", executionResult, graphic = graphic)
         }
     }
 
