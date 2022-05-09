@@ -15,11 +15,13 @@ import javafx.scene.layout.CornerRadii
 import javafx.scene.paint.Color
 import tornadofx.*
 
+private val REJECTING_COLOR: Color = Color.rgb(255, 100, 100)
+
 val ExecutionStatus.color
     get() = when (this) {
         ExecutionStatus.RUNNING -> null
         ExecutionStatus.ACCEPTED -> Color.LIGHTGREEN
-        ExecutionStatus.REJECTED -> Color.DEEPPINK
+        ExecutionStatus.REJECTED -> REJECTING_COLOR
         ExecutionStatus.FROZEN -> Color.DEEPSKYBLUE
     }
 
