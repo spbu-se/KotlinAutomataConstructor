@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     application
 }
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 val kotlinxSerializationJsonVersion: String by rootProject
 val tornadofxVersion: String by rootProject
