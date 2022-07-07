@@ -1,6 +1,6 @@
 package automaton.constructor.controller
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.factory.getAllAutomatonFactories
 import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers
@@ -139,7 +139,7 @@ class OpenedAutomatonController(val view: View) {
 
     private fun AutomatonSerializer.loadAsync(file: File): Task<Automaton> =
         view.runAsyncWithDialog("Loading automaton from $file", daemon = true) {
-            deserialize(file).toAutomaton()
+            deserialize(file).toAutomaton() as Automaton
         } addOnSuccess {
             openedAutomaton = it
             openedFile = file

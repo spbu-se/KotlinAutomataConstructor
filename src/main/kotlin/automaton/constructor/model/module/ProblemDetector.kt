@@ -1,6 +1,6 @@
 package automaton.constructor.model.module
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import javafx.beans.binding.Bindings.isEmpty
 import javafx.beans.binding.Bindings.isNotEmpty
 import javafx.beans.value.ObservableBooleanValue

@@ -1,6 +1,6 @@
 package automaton.constructor.model.module.executor
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.module.initialStates

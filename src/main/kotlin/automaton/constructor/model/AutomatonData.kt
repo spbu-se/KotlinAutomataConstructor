@@ -1,12 +1,14 @@
 package automaton.constructor.model
 
+import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.BaseAutomaton
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
 
 fun AutomatonData.toAutomaton() =
-    Automaton(typeName, memoryDescriptors).also { automaton ->
+    BaseAutomaton(typeName, memoryDescriptors).also { automaton ->
         val idToStateMap = states.associate {
             it.id to automaton.addState(it.name, Point2D(it.x, it.y)).apply {
                 isInitial = it.isInitial

@@ -1,6 +1,6 @@
 package automaton.constructor.controller
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.x
 import automaton.constructor.utils.y
 import automaton.constructor.view.*
