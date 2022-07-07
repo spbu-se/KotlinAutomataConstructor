@@ -72,6 +72,8 @@ class OpenedAutomatonController(val view: View) {
                     button("Cancel") { action { close() } }
                 }
             }
+            scene.widthProperty().onChange { stage.sizeToScene() }
+            scene.heightProperty().onChange { stage.sizeToScene() }
         }
     }
 
