@@ -1,15 +1,11 @@
 package automaton.constructor.model.factory
 
-import automaton.constructor.model.automaton.BaseAutomaton
-import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.utils.*
 
-abstract class AbstractAutomatonFactory(override val displayName: String) : AutomatonFactory {
-    abstract fun createMemoryDescriptors(): List<MemoryUnitDescriptor>
-    abstract fun createSettings(): List<Setting>
+abstract class AbstractAutomatonFactory(final override val displayName: String) : AutomatonFactory {
+    open fun createSettings(): List<Setting> = emptyList<Nothing>()
 
-    override fun createAutomaton() = BaseAutomaton(displayName, createMemoryDescriptors())
-    override fun createEditor() = createSettings().takeIf { it.isNotEmpty() }?.let { SettingListEditor(it) }
+    final override fun createEditor() = createSettings().takeIf { it.isNotEmpty() }?.let { SettingListEditor(it) }
 
-    override fun toString() = displayName.capitalize()
+    final override fun toString() = displayName.capitalize()
 }

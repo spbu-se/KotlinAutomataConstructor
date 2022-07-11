@@ -1,9 +1,8 @@
 package automaton.constructor.model.factory
 
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.automaton.FiniteAutomaton
+import automaton.constructor.model.automaton.FiniteAutomaton.Companion.NAME
 
-class FiniteAutomatonFactory : AbstractAutomatonFactory("finite automaton") {
-    override fun createMemoryDescriptors() = listOf(InputTapeDescriptor())
-
-    override fun createSettings() = emptyList<Nothing>()
+class FiniteAutomatonFactory : AbstractAutomatonFactory(NAME) {
+    override fun createAutomaton() = FiniteAutomaton()
 }

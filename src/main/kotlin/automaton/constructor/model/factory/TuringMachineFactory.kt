@@ -1,9 +1,8 @@
 package automaton.constructor.model.factory
 
-import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.automaton.TuringMachine
+import automaton.constructor.model.automaton.TuringMachine.Companion.NAME
 
-class TuringMachineFactory : AbstractAutomatonFactory("Turing machine") {
-    override fun createMemoryDescriptors() = listOf(MultiTrackTapeDescriptor(1))
-
-    override fun createSettings() = emptyList<Nothing>()
+class TuringMachineFactory : AbstractAutomatonFactory(NAME) {
+    override fun createAutomaton() = TuringMachine()
 }
