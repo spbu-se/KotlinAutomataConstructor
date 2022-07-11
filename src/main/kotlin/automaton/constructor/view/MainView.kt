@@ -45,6 +45,10 @@ class MainView : View() {
                     enableWhen(automatonView.automaton.undoRedoManager.isRedoableProperty)
                 }
             }
+            menu("Help") {
+                shortcutItem("User Documentation", "Shortcut+D") { openedAutomatonController.onUserDocumentation() }
+                shortcutItem("README", "Shortcut+R") { openedAutomatonController.onREADME() }
+            }
         }
         centerProperty().bind(automatonViewBinding)
     }

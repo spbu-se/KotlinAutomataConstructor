@@ -12,6 +12,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import tornadofx.*
+import tornadofx.FX.Companion.application
 import java.io.File
 
 class OpenedAutomatonController(val view: View) {
@@ -25,6 +26,10 @@ class OpenedAutomatonController(val view: View) {
         it?.toString() ?: "Untitled ${openedAutomaton.typeName}"
     }
     private val name: String by nameBinding
+
+    private val userDocumentationURL =
+        "https://docs.google.com/document/d/1jhqQSpF-SMvZJMpAzzRWi49u15uQ_wBPstUS369gO-Y/edit?usp=sharing"
+    private val readmeURL = "https://github.com/spbu-se/KotlinAutomataConstructor/blob/main/README.md"
 
     val openedAutomatonTitleBinding = nameBinding.nonNullObjectBinding(
         openedAutomatonProperty.select { it.undoRedoManager.wasModifiedProperty }
@@ -97,6 +102,14 @@ class OpenedAutomatonController(val view: View) {
     fun onSaveAs(): Boolean {
         saveAs(chooseFile("Save As", FileChooserMode.Save) ?: return false)
         return true
+    }
+
+    fun onUserDocumentation() {
+        application.hostServices.showDocument(userDocumentationURL)
+    }
+
+    fun onREADME() {
+        application.hostServices.showDocument(readmeURL)
     }
 
     private fun saveAs(file: File) {
