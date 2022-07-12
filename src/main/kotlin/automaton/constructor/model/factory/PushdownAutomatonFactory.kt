@@ -8,7 +8,7 @@ import javafx.scene.control.Spinner
 import tornadofx.*
 
 class PushdownAutomatonFactory : AbstractAutomatonFactory(PushdownAutomaton.NAME) {
-    private val stackCountProperty = DEFAULT_STACK_COUNT.toProperty()
+    val stackCountProperty = DEFAULT_STACK_COUNT.toProperty()
     var stackCount by stackCountProperty
 
     override fun createAutomaton() = PushdownAutomaton(

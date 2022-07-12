@@ -7,7 +7,7 @@ import javafx.scene.control.Spinner
 import tornadofx.*
 
 class MultiTapeTuringMachineFactory : AbstractAutomatonFactory(MultiTapeTuringMachine.NAME) {
-    private val tapeCountProperty = DEFAULT_TAPE_COUNT.toProperty()
+    val tapeCountProperty = DEFAULT_TAPE_COUNT.toProperty()
     var tapeCount by tapeCountProperty
 
     override fun createAutomaton() = MultiTapeTuringMachine(

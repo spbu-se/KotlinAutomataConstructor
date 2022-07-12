@@ -7,7 +7,7 @@ import javafx.scene.control.Spinner
 import tornadofx.*
 
 class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(MultiTrackTuringMachine.NAME) {
-    private val trackCountProperty = DEFAULT_TRACK_COUNT.toProperty()
+    val trackCountProperty = DEFAULT_TRACK_COUNT.toProperty()
     var trackCount by trackCountProperty
 
     override fun createAutomaton() = MultiTrackTuringMachine(

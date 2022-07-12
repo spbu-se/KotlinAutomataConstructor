@@ -8,7 +8,7 @@ import javafx.scene.control.Spinner
 import tornadofx.*
 
 class TuringMachineWithRegistersFactory : AbstractAutomatonFactory(TuringMachineWithRegisters.NAME) {
-    private val registerCountProperty = DEFAULT_REGISTER_COUNT.toProperty()
+    val registerCountProperty = DEFAULT_REGISTER_COUNT.toProperty()
     var registerCount by registerCountProperty
 
     override fun createAutomaton() = TuringMachineWithRegisters(
