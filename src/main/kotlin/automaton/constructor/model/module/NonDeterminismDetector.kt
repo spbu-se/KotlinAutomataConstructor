@@ -9,7 +9,7 @@ import javafx.beans.binding.BooleanBinding
 import javafx.collections.SetChangeListener
 import tornadofx.*
 
-val nonDeterminismDetectorFactory = { automaton: Automaton -> NonDeterminismDetector(automaton) }
+private val nonDeterminismDetectorFactory = { automaton: Automaton -> NonDeterminismDetector(automaton) }
 val Automaton.nonDeterminismDetector get() = getModule(nonDeterminismDetectorFactory)
 val Automaton.isDeterministicBinding get() = nonDeterminismDetector.isDeterministicBinding
 

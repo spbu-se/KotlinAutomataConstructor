@@ -5,7 +5,7 @@ import automaton.constructor.utils.capitalize
 import javafx.beans.value.ObservableValue
 import tornadofx.*
 
-val automatonDescriptionProviderFactory = { automaton: Automaton -> AutomatonDescriptionProvider(automaton) }
+private val automatonDescriptionProviderFactory = { automaton: Automaton -> AutomatonDescriptionProvider(automaton) }
 val Automaton.automatonDescriptionProvider get() = getModule(automatonDescriptionProviderFactory)
 val Automaton.descriptionBinding get() = automatonDescriptionProvider.descriptionBinding
 val Automaton.description: String get() = descriptionBinding.value
