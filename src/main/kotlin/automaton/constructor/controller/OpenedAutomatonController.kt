@@ -1,6 +1,6 @@
 package automaton.constructor.controller
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.factory.getAllAutomatonFactories
 import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers

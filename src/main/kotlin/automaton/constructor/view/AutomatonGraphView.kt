@@ -1,7 +1,7 @@
 package automaton.constructor.view
 
 import automaton.constructor.controller.AutomatonGraphController
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.State
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.subPane

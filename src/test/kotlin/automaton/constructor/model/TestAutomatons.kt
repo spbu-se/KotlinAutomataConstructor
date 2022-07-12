@@ -1,5 +1,6 @@
 package automaton.constructor.model
 
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.serializers.JsonAutomatonSerializer
 import java.io.File
 import kotlin.io.path.Path

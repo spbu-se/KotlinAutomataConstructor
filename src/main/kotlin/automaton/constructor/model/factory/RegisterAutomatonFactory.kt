@@ -1,22 +1,33 @@
 package automaton.constructor.model.factory
 
-import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.automaton.RegisterAutomaton
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.Setting
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class RegisterAutomatonFactory : AbstractAutomatonFactory("register automaton") {
-    val registerCountProperty = 1.toProperty()
+class RegisterAutomatonFactory : AbstractAutomatonFactory(RegisterAutomaton.NAME) {
+    val registerCountProperty = DEFAULT_REGISTER_COUNT.toProperty()
     var registerCount by registerCountProperty
 
-    override fun createMemoryDescriptors(): List<MemoryUnitDescriptor> =
-        listOf(InputTapeDescriptor()) + List(registerCount) { RegisterDescriptor() }
+    override fun createAutomaton() = RegisterAutomaton(
+        inputTape = InputTapeDescriptor(),
+        registers = List(registerCount) { RegisterDescriptor() }
+    )
 
     override fun createSettings() = listOf(
-        Setting("Number of registers", Spinner<Int>(1, 5, registerCount).apply {
-            registerCountProperty.bind(valueProperty())
-        })
+        Setting(
+            displayName = "Number of registers",
+            editor = Spinner<Int>(MIN_REGISTER_COUNT, MAX_REGISTER_COUNT, DEFAULT_REGISTER_COUNT).apply {
+                registerCountProperty.bind(valueProperty())
+            }
+        )
     )
+
+    companion object {
+        const val MIN_REGISTER_COUNT = 1
+        const val MAX_REGISTER_COUNT = 5
+        const val DEFAULT_REGISTER_COUNT = 1
+    }
 }

@@ -1,6 +1,6 @@
 package automaton.constructor.view
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.module.descriptionBinding
 import automaton.constructor.model.module.executor.executor
 import automaton.constructor.model.module.problems

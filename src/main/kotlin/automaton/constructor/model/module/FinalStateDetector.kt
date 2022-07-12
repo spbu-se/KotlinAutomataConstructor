@@ -1,6 +1,6 @@
 package automaton.constructor.model.module
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.filteredSet
 
 val finalStateDetectorFactory = { automaton: Automaton -> FinalStateDetector(automaton) }

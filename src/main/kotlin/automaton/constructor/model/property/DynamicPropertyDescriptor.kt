@@ -1,6 +1,6 @@
 package automaton.constructor.model.property
 
-import automaton.constructor.model.Automaton
+import automaton.constructor.model.automaton.Automaton
 import javafx.scene.Node
 import javafx.util.StringConverter
 
