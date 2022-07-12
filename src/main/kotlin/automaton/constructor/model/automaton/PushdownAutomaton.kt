@@ -6,7 +6,7 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
 /**
  * Pushdown automaton.
  *
- * It's an automaton with an [input tape][inputTape] and several [stacks] [memory descriptors][memoryDescriptors].
+ * It's an automaton with an [input tape][inputTape] and several [stacks] as [memory descriptors][memoryDescriptors].
  */
 class PushdownAutomaton(
     val inputTape: InputTapeDescriptor,

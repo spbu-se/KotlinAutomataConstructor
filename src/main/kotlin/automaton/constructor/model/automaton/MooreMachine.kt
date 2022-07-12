@@ -6,7 +6,7 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
 /**
  * Moore machine.
  *
- * It's an automaton with an [input tape][inputTape] and a [Moore output][mooreOutput] [memory descriptors][memoryDescriptors].
+ * It's an automaton with an [input tape][inputTape] and a [Moore output][mooreOutput] as [memory descriptors][memoryDescriptors].
  */
 class MooreMachine(
     val inputTape: InputTapeDescriptor,

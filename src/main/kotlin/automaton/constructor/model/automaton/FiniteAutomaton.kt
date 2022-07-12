@@ -5,7 +5,7 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
 /**
  * Finite automaton.
  *
- * It's an automaton with an [input tape][inputTape] [memory descriptor][memoryDescriptors].
+ * It's an automaton with an [input tape][inputTape] as a [memory descriptor][memoryDescriptors].
  */
 class FiniteAutomaton(
     val inputTape: InputTapeDescriptor

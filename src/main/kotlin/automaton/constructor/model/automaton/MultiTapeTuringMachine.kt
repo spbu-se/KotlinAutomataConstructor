@@ -5,7 +5,7 @@ import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 /**
  * Multi-tape Turing machine.
  *
- * It's an automaton with several [tapes] [memory descriptors][memoryDescriptors].
+ * It's an automaton with several [tapes] as [memory descriptors][memoryDescriptors].
  */
 class MultiTapeTuringMachine(
     val tapes: List<MultiTrackTapeDescriptor>
