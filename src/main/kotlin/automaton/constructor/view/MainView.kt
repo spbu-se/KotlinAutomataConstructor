@@ -1,5 +1,6 @@
 package automaton.constructor.view
 
+import automaton.constructor.controller.AutomatonDocumentationController
 import automaton.constructor.controller.OpenedAutomatonController
 import automaton.constructor.controller.UndoRedoController
 import automaton.constructor.utils.nonNullObjectBinding
@@ -10,6 +11,7 @@ import tornadofx.*
 
 class MainView : View() {
     private val openedAutomatonController = OpenedAutomatonController(this)
+    private val automatonDocumentationController = AutomatonDocumentationController()
     private val automatonViewBinding = openedAutomatonController.openedAutomatonProperty.nonNullObjectBinding {
         AutomatonView(it, this)
     }
@@ -44,6 +46,12 @@ class MainView : View() {
                 }.apply {
                     enableWhen(automatonView.automaton.undoRedoManager.isRedoableProperty)
                 }
+            }
+            menu("Help") {
+                shortcutItem("User Documentation", "Shortcut+D") {
+                    automatonDocumentationController.onUserDocumentation()
+                }
+                shortcutItem("README", "Shortcut+R") { automatonDocumentationController.onREADME() }
             }
         }
         centerProperty().bind(automatonViewBinding)
