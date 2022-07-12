@@ -1,8 +1,8 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.TuringMachine
-import automaton.constructor.model.automaton.TuringMachine.Companion.NAME
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 
-class TuringMachineFactory : AbstractAutomatonFactory(NAME) {
-    override fun createAutomaton() = TuringMachine()
+class TuringMachineFactory : AbstractAutomatonFactory(TuringMachine.NAME) {
+    override fun createAutomaton() = TuringMachine(tape = MultiTrackTapeDescriptor(trackCount = 1))
 }

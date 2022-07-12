@@ -1,16 +1,12 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.MultiTapeTuringMachine
-import automaton.constructor.model.automaton.MultiTapeTuringMachine.Companion.DEFAULT_TAPE_COUNT
-import automaton.constructor.model.automaton.MultiTapeTuringMachine.Companion.MAX_TAPE_COUNT
-import automaton.constructor.model.automaton.MultiTapeTuringMachine.Companion.MIN_TAPE_COUNT
-import automaton.constructor.model.automaton.MultiTapeTuringMachine.Companion.NAME
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.Setting
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class MultiTapeTuringMachineFactory : AbstractAutomatonFactory(NAME) {
+class MultiTapeTuringMachineFactory : AbstractAutomatonFactory(MultiTapeTuringMachine.NAME) {
     private val tapeCountProperty = DEFAULT_TAPE_COUNT.toProperty()
     var tapeCount by tapeCountProperty
 
@@ -26,4 +22,10 @@ class MultiTapeTuringMachineFactory : AbstractAutomatonFactory(NAME) {
             }
         )
     )
+
+    companion object {
+        const val MIN_TAPE_COUNT = 2
+        const val MAX_TAPE_COUNT = 5
+        const val DEFAULT_TAPE_COUNT = 2
+    }
 }

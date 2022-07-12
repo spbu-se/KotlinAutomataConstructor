@@ -1,16 +1,12 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.MultiTrackTuringMachine
-import automaton.constructor.model.automaton.MultiTrackTuringMachine.Companion.DEFAULT_TRACK_COUNT
-import automaton.constructor.model.automaton.MultiTrackTuringMachine.Companion.MAX_TRACK_COUNT
-import automaton.constructor.model.automaton.MultiTrackTuringMachine.Companion.MIN_TRACK_COUNT
-import automaton.constructor.model.automaton.MultiTrackTuringMachine.Companion.NAME
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.Setting
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(NAME) {
+class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(MultiTrackTuringMachine.NAME) {
     private val trackCountProperty = DEFAULT_TRACK_COUNT.toProperty()
     var trackCount by trackCountProperty
 
@@ -26,4 +22,10 @@ class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(NAME) {
             }
         )
     )
+
+    companion object {
+        const val MIN_TRACK_COUNT = 2
+        const val MAX_TRACK_COUNT = 5
+        const val DEFAULT_TRACK_COUNT = 2
+    }
 }

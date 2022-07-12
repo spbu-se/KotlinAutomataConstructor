@@ -8,18 +8,15 @@ import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
  * It's an automaton with several [tracks] [memory descriptors][memoryDescriptors].
  */
 class MultiTrackTuringMachine(
-    val tracks: MultiTrackTapeDescriptor = MultiTrackTapeDescriptor(DEFAULT_TRACK_COUNT),
+    val tracks: MultiTrackTapeDescriptor
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(tracks)) {
     init {
-        require(tracks.trackCount in MIN_TRACK_COUNT..MAX_TRACK_COUNT) {
+        require(tracks.trackCount > 1) {
             "Illegal `tracks` argument when creating `MultiTrackTuringMachine`"
         }
     }
 
     companion object {
         const val NAME = "multi-track Turing machine"
-        const val MIN_TRACK_COUNT = 2
-        const val MAX_TRACK_COUNT = 5
-        const val DEFAULT_TRACK_COUNT = 2
     }
 }

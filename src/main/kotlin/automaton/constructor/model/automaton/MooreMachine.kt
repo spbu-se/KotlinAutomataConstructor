@@ -9,8 +9,8 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
  * It's an automaton with an [input tape][inputTape] and a [Moore output][mooreOutput] [memory descriptors][memoryDescriptors].
  */
 class MooreMachine(
-    val inputTape: InputTapeDescriptor = InputTapeDescriptor(),
-    val mooreOutput: MooreOutputDescriptor = MooreOutputDescriptor(),
+    val inputTape: InputTapeDescriptor,
+    val mooreOutput: MooreOutputDescriptor
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape, mooreOutput)) {
     companion object {
         const val NAME = "Moore machine"

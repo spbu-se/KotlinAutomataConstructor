@@ -1,20 +1,18 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.TuringMachineWithRegisters
-import automaton.constructor.model.automaton.TuringMachineWithRegisters.Companion.DEFAULT_REGISTER_COUNT
-import automaton.constructor.model.automaton.TuringMachineWithRegisters.Companion.MAX_REGISTER_COUNT
-import automaton.constructor.model.automaton.TuringMachineWithRegisters.Companion.MIN_REGISTER_COUNT
-import automaton.constructor.model.automaton.TuringMachineWithRegisters.Companion.NAME
 import automaton.constructor.model.memory.RegisterDescriptor
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.Setting
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class TuringMachineWithRegistersFactory : AbstractAutomatonFactory(NAME) {
+class TuringMachineWithRegistersFactory : AbstractAutomatonFactory(TuringMachineWithRegisters.NAME) {
     private val registerCountProperty = DEFAULT_REGISTER_COUNT.toProperty()
     var registerCount by registerCountProperty
 
     override fun createAutomaton() = TuringMachineWithRegisters(
+        tape = MultiTrackTapeDescriptor(trackCount = 1),
         registers = List(registerCount) { RegisterDescriptor() }
     )
 
@@ -26,4 +24,10 @@ class TuringMachineWithRegistersFactory : AbstractAutomatonFactory(NAME) {
             }
         )
     )
+
+    companion object {
+        const val MIN_REGISTER_COUNT = 1
+        const val MAX_REGISTER_COUNT = 5
+        const val DEFAULT_REGISTER_COUNT = 1
+    }
 }
