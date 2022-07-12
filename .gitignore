@@ -1,0 +1,5 @@
+# Ignore Idea & Gradle files
+
+.idea/
+.gradle/
+build/
