@@ -139,7 +139,7 @@ class OpenedAutomatonController(val view: View) {
 
     private fun AutomatonSerializer.loadAsync(file: File): Task<Automaton> =
         view.runAsyncWithDialog("Loading automaton from $file", daemon = true) {
-            deserialize(file).toAutomaton() as Automaton
+            deserialize(file).toAutomaton()
         } addOnSuccess {
             openedAutomaton = it
             openedFile = file

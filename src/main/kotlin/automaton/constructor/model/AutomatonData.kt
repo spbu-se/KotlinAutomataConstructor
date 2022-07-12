@@ -7,7 +7,7 @@ import automaton.constructor.utils.MostlyGeneratedOrInline
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
 
-fun AutomatonData.toAutomaton() =
+fun AutomatonData.toAutomaton(): Automaton =
     BaseAutomaton(typeName, memoryDescriptors).also { automaton ->
         val idToStateMap = states.associate {
             it.id to automaton.addState(it.name, Point2D(it.x, it.y)).apply {
