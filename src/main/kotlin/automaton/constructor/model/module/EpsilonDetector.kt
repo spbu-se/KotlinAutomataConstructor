@@ -8,7 +8,7 @@ import javafx.beans.binding.Bindings.isNotEmpty
 import javafx.beans.binding.BooleanBinding
 import tornadofx.*
 
-val epsilonDetectorFactory = { automaton: Automaton -> EpsilonDetector(automaton) }
+private val epsilonDetectorFactory = { automaton: Automaton -> EpsilonDetector(automaton) }
 val Automaton.epsilonDetector get() = getModule(epsilonDetectorFactory)
 val Automaton.hasEpsilonBinding get() = epsilonDetector.hasEpsilonBinding
 

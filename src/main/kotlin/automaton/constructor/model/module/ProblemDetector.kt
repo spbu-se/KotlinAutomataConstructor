@@ -7,7 +7,7 @@ import javafx.beans.value.ObservableBooleanValue
 import javafx.collections.ObservableList
 import tornadofx.*
 
-val problemDetectorFactory = { automaton: Automaton -> ProblemDetector(automaton) }
+private val problemDetectorFactory = { automaton: Automaton -> ProblemDetector(automaton) }
 val Automaton.problemDetector get() = getModule(problemDetectorFactory)
 val Automaton.problems get() = problemDetector.problems
 

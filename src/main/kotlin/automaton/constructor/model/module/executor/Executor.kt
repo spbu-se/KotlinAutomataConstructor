@@ -11,7 +11,7 @@ import javafx.beans.binding.BooleanBinding
 import javafx.collections.SetChangeListener
 import tornadofx.*
 
-val executorFactory = { automaton: Automaton -> Executor(automaton) }
+private val executorFactory = { automaton: Automaton -> Executor(automaton) }
 val Automaton.executor get() = getModule(executorFactory)
 
 class Executor(val automaton: Automaton) : AutomatonModule {
