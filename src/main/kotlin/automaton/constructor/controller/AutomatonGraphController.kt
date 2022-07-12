@@ -73,7 +73,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
         stateView.group.setOnMouseClicked {
             it.consume()
             stateView.group.requestFocus()
-            if (it.button == MouseButton.PRIMARY && it.isStillSincePress)
+            if (it.button == MouseButton.PRIMARY && it.isStillSincePress) {
                 lastSelectedElement = when {
                     !it.isControlDown -> {
                         clearSelection()
@@ -92,6 +92,21 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                         stateView
                     }
                 }
+            } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
+                val actions = automaton.stateActions.filter { action ->
+                    action.isAvailableFor(stateView.state)
+                }
+                if (actions.isNotEmpty()) {
+                    ContextMenu().apply {
+                        for (action in actions) {
+                            item(action.displayName) {
+                                action { action.performOn(stateView.state) }
+                            }
+                        }
+                        show(stateView.group.scene.window, it.screenX, it.screenY)
+                    }
+                }
+            }
         }
         stateView.group.setOnMouseDragged {
             it.consume()
@@ -149,7 +164,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
         transitionView.text.setOnMouseClicked {
             it.consume()
             transitionView.text.requestFocus()
-            if (it.button == MouseButton.PRIMARY)
+            if (it.button == MouseButton.PRIMARY) {
                 lastSelectedElement = when {
                     !it.isControlDown -> {
                         clearSelection()
@@ -168,6 +183,21 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                         transitionView
                     }
                 }
+            } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
+                val actions = automaton.transitionActions.filter { action ->
+                    action.isAvailableFor(transitionView.transition)
+                }
+                if (actions.isNotEmpty()) {
+                    ContextMenu().apply {
+                        for (action in actions) {
+                            item(action.displayName) {
+                                action { action.performOn(transitionView.transition) }
+                            }
+                        }
+                        show(transitionView.text.scene.window, it.screenX, it.screenY)
+                    }
+                }
+            }
         }
         clearSelection()
         selectedTransitionViews.add(transitionView)
