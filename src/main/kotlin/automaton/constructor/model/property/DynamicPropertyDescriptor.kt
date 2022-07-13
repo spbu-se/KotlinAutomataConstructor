@@ -9,7 +9,13 @@ import javafx.util.StringConverter
  * @see DynamicProperty
  */
 class DynamicPropertyDescriptor<T>(
+    /**
+     * Displayable name of this descriptor
+     */
     val displayName: String,
+    /**
+     * The default value for a dynamic property [created][createProperty] by this descriptor
+     */
     val defaultValue: T,
     /**
      * `true` properties described by this descriptor can be deemed epsilon if their value is [EPSILON_VALUE]
@@ -23,9 +29,15 @@ class DynamicPropertyDescriptor<T>(
      */
     private val editorFactory: (DynamicProperty<T>) -> Node,
     /**
-     * Converts given value to a human-readable string
+     * Converts a given value to a human-readable string.
+     * This string can be later deserialized back to the given value
      */
-    val stringConverter: StringConverter<T>
+    val stringConverter: StringConverter<T>,
+    /**
+     * Converts a given value to a human-readable string **intended only for display**.
+     * There are no guarantees this string can be later deserialized back to the given value
+     */
+    val displayValueFactory: (T) -> String = stringConverter::toString
 ) {
     /**
      * Creates [DynamicProperty] described by this descriptor with [defaultValue]
