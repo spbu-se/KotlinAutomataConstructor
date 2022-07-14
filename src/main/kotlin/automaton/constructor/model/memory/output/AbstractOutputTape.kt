@@ -10,7 +10,7 @@ import automaton.constructor.utils.scrollToRightWhenUnfocused
 import javafx.scene.Node
 import tornadofx.*
 
-abstract class AbstractOutputDescriptor : MemoryUnitDescriptor {
+abstract class AbstractOutputTapeDescriptor : MemoryUnitDescriptor {
     override val transitionFilters get() = emptyList<DynamicPropertyDescriptor<*>>()
     override val stateFilters get() = emptyList<DynamicPropertyDescriptor<*>>()
     abstract override val transitionSideEffects: List<DynamicPropertyDescriptor<*>>
@@ -18,7 +18,7 @@ abstract class AbstractOutputDescriptor : MemoryUnitDescriptor {
 
     abstract fun getOutput(transition: Transition): List<Char?>
 
-    override fun createMemoryUnit() = Output(this, "")
+    override fun createMemoryUnit() = OutputTape(this, "")
 
     override fun createEditor(): Node? = null
 
@@ -31,8 +31,8 @@ abstract class AbstractOutputDescriptor : MemoryUnitDescriptor {
     }
 }
 
-class Output(
-    override val descriptor: AbstractOutputDescriptor,
+class OutputTape(
+    override val descriptor: AbstractOutputTapeDescriptor,
     initValue: String
 ) : MonospaceEditableString(initValue), MemoryUnit {
     override fun getCurrentFilterValues() = listOf<Nothing>()
@@ -46,7 +46,7 @@ class Output(
             .joinToString(separator = "")
     }
 
-    override fun copy() = Output(descriptor, value)
+    override fun copy() = OutputTape(descriptor, value)
 
     override fun createEditor() = super.createTextFieldEditor().scrollToRightWhenUnfocused()
 }
