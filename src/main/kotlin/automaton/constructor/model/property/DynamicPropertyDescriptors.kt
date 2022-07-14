@@ -113,8 +113,4 @@ object DynamicPropertyDescriptors {
             override fun fromString(string: String): String? = if (string == EPSILON_STRING) EPSILON_VALUE else string
         }
     )
-
-    fun <T> DynamicPropertyDescriptor<T>.withDisplayValueFactory(
-        displayValueFactory: (T) -> String
-    ) = copy(displayValueFactory = displayValueFactory)
 }

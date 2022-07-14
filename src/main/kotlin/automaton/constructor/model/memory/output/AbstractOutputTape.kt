@@ -3,7 +3,6 @@ package automaton.constructor.model.memory.output
 import automaton.constructor.model.memory.*
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.property.*
-import automaton.constructor.model.property.DynamicPropertyDescriptors.withDisplayValueFactory
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.scrollToRightWhenUnfocused
@@ -16,19 +15,16 @@ abstract class AbstractOutputTapeDescriptor : MemoryUnitDescriptor {
     abstract override val transitionSideEffects: List<DynamicPropertyDescriptor<*>>
     abstract override val stateSideEffects: List<DynamicPropertyDescriptor<*>>
 
+    val outputCharDescriptor = DynamicPropertyDescriptors.charOrEps(
+        name = "Output char",
+        canBeDeemedEpsilon = false
+    ).copy(displayValueFactory = { if (it == EPSILON_VALUE) "" else it.toString() })
+
     abstract fun getOutput(transition: Transition): List<Char?>
 
     override fun createMemoryUnit() = OutputTape(this, "")
 
     override fun createEditor(): Node? = null
-
-
-    companion object {
-        val outputCharDescriptor = DynamicPropertyDescriptors.charOrEps(
-            name = "Output char",
-            canBeDeemedEpsilon = false
-        ).withDisplayValueFactory { if (it == EPSILON_VALUE) "" else it.toString() }
-    }
 }
 
 class OutputTape(
