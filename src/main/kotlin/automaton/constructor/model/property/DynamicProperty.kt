@@ -23,5 +23,13 @@ class DynamicProperty<T>(
 
     override fun createEditor() = descriptor.createEditor(this)
 
+    /**
+     * Human-readable string representation of this property **intended only for display**
+     */
+    val displayValue: String get() = descriptor.displayValueFactory(value)
+
+    /**
+     * Human-readable string representation of this property
+     */
     override fun toString(): String = descriptor.stringConverter.toString(value)
 }
