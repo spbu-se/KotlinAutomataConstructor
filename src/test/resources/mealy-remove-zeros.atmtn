@@ -5,7 +5,7 @@
       "type": "Input tape"
     },
     {
-      "type": "Mealy/Moore output"
+      "type": "Mealy/Moore output tape"
     }
   ],
   "states": [
