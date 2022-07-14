@@ -11,7 +11,7 @@ private const val NAME = "Mealy/Moore output tape"
 class MealyMooreOutputTapeDescriptor : AbstractOutputTapeDescriptor() {
     override val transitionSideEffects = listOf(outputCharDescriptor)
     override val stateSideEffects = listOf(outputCharDescriptor)
-    override var displayName = NAME
+    override var displayName = "Output tape"
     override fun getOutput(transition: Transition): List<Char?> = listOf(
         transition[outputCharDescriptor],
         transition.target[outputCharDescriptor]
