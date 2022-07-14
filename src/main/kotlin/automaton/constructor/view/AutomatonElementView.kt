@@ -15,7 +15,10 @@ abstract class AutomatonElementView(private val automatonElement: AutomatonEleme
         }
 
     protected var settingsTextBinding =
-        stringBinding(automatonElement, *automatonElement.allProperties.toTypedArray()) {
+        stringBinding(
+            automatonElement,
+            *automatonElement.propertyGroups.flatMap { it.filters + it.sideEffects }.toTypedArray()
+        ) {
             propertyGroups.asSequence()
                 .map { (_, filters, sideEffects) ->
                     listOf(filters, sideEffects)
