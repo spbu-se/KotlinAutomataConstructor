@@ -15,16 +15,20 @@ abstract class AbstractOutputDescriptor : MemoryUnitDescriptor {
     override val stateFilters get() = emptyList<DynamicPropertyDescriptor<*>>()
     abstract override val transitionSideEffects: List<DynamicPropertyDescriptor<*>>
     abstract override val stateSideEffects: List<DynamicPropertyDescriptor<*>>
-    val outputChar = DynamicPropertyDescriptors.charOrEps(
-        name = "Output char",
-        canBeDeemedEpsilon = false
-    ).withDisplayValueFactory { if (it == EPSILON_VALUE) "" else it.toString() }
 
-    abstract fun getOutputChar(transition: Transition): Char?
+    abstract fun getOutput(transition: Transition): List<Char?>
 
     override fun createMemoryUnit() = Output(this, "")
 
     override fun createEditor(): Node? = null
+
+
+    companion object {
+        val outputCharDescriptor = DynamicPropertyDescriptors.charOrEps(
+            name = "Output char",
+            canBeDeemedEpsilon = false
+        ).withDisplayValueFactory { if (it == EPSILON_VALUE) "" else it.toString() }
+    }
 }
 
 class Output(
@@ -37,8 +41,9 @@ class Output(
     override val status: MemoryUnitStatus by observableStatus
 
     override fun takeTransition(transition: Transition) {
-        val outputChar = descriptor.getOutputChar(transition)
-        if (outputChar != EPSILON_VALUE) value += outputChar
+        value += descriptor.getOutput(transition)
+            .filter { it != EPSILON_VALUE }
+            .joinToString(separator = "")
     }
 
     override fun copy() = Output(descriptor, value)
