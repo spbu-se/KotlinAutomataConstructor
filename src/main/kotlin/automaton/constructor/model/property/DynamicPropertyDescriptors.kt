@@ -11,35 +11,23 @@ object DynamicPropertyDescriptors {
     const val BLANK_CHAR = '□'
 
 
-    fun outputChar(name: String) = charOrEps(
-        name = name,
-        canBeDeemedEpsilon = false,
-        displayValueFactory = { if (it == EPSILON_VALUE) "" else it.toString() }
-    )
-
     fun charOrEps(
         name: String,
-        canBeDeemedEpsilon: Boolean,
-        displayValueFactory: ((Char?) -> String)? = null
+        canBeDeemedEpsilon: Boolean
     ): DynamicPropertyDescriptor<Char?> = charOrElse(
         name = name,
         canBeDeemedEpsilon = canBeDeemedEpsilon,
         emptyChar = EPSILON_CHAR,
         emptyValue = EPSILON_VALUE,
-        charConverter = { it },
-        displayValueFactory = displayValueFactory
+        charConverter = { it }
     )
 
-    fun charOrBlank(
-        name: String,
-        displayValueFactory: ((Char) -> String)? = null
-    ): DynamicPropertyDescriptor<Char> = charOrElse(
+    fun charOrBlank(name: String): DynamicPropertyDescriptor<Char> = charOrElse(
         name = name,
         canBeDeemedEpsilon = false,
         emptyChar = BLANK_CHAR,
         emptyValue = BLANK_CHAR,
-        charConverter = { it },
-        displayValueFactory = displayValueFactory
+        charConverter = { it }
     )
 
     @MostlyGeneratedOrInline
@@ -48,8 +36,7 @@ object DynamicPropertyDescriptors {
         canBeDeemedEpsilon: Boolean,
         emptyChar: Char,
         emptyValue: T,
-        crossinline charConverter: (Char) -> T,
-        noinline displayValueFactory: ((T) -> String)? = null
+        crossinline charConverter: (Char) -> T
     ) = DynamicPropertyDescriptor(
         displayName = name,
         defaultValue = emptyValue,
@@ -70,26 +57,20 @@ object DynamicPropertyDescriptors {
 
             override fun fromString(string: String): T =
                 if (string == emptyChar.toString()) emptyValue else charConverter(string.single())
-        },
-        displayValueFactory = displayValueFactory ?: {
-            if (it == EPSILON_VALUE) emptyChar.toString() else it.toString()
         }
     )
 
     @MostlyGeneratedOrInline
-    inline fun <reified E : Enum<E>> enum(name: String, noinline displayValueFactory: ((E) -> String)? = null) =
-        choice(
-            name = name,
-            canBeDeemedEpsilon = false,
-            values = enumValues(),
-            displayValueFactory = displayValueFactory
-        )
+    inline fun <reified E : Enum<E>> enum(name: String) = choice(
+        name = name,
+        canBeDeemedEpsilon = false,
+        values = enumValues<E>()
+    )
 
     fun <T> choice(
         name: String,
         canBeDeemedEpsilon: Boolean,
-        vararg values: T,
-        displayValueFactory: ((T) -> String)? = null
+        vararg values: T
     ): DynamicPropertyDescriptor<T> {
         val stringToValueMap = values.associateBy { it.toString() }
         return DynamicPropertyDescriptor(
@@ -106,15 +87,13 @@ object DynamicPropertyDescriptors {
             stringConverter = object : StringConverter<T>() {
                 override fun toString(obj: T): String = obj.toString()
                 override fun fromString(string: String): T = stringToValueMap.getValue(string)
-            },
-            displayValueFactory = displayValueFactory ?: { it.toString() }
+            }
         )
     }
 
     fun stringOrEps(
         name: String,
-        canBeDeemedEpsilon: Boolean,
-        displayValueFactory: ((String?) -> String)? = null
+        canBeDeemedEpsilon: Boolean
     ) = DynamicPropertyDescriptor(
         displayName = name,
         canBeDeemedEpsilon = canBeDeemedEpsilon,
@@ -132,7 +111,10 @@ object DynamicPropertyDescriptors {
         stringConverter = object : StringConverter<String?>() {
             override fun toString(obj: String?): String = if (obj == EPSILON_VALUE) EPSILON_STRING else obj
             override fun fromString(string: String): String? = if (string == EPSILON_STRING) EPSILON_VALUE else string
-        },
-        displayValueFactory = displayValueFactory ?: { if (it == EPSILON_VALUE) EPSILON_STRING else it }
+        }
     )
+
+    fun <T> DynamicPropertyDescriptor<T>.withDisplayValueFactory(
+        displayValueFactory: (T) -> String
+    ) = copy(displayValueFactory = displayValueFactory)
 }

@@ -48,4 +48,24 @@ class DynamicPropertyDescriptor<T>(
      * Creates control for editing the `value` of the given [property] described by this descriptor
      */
     fun createEditor(property: DynamicProperty<T>): Node = editorFactory(property)
+
+
+    /**
+     * Creates a copy of this descriptor.
+     */
+    fun copy(
+        displayName: String = this.displayName,
+        defaultValue: T = this.defaultValue,
+        canBeDeemedEpsilon: Boolean = this.canBeDeemedEpsilon,
+        editorFactory: (DynamicProperty<T>) -> Node = this.editorFactory,
+        stringConverter: StringConverter<T> = this.stringConverter,
+        displayValueFactory: (T) -> String = this.displayValueFactory,
+    ) = DynamicPropertyDescriptor(
+        displayName,
+        defaultValue,
+        canBeDeemedEpsilon,
+        editorFactory,
+        stringConverter,
+        displayValueFactory
+    )
 }
