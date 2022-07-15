@@ -2,6 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
+import automaton.constructor.utils.I18N.labels
 
 /**
  * Turing machine with registers.
@@ -14,14 +15,14 @@ class TuringMachineWithRegisters(
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(tape) + registers) {
     init {
         require(tape.trackCount == 1) {
-            "Illegal `tape` argument when creating `TuringMachineWithRegisters`"
+            labels.getString("TuringMachineWithRegisters.IllegalTapeArgument")
         }
         require(registers.isNotEmpty()) {
-            "Illegal `registers` argument when creating `TuringMachineWithRegisters`"
+            labels.getString("TuringMachineWithRegisters.IllegalRegistersArgument")
         }
     }
 
     companion object {
-        const val NAME = "Turing machine with registers"
+        val NAME: String = labels.getString("TuringMachineWithRegisters.NAME")
     }
 }

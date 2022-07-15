@@ -11,17 +11,19 @@ import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.noPropertiesSerializer
+import automaton.constructor.utils.I18N.labels
 import javafx.beans.binding.Bindings.`when`
 import javafx.beans.value.ObservableValue
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import tornadofx.*
 
-private const val NAME = "Input tape"
+private val NAME: String = labels.getString("InputTape.NAME")
 
 @Serializable(with = InputTapeDescriptorSerializer::class)
 class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
-    val expectedChar = DynamicPropertyDescriptors.charOrEps("Expected char", canBeDeemedEpsilon = true)
+    val expectedChar = DynamicPropertyDescriptors.charOrEps(labels.getString("InputTapeDescriptor.ExpectedChar"),
+        canBeDeemedEpsilon = true)
 
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = emptyList<DynamicPropertyDescriptor<*>>()

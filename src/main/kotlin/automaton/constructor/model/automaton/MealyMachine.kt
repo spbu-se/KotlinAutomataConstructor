@@ -2,6 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.memory.output.MealyOutputDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.utils.I18N.labels
 
 /**
  * Mealy machine.
@@ -13,6 +14,6 @@ class MealyMachine(
     val mealyOutput: MealyOutputDescriptor
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape, mealyOutput)) {
     companion object {
-        const val NAME = "Mealy machine"
+        val NAME: String = labels.getString("MealyMachine.NAME")
     }
 }

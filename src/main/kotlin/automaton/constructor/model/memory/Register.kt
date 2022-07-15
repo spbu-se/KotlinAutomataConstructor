@@ -6,16 +6,19 @@ import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.noPropertiesSerializer
+import automaton.constructor.utils.I18N.labels
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import tornadofx.*
 
-private const val NAME = "Register"
+private val NAME = labels.getString("Register.NAME")
 
 @Serializable(with = RegisterDescriptorSerializer::class)
 class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
-    val expectedValue = DynamicPropertyDescriptors.stringOrEps("Expected value", canBeDeemedEpsilon = false)
-    val newValue = DynamicPropertyDescriptors.stringOrEps("New value", canBeDeemedEpsilon = false)
+    val expectedValue = DynamicPropertyDescriptors.stringOrEps(labels.getString("Register.RegisterDescriptor.ExpectedValue"),
+        canBeDeemedEpsilon = false)
+    val newValue = DynamicPropertyDescriptors.stringOrEps(labels.getString("Register.RegisterDescriptor.NewValue"),
+        canBeDeemedEpsilon = false)
     override val transitionFilters = listOf(expectedValue)
     override val transitionSideEffects = listOf(newValue)
     override var displayName = NAME

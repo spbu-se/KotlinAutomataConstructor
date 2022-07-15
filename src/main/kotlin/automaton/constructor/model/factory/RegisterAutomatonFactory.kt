@@ -4,6 +4,7 @@ import automaton.constructor.model.automaton.RegisterAutomaton
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.Setting
+import automaton.constructor.utils.I18N.labels
 import javafx.scene.control.Spinner
 import tornadofx.*
 
@@ -18,7 +19,7 @@ class RegisterAutomatonFactory : AbstractAutomatonFactory(RegisterAutomaton.NAME
 
     override fun createSettings() = listOf(
         Setting(
-            displayName = "Number of registers",
+            displayName = labels.getString("RegisterAutomatonFactory.DisplayName.NumberOfRegisters"),
             editor = Spinner<Int>(MIN_REGISTER_COUNT, MAX_REGISTER_COUNT, DEFAULT_REGISTER_COUNT).apply {
                 registerCountProperty.bind(valueProperty())
             }

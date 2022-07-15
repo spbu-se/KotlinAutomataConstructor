@@ -8,25 +8,29 @@ import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.monospaced
 import automaton.constructor.utils.surrogateSerializer
+import automaton.constructor.utils.I18N.labels
 import javafx.scene.layout.VBox
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import tornadofx.*
+import java.text.MessageFormat
 
 @Serializable(with = MultiTrackTapeDescriptorSerializer::class)
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
-    val headMoveDirection = DynamicPropertyDescriptors.enum<HeadMoveDirection>("Head move")
+    val headMoveDirection = DynamicPropertyDescriptors.enum<HeadMoveDirection>(labels.getString("MultiTrackTapeDescriptor.HeadMoveDirection"))
     val expectedChars = List(trackCount) { i ->
-        DynamicPropertyDescriptors.charOrBlank("Expected char${getIndexSuffix(i)}")
+        DynamicPropertyDescriptors.charOrBlank(MessageFormat.format(labels.getString("MultiTrackTapeDescriptor.ExpectedChar"),
+            getIndexSuffix(i)))
     }
     val newChars = List(trackCount) { i ->
-        DynamicPropertyDescriptors.charOrBlank("New char${getIndexSuffix(i)}")
+        DynamicPropertyDescriptors.charOrBlank(MessageFormat.format(labels.getString("MultiTrackTapeDescriptor.NewChar"), getIndexSuffix(i)))
     }
     override val transitionFilters = expectedChars
     override val transitionSideEffects = newChars + headMoveDirection
-    override var displayName = if (trackCount == 1) "Tape" else "Multi-track tape"
+    override var displayName = if (trackCount == 1) labels.getString("MultiTrackTapeDescriptor.DisplayName.Tape")
+    else labels.getString("MultiTrackTapeDescriptor.DisplayName.Multi-trackTape")
 
     override fun createMemoryUnit() = MultiTrackTape(this, valueProperties.map { Track(it.value) })
 

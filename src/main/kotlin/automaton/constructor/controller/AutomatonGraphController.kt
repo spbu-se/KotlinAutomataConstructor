@@ -3,6 +3,7 @@ package automaton.constructor.controller
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.x
 import automaton.constructor.utils.y
+import automaton.constructor.utils.I18N.labels
 import automaton.constructor.view.*
 import javafx.geometry.Point2D
 import javafx.scene.control.ContextMenu
@@ -38,7 +39,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
             if (it.button == MouseButton.PRIMARY && it.isStillSincePress) clearSelection()
             else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
                 ContextMenu().apply {
-                    item("Add state") {
+                    item(labels.getString("AutomatonGraphController.AddState")) {
                         action {
                             automaton.addState(position = Point2D(it.x, it.y))
                         }

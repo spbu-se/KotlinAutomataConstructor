@@ -2,11 +2,13 @@ package automaton.constructor.view.module.executor
 
 import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.utils.hoverableTooltip
+import automaton.constructor.utils.I18N.labels
 import automaton.constructor.view.StateView
 import javafx.collections.SetChangeListener
 import javafx.geometry.Orientation
 import javafx.scene.layout.VBox
 import tornadofx.*
+import java.text.MessageFormat
 
 private const val MAX_SHOWN_EXECUTION_STATES = 5
 
@@ -28,7 +30,7 @@ fun StateView.installExecutionStateTooltip() = group.hoverableTooltip {
         val notShownExecutionStates = state.executionStates.size - MAX_SHOWN_EXECUTION_STATES
         if (notShownExecutionStates > 0) {
             separator(Orientation.HORIZONTAL)
-            label("$notShownExecutionStates execution states not shown") { paddingAll = 5.0 }
+            label(MessageFormat.format(labels.getString("ExecutionStateTooltip.NotShownExecutionStates"), notShownExecutionStates)) { paddingAll = 5.0 }
         }
     }
 }

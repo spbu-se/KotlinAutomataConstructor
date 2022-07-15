@@ -10,6 +10,7 @@ import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.scrollToRightWhenUnfocused
+import automaton.constructor.utils.I18N.labels
 import javafx.scene.Node
 import tornadofx.*
 
@@ -18,7 +19,8 @@ abstract class AbstractOutputDescriptor : MemoryUnitDescriptor {
     override val stateFilters get() = emptyList<DynamicPropertyDescriptor<*>>()
     abstract override val transitionSideEffects: List<DynamicPropertyDescriptor<*>>
     abstract override val stateSideEffects: List<DynamicPropertyDescriptor<*>>
-    val outputChar = DynamicPropertyDescriptors.charOrEps("Output char", canBeDeemedEpsilon = false)
+    val outputChar = DynamicPropertyDescriptors.charOrEps(labels.getString("AbstractOutput.OutputChar"),
+        canBeDeemedEpsilon = false)
 
     abstract fun getOutputChar(transition: Transition): Char?
 

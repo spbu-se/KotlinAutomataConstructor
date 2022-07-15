@@ -5,6 +5,7 @@ import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.STEPPING_STRATEGIES
 import automaton.constructor.utils.SettingGroupEditor
+import automaton.constructor.utils.I18N.labels
 import automaton.constructor.view.memory.inputDataView
 import javafx.collections.SetChangeListener
 import javafx.scene.control.ScrollPane
@@ -23,7 +24,9 @@ class ExecutorView(val executor: Executor, val view: View) : HBox() {
                 maxHeight = Double.MAX_VALUE
                 hgrow = Priority.ALWAYS
                 vgrow = Priority.ALWAYS
-                textProperty().bind(executor.startedBinding.stringBinding { if (it!!) "Stop" else "Run" })
+                textProperty().bind(executor.startedBinding.stringBinding { if (it!!)
+                    labels.getString("ExecutorView.Stop")
+                else labels.getString("ExecutorView.Run") })
                 action {
                     controller.toggleRun()
                 }

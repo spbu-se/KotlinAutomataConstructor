@@ -2,6 +2,7 @@ package automaton.constructor.model.module
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.capitalize
+import automaton.constructor.utils.I18N.labels
 import javafx.beans.value.ObservableValue
 import tornadofx.*
 
@@ -12,7 +13,8 @@ val Automaton.description: String get() = descriptionBinding.value
 
 class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
     private val determinicityPartBinding = stringBinding(automaton.isDeterministicBinding) {
-        if (value) "deterministic" else "nondeterministic"
+        if (value) labels.getString("AutomatonDescriptionProvider.Deterministic")
+        else labels.getString("AutomatonDescriptionProvider.Nondeterministic")
     }
     private val determinicityPart: String by determinicityPartBinding
 
@@ -21,7 +23,9 @@ class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
                 (memoryUnitDescriptor.transitionFilters + memoryUnitDescriptor.transitionSideEffects
                         + memoryUnitDescriptor.stateFilters + memoryUnitDescriptor.stateSideEffects)
                     .any { it.canBeDeemedEpsilon }
-            }) stringBinding(automaton.hasEpsilonBinding) { (if (value) "with" else "without") + " epsilon transitions" }
+            }) stringBinding(automaton.hasEpsilonBinding) { (if (value) labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.With")
+        else labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.Without")) +
+                labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.EpsilonTransitions") }
         else "".toProperty()
     private val epsilonPart: String by epsilonPartBinding
 

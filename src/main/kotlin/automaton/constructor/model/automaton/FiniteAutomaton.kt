@@ -1,6 +1,7 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.utils.I18N.labels
 
 /**
  * Finite automaton.
@@ -11,6 +12,6 @@ class FiniteAutomaton(
     val inputTape: InputTapeDescriptor
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape)) {
     companion object {
-        const val NAME = "finite automaton"
+        val NAME: String = labels.getString("FiniteAutomaton.NAME")
     }
 }

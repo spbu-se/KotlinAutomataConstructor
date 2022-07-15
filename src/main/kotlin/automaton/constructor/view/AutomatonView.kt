@@ -7,6 +7,7 @@ import automaton.constructor.model.module.problems
 import automaton.constructor.utils.SettingsEditor
 import automaton.constructor.utils.customizedZoomScrollPane
 import automaton.constructor.utils.nonNullObjectBinding
+import automaton.constructor.utils.I18N.labels
 import automaton.constructor.view.module.executor.ExecutorView
 import automaton.constructor.view.module.executor.tree.ExecutionTreeView
 import javafx.scene.control.SplitPane
@@ -14,6 +15,7 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import tornadofx.*
+import java.text.MessageFormat
 
 // TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
 class AutomatonView(val automaton: Automaton, val view: View) : SplitPane() {
@@ -46,7 +48,8 @@ class AutomatonView(val automaton: Automaton, val view: View) : SplitPane() {
                 textAlignment = TextAlignment.RIGHT
                 fun updateText() {
                     text = if (automaton.problems.isEmpty()) ""
-                    else automaton.problems.joinToString(prefix = "Problems:\n", separator = "\n") { it.message }
+                    else automaton.problems.joinToString(prefix = MessageFormat.format(labels.getString("AutomatonView.Pane.Problems"),
+                        ":\n"), separator = "\n") { it.message }
                 }
                 updateText()
                 automaton.problems.onChange { updateText() }

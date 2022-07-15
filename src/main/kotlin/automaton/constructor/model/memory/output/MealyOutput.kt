@@ -3,10 +3,11 @@ package automaton.constructor.model.memory.output
 import automaton.constructor.model.property.DynamicPropertyDescriptor
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.noPropertiesSerializer
+import automaton.constructor.utils.I18N.labels
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
-private const val NAME = "Mealy output"
+private val NAME: String = labels.getString("MealyOutput.NAME")
 
 @Serializable(with = MealyOutputDescriptorSerializer::class)
 class MealyOutputDescriptor : AbstractOutputDescriptor() {

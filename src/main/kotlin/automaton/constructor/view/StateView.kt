@@ -1,6 +1,7 @@
 package automaton.constructor.view
 
 import automaton.constructor.model.State
+import automaton.constructor.utils.I18N.labels
 import automaton.constructor.utils.*
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
@@ -79,10 +80,13 @@ class StateView(val state: State) : AutomatonElementView(state) {
 
     override fun getSettings() = listOf(
         SettingGroup(
-            "State".toProperty(), listOf(
-                Setting("Name", TextField().apply { textProperty().bindBidirectional(state.nameProperty) }),
-                Setting("Initial", CheckBox().apply { selectedProperty().bindBidirectional(state.isInitialProperty) }),
-                Setting("Final", CheckBox().apply { selectedProperty().bindBidirectional(state.isFinalProperty) }),
+            labels.getString("StateView.State").toProperty(), listOf(
+                Setting(labels.getString("StateView.StateName"),
+                    TextField().apply { textProperty().bindBidirectional(state.nameProperty) }),
+                Setting(labels.getString("StateView.InitialState"),
+                    CheckBox().apply { selectedProperty().bindBidirectional(state.isInitialProperty) }),
+                Setting(labels.getString("StateView.FinalState"),
+                    CheckBox().apply { selectedProperty().bindBidirectional(state.isFinalProperty) }),
             )
         )
     ) + super.getSettings()

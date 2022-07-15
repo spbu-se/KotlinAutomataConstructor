@@ -2,6 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.memory.output.MooreOutputDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.utils.I18N.labels
 
 /**
  * Moore machine.
@@ -13,6 +14,6 @@ class MooreMachine(
     val mooreOutput: MooreOutputDescriptor
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape, mooreOutput)) {
     companion object {
-        const val NAME = "Moore machine"
+        val NAME: String = labels.getString("MooreMachine.NAME")
     }
 }
