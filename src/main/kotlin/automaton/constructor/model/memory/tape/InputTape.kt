@@ -22,8 +22,10 @@ private val NAME: String = labels.getString("InputTape.NAME")
 
 @Serializable(with = InputTapeDescriptorSerializer::class)
 class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
-    val expectedChar = DynamicPropertyDescriptors.charOrEps(labels.getString("InputTapeDescriptor.ExpectedChar"),
-        canBeDeemedEpsilon = true)
+    val expectedChar = DynamicPropertyDescriptors.charOrEps(
+        labels.getString("InputTapeDescriptor.ExpectedChar"),
+        canBeDeemedEpsilon = true
+    )
 
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = emptyList<DynamicPropertyDescriptor<*>>()

@@ -21,9 +21,10 @@ class Track private constructor(
     var processed: String by processedProperty
 
     // dynamic property is used to reuse charOrBlank editor implementation
-    val currentProperty = DynamicPropertyDescriptors.charOrBlank(labels.getString("Track.CurrentProperty")).createProperty().apply {
-        value = current
-    }
+    val currentProperty =
+        DynamicPropertyDescriptors.charOrBlank(labels.getString("Track.CurrentProperty")).createProperty().apply {
+            value = current
+        }
     var current: Char by currentProperty
 
     // without current

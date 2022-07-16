@@ -19,8 +19,10 @@ abstract class AbstractOutputDescriptor : MemoryUnitDescriptor {
     override val stateFilters get() = emptyList<DynamicPropertyDescriptor<*>>()
     abstract override val transitionSideEffects: List<DynamicPropertyDescriptor<*>>
     abstract override val stateSideEffects: List<DynamicPropertyDescriptor<*>>
-    val outputChar = DynamicPropertyDescriptors.charOrEps(labels.getString("AbstractOutput.OutputChar"),
-        canBeDeemedEpsilon = false)
+    val outputChar = DynamicPropertyDescriptors.charOrEps(
+        labels.getString("AbstractOutput.OutputChar"),
+        canBeDeemedEpsilon = false
+    )
 
     abstract fun getOutputChar(transition: Transition): Char?
 

@@ -26,10 +26,14 @@ class TransitionView(
     override fun getSettings() = listOf(
         SettingGroup(
             labels.getString("TransitionView.Transition").toProperty(), listOf(
-                Setting(labels.getString("TransitionView.Source"),
-                    createUnmodifiableSettingControl(transition.source.nameProperty)),
-                Setting(labels.getString("TransitionView.Target"),
-                    createUnmodifiableSettingControl(transition.target.nameProperty))
+                Setting(
+                    labels.getString("TransitionView.Source"),
+                    createUnmodifiableSettingControl(transition.source.nameProperty)
+                ),
+                Setting(
+                    labels.getString("TransitionView.Target"),
+                    createUnmodifiableSettingControl(transition.target.nameProperty)
+                )
             )
         )
     ) + super.getSettings()

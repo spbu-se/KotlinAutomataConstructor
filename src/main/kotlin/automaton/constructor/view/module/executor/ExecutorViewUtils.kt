@@ -39,9 +39,9 @@ val ExecutionState.backgroundBinding
 
 fun ExecutionState.createSettings() = memory.createSettings() + Setting(labels.getString("ExecutorViewUtils.Frozen"),
     CheckBox().apply {
-    visibleWhen(isEmpty(children).and(statusProperty.booleanBinding { it == ExecutionStatus.RUNNING || it == ExecutionStatus.FROZEN }))
-    managedWhen(visibleProperty())
-    selectedProperty().bindBidirectional(isFrozenProperty)
-})
+        visibleWhen(isEmpty(children).and(statusProperty.booleanBinding { it == ExecutionStatus.RUNNING || it == ExecutionStatus.FROZEN }))
+        managedWhen(visibleProperty())
+        selectedProperty().bindBidirectional(isFrozenProperty)
+    })
 
 fun ExecutionState.tooltipContent() = SettingListEditor(createSettings())

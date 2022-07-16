@@ -20,10 +20,14 @@ private val NAME: String = labels.getString("Stack.NAME")
 
 @Serializable(with = StackDescriptorSerializer::class)
 class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableString("z"), MemoryUnitDescriptor {
-    val expectedChar = DynamicPropertyDescriptors.charOrEps(labels.getString("Stack.StackDescriptor.ExpectedChar"),
-        canBeDeemedEpsilon = false)
-    val pushedString = DynamicPropertyDescriptors.stringOrEps(labels.getString("Stack.StackDescriptor.PushedString"),
-        canBeDeemedEpsilon = false)
+    val expectedChar = DynamicPropertyDescriptors.charOrEps(
+        labels.getString("Stack.StackDescriptor.ExpectedChar"),
+        canBeDeemedEpsilon = false
+    )
+    val pushedString = DynamicPropertyDescriptors.stringOrEps(
+        labels.getString("Stack.StackDescriptor.PushedString"),
+        canBeDeemedEpsilon = false
+    )
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = listOf(pushedString)
     override var displayName = NAME

@@ -48,8 +48,12 @@ class AutomatonView(val automaton: Automaton, val view: View) : SplitPane() {
                 textAlignment = TextAlignment.RIGHT
                 fun updateText() {
                     text = if (automaton.problems.isEmpty()) ""
-                    else automaton.problems.joinToString(prefix = MessageFormat.format(labels.getString("AutomatonView.Pane.Problems"),
-                        ":\n"), separator = "\n") { it.message }
+                    else automaton.problems.joinToString(
+                        prefix = MessageFormat.format(
+                            labels.getString("AutomatonView.Pane.Problems"),
+                            ":\n"
+                        ), separator = "\n"
+                    ) { it.message }
                 }
                 updateText()
                 automaton.problems.onChange { updateText() }

@@ -24,9 +24,11 @@ class ExecutorView(val executor: Executor, val view: View) : HBox() {
                 maxHeight = Double.MAX_VALUE
                 hgrow = Priority.ALWAYS
                 vgrow = Priority.ALWAYS
-                textProperty().bind(executor.startedBinding.stringBinding { if (it!!)
-                    labels.getString("ExecutorView.Stop")
-                else labels.getString("ExecutorView.Run") })
+                textProperty().bind(executor.startedBinding.stringBinding {
+                    if (it!!)
+                        labels.getString("ExecutorView.Stop")
+                    else labels.getString("ExecutorView.Run")
+                })
                 action {
                     controller.toggleRun()
                 }

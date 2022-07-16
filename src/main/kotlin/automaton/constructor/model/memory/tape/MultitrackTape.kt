@@ -19,13 +19,23 @@ import java.text.MessageFormat
 @Serializable(with = MultiTrackTapeDescriptorSerializer::class)
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
-    val headMoveDirection = DynamicPropertyDescriptors.enum<HeadMoveDirection>(labels.getString("MultiTrackTapeDescriptor.HeadMoveDirection"))
+    val headMoveDirection =
+        DynamicPropertyDescriptors.enum<HeadMoveDirection>(labels.getString("MultiTrackTapeDescriptor.HeadMoveDirection"))
     val expectedChars = List(trackCount) { i ->
-        DynamicPropertyDescriptors.charOrBlank(MessageFormat.format(labels.getString("MultiTrackTapeDescriptor.ExpectedChar"),
-            getIndexSuffix(i)))
+        DynamicPropertyDescriptors.charOrBlank(
+            MessageFormat.format(
+                labels.getString("MultiTrackTapeDescriptor.ExpectedChar"),
+                getIndexSuffix(i)
+            )
+        )
     }
     val newChars = List(trackCount) { i ->
-        DynamicPropertyDescriptors.charOrBlank(MessageFormat.format(labels.getString("MultiTrackTapeDescriptor.NewChar"), getIndexSuffix(i)))
+        DynamicPropertyDescriptors.charOrBlank(
+            MessageFormat.format(
+                labels.getString("MultiTrackTapeDescriptor.NewChar"),
+                getIndexSuffix(i)
+            )
+        )
     }
     override val transitionFilters = expectedChars
     override val transitionSideEffects = newChars + headMoveDirection

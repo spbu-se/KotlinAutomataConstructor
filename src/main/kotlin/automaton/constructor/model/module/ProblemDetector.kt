@@ -24,7 +24,8 @@ class ProblemDetector(automaton: Automaton) : AutomatonModule {
     companion object {
         val ADD_INIT_STATE_MESSAGE: String = labels.getString("ProblemDetector.ADD_INIT_STATE_MESSAGE")
         val ADD_FINAL_STATE_MESSAGE: String = labels.getString("ProblemDetector.ADD_FINAL_STATE_MESSAGE")
-        val REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE: String = labels.getString("ProblemDetector.REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE")
+        val REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE: String =
+            labels.getString("ProblemDetector.REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE")
     }
 
     init {

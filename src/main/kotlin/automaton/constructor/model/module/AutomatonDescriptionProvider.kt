@@ -5,6 +5,7 @@ import automaton.constructor.utils.capitalize
 import automaton.constructor.utils.I18N.labels
 import javafx.beans.value.ObservableValue
 import tornadofx.*
+import java.text.MessageFormat
 
 private val automatonDescriptionProviderFactory = { automaton: Automaton -> AutomatonDescriptionProvider(automaton) }
 val Automaton.automatonDescriptionProvider get() = getModule(automatonDescriptionProviderFactory)
@@ -20,17 +21,20 @@ class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
 
     private val epsilonPartBinding: ObservableValue<String> =
         if (automaton.memoryDescriptors.any { memoryUnitDescriptor ->
-                (memoryUnitDescriptor.transitionFilters + memoryUnitDescriptor.transitionSideEffects
-                        + memoryUnitDescriptor.stateFilters + memoryUnitDescriptor.stateSideEffects)
-                    .any { it.canBeDeemedEpsilon }
-            }) stringBinding(automaton.hasEpsilonBinding) { (if (value) labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.With")
-        else labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.Without")) +
-                labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.EpsilonTransitions") }
+                (memoryUnitDescriptor.transitionFilters + memoryUnitDescriptor.transitionSideEffects + memoryUnitDescriptor.stateFilters + memoryUnitDescriptor.stateSideEffects).any { it.canBeDeemedEpsilon }
+            }) stringBinding(automaton.hasEpsilonBinding) {
+            (if (value) MessageFormat.format(
+                labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.With"), " "
+            )
+            else MessageFormat.format(
+                labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.Without"), " "
+            )) + labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.EpsilonTransitions")
+        }
         else "".toProperty()
     private val epsilonPart: String by epsilonPartBinding
 
     val descriptionBinding = stringBinding(determinicityPartBinding, epsilonPartBinding) {
-        listOf(determinicityPart, automaton.typeName, epsilonPart).filter { it.isNotEmpty() }
-            .joinToString(" ").capitalize()
+        listOf(determinicityPart, automaton.typeName, epsilonPart).filter { it.isNotEmpty() }.joinToString(" ")
+            .capitalize()
     }
 }

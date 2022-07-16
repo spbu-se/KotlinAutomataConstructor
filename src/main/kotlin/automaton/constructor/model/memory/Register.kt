@@ -15,10 +15,14 @@ private val NAME = labels.getString("Register.NAME")
 
 @Serializable(with = RegisterDescriptorSerializer::class)
 class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
-    val expectedValue = DynamicPropertyDescriptors.stringOrEps(labels.getString("Register.RegisterDescriptor.ExpectedValue"),
-        canBeDeemedEpsilon = false)
-    val newValue = DynamicPropertyDescriptors.stringOrEps(labels.getString("Register.RegisterDescriptor.NewValue"),
-        canBeDeemedEpsilon = false)
+    val expectedValue = DynamicPropertyDescriptors.stringOrEps(
+        labels.getString("Register.RegisterDescriptor.ExpectedValue"),
+        canBeDeemedEpsilon = false
+    )
+    val newValue = DynamicPropertyDescriptors.stringOrEps(
+        labels.getString("Register.RegisterDescriptor.NewValue"),
+        canBeDeemedEpsilon = false
+    )
     override val transitionFilters = listOf(expectedValue)
     override val transitionSideEffects = listOf(newValue)
     override var displayName = NAME

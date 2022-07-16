@@ -24,8 +24,10 @@ class OpenedAutomatonController(val view: View) {
     var openedAutomaton: Automaton by openedAutomatonProperty
 
     private val nameBinding = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
-        it?.toString() ?: MessageFormat.format(labels.getString("OpenedAutomatonController.UntitledAutomaton"),
-            openedAutomaton.typeName)
+        it?.toString() ?: MessageFormat.format(
+            labels.getString("OpenedAutomatonController.UntitledAutomaton"),
+            openedAutomaton.typeName
+        )
     }
     private val name: String by nameBinding
 
@@ -98,8 +100,10 @@ class OpenedAutomatonController(val view: View) {
      * @return false if CANCEL is pressed
      */
     fun onSaveAs(): Boolean {
-        saveAs(chooseFile(labels.getString("MainView.File.SaveAs"), FileChooserMode.Save)
-            ?: return false)
+        saveAs(
+            chooseFile(labels.getString("MainView.File.SaveAs"), FileChooserMode.Save)
+                ?: return false
+        )
         return true
     }
 
@@ -124,35 +128,52 @@ class OpenedAutomatonController(val view: View) {
     private fun findFileAutomatonSerializer(file: File) =
         automatonSerializers().find { serializer ->
             serializer.extensionFilter.extensions.any { file.path.endsWith(it.drop(1)) }
-        } ?: throw IllegalArgumentException(MessageFormat.format(labels.getString("OpenedAutomatonController.FindFileAutomatonSerializer.IllegalArgumentException"),
-            file.extension, file))
+        } ?: throw IllegalArgumentException(
+            MessageFormat.format(
+                labels.getString("OpenedAutomatonController.FindFileAutomatonSerializer.IllegalArgumentException"),
+                file.extension, file
+            )
+        )
 
     private fun AutomatonSerializer.saveAsync(file: File): Task<Unit> {
         val automatonData = openedAutomaton.toData()
         openedAutomaton.undoRedoManager.wasModified = false
-        return view.runAsyncWithDialog(MessageFormat.format(labels.getString("OpenedAutomatonController.SavingAutomaton"), file),
-            daemon = false) {
+        return view.runAsyncWithDialog(
+            MessageFormat.format(labels.getString("OpenedAutomatonController.SavingAutomaton"), file),
+            daemon = false
+        ) {
             serialize(file, automatonData)
         } addOnSuccess {
             openedFile = file
         } addOnFail {
             openedAutomaton.undoRedoManager.wasModified = true
-            throw RuntimeException(MessageFormat.format(labels.getString("OpenedAutomatonController.SaveAsync.RuntimeException"),
-                file), it)
+            throw RuntimeException(
+                MessageFormat.format(
+                    labels.getString("OpenedAutomatonController.SaveAsync.RuntimeException"),
+                    file
+                ), it
+            )
         } addOnCancel {
             openedAutomaton.undoRedoManager.wasModified = true
         }
     }
 
     private fun AutomatonSerializer.loadAsync(file: File): Task<Automaton> =
-        view.runAsyncWithDialog(MessageFormat.format(labels.getString("OpenedAutomatonController.LoadingAutomaton"), file),
-            daemon = true) {
+        view.runAsyncWithDialog(
+            MessageFormat.format(labels.getString("OpenedAutomatonController.LoadingAutomaton"), file),
+            daemon = true
+        ) {
             deserialize(file).toAutomaton()
         } addOnSuccess {
             openedAutomaton = it
             openedFile = file
         } addOnFail {
-            throw RuntimeException(MessageFormat.format(labels.getString("OpenedAutomatonController.LoadAsync.RuntimeException"),file), it)
+            throw RuntimeException(
+                MessageFormat.format(
+                    labels.getString("OpenedAutomatonController.LoadAsync.RuntimeException"),
+                    file
+                ), it
+            )
         }
 
     /**

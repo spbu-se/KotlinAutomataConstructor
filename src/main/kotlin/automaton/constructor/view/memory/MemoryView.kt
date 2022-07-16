@@ -8,6 +8,8 @@ import automaton.constructor.utils.I18N.labels
 import tornadofx.*
 
 fun inputDataView(automaton: Automaton) = SettingGroupEditor(
-    SettingGroup(labels.getString("MemoryView.InputDataView").toProperty(),
-        automaton.memoryDescriptors.createSettings())
+    SettingGroup(
+        labels.getString("MemoryView.InputDataView").toProperty(),
+        automaton.memoryDescriptors.createSettings()
+    )
 )
