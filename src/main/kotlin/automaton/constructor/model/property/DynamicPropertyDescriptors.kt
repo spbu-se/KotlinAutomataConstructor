@@ -2,9 +2,7 @@ package automaton.constructor.model.property
 
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.setControlNewText
-import javafx.scene.control.ChoiceBox
-import javafx.scene.control.TextField
-import javafx.scene.control.TextFormatter
+import javafx.scene.control.*
 import javafx.util.StringConverter
 
 object DynamicPropertyDescriptors {
@@ -12,14 +10,25 @@ object DynamicPropertyDescriptors {
     const val EPSILON_STRING = EPSILON_CHAR.toString()
     const val BLANK_CHAR = '□'
 
+
     fun charOrEps(
         name: String,
         canBeDeemedEpsilon: Boolean
-    ): DynamicPropertyDescriptor<Char?> =
-        charOrElse(name, canBeDeemedEpsilon, EPSILON_CHAR, EPSILON_VALUE) { it }
+    ): DynamicPropertyDescriptor<Char?> = charOrElse(
+        name = name,
+        canBeDeemedEpsilon = canBeDeemedEpsilon,
+        emptyChar = EPSILON_CHAR,
+        emptyValue = EPSILON_VALUE,
+        charConverter = { it }
+    )
 
-    fun charOrBlank(name: String): DynamicPropertyDescriptor<Char> =
-        charOrElse(name, false, BLANK_CHAR, BLANK_CHAR) { it }
+    fun charOrBlank(name: String): DynamicPropertyDescriptor<Char> = charOrElse(
+        name = name,
+        canBeDeemedEpsilon = false,
+        emptyChar = BLANK_CHAR,
+        emptyValue = BLANK_CHAR,
+        charConverter = { it }
+    )
 
     @MostlyGeneratedOrInline
     private inline fun <T> charOrElse(
@@ -52,8 +61,11 @@ object DynamicPropertyDescriptors {
     )
 
     @MostlyGeneratedOrInline
-    inline fun <reified E : Enum<E>> enum(name: String) =
-        choice(name, false, *enumValues<E>())
+    inline fun <reified E : Enum<E>> enum(name: String) = choice(
+        name = name,
+        canBeDeemedEpsilon = false,
+        values = enumValues<E>()
+    )
 
     fun <T> choice(
         name: String,
@@ -82,8 +94,8 @@ object DynamicPropertyDescriptors {
     fun stringOrEps(
         name: String,
         canBeDeemedEpsilon: Boolean
-    ) = DynamicPropertyDescriptor<String?>(
-        name,
+    ) = DynamicPropertyDescriptor(
+        displayName = name,
         canBeDeemedEpsilon = canBeDeemedEpsilon,
         defaultValue = null,
         editorFactory = { property ->

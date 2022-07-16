@@ -5,7 +5,7 @@ import javafx.beans.property.Property
 /**
  * State or transition
  */
-open class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDescriptorGroup>) {
+abstract class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDescriptorGroup>) {
     private val properties = mutableMapOf<DynamicPropertyDescriptor<*>, DynamicProperty<*>>()
     val propertyGroups = propertyDescriptorGroups.map { (memoryDescriptor, filters, sideEffects) ->
         DynamicPropertyGroup(

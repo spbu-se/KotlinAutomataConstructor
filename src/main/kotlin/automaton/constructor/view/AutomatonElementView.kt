@@ -5,9 +5,7 @@ import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.createSettings
 import tornadofx.*
 
-open class AutomatonElementView(
-    val automatonElement: AutomatonElement
-) {
+abstract class AutomatonElementView(private val automatonElement: AutomatonElement) {
     val selectedProperty = false.toProperty()
     var selected by selectedProperty
 
@@ -23,11 +21,12 @@ open class AutomatonElementView(
         ) {
             propertyGroups.asSequence()
                 .map { (_, filters, sideEffects) ->
-                    val filtersString = filters.joinToString(separator = ",")
-                    val sideEffectsString = sideEffects.joinToString(separator = ",")
-                    if (filtersString.isEmpty() || sideEffectsString.isEmpty()) filtersString + sideEffectsString
-                    else "$filtersString/$sideEffectsString"
-                }.filter { it.isNotEmpty() }
+                    listOf(filters, sideEffects)
+                        .map { dynamicProperties -> dynamicProperties.joinToString(separator = ",") { it.displayValue } }
+                        .filter { it.isNotEmpty() }
+                        .joinToString(separator = "/")
+                }
+                .filter { it.isNotEmpty() }
                 .joinToString(separator = ";")
         }
 }

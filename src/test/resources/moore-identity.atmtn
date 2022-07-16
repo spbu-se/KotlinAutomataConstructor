@@ -5,7 +5,7 @@
       "type": "Input tape"
     },
     {
-      "type": "Moore output"
+      "type": "Mealy/Moore output tape"
     }
   ],
   "states": [
@@ -36,28 +36,32 @@
       "source": 0,
       "target": 1,
       "properties": [
-        "0"
+        "0",
+        "ε"
       ]
     },
     {
       "source": 1,
       "target": 0,
       "properties": [
-        "1"
+        "1",
+        "ε"
       ]
     },
     {
       "source": 1,
       "target": 1,
       "properties": [
-        "0"
+        "0",
+        "ε"
       ]
     },
     {
       "source": 0,
       "target": 0,
       "properties": [
-        "1"
+        "1",
+        "ε"
       ]
     }
   ]

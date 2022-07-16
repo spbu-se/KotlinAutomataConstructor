@@ -3,7 +3,7 @@ package automaton.constructor.model.module.executor
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.TestAutomatons
 import automaton.constructor.model.memory.RegisterDescriptor
-import automaton.constructor.model.memory.output.Output
+import automaton.constructor.model.memory.output.OutputTape
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTape
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
@@ -134,20 +134,20 @@ class ExecutorTest {
     }
 
     @Nested
-    inner class MealyRemoveZeroes : AbstractOutput() {
+    inner class MealyRemoveZeroes : AbstractOutputTape() {
         override fun createAutomaton() = TestAutomatons.MEALY_REMOVE_ZEROES
 
         override fun getInputOutputPairs() = listOf("" to "", "001" to "1", "11" to "11", "0" to "")
     }
 
     @Nested
-    inner class MooreIdentity : AbstractOutput() {
+    inner class MooreIdentity : AbstractOutputTape() {
         override fun createAutomaton() = TestAutomatons.MOORE_IDENTITY
 
         override fun getInputOutputPairs() = listOf("" to "", "001" to "001")
     }
 
-    abstract inner class AbstractOutput {
+    abstract inner class AbstractOutputTape {
         private lateinit var automaton: Automaton
         private lateinit var tapeDescriptor: InputTapeDescriptor
 
@@ -170,7 +170,7 @@ class ExecutorTest {
             tapeDescriptor.value = input
             automaton.executor.start()
             automaton.executor.runFor(MAX_RUN_MILLIS)
-            return (automaton.executor.acceptedStates.first().memory[1] as Output).value
+            return (automaton.executor.acceptedStates.first().memory[1] as OutputTape).value
         }
     }
 
