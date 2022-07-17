@@ -9,9 +9,9 @@ import automaton.constructor.model.memory.MemoryUnitDescriptor
  * It's an automaton with a custom list of [memory descriptors][memoryDescriptors].
  */
 class CustomAutomaton(
-    override val memoryDescriptors: List<MemoryUnitDescriptor>
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors) {
-    override fun getTypeDataOrNull() = CustomAutomatonData(
+    memoryDescriptors: List<MemoryUnitDescriptor>
+) : AbstractAutomaton(NAME, memoryDescriptors) {
+    override fun getTypeData() = CustomAutomatonData(
         memoryUnitDescriptors = memoryDescriptors.map { it.getData() }
     )
 

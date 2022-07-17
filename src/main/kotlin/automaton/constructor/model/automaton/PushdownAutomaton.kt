@@ -12,14 +12,14 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
 class PushdownAutomaton(
     val inputTape: InputTapeDescriptor,
     val stacks: List<StackDescriptor>
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape) + stacks) {
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape) + stacks) {
     init {
         require(stacks.isNotEmpty()) {
             "Illegal `stacks` argument when creating `PushdownAutomaton`"
         }
     }
 
-    override fun getTypeDataOrNull() = PushdownAutomatonData(
+    override fun getTypeData() = PushdownAutomatonData(
         inputTape = inputTape.getData(),
         stacks = stacks.map { it.getData() }
     )

@@ -12,14 +12,14 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
 class RegisterAutomaton(
     val inputTape: InputTapeDescriptor,
     val registers: List<RegisterDescriptor>
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape) + registers) {
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape) + registers) {
     init {
         require(registers.isNotEmpty()) {
             "Illegal `registers` argument when creating `RegisterAutomaton`"
         }
     }
 
-    override fun getTypeDataOrNull() = RegisterAutomatonData(
+    override fun getTypeData() = RegisterAutomatonData(
         inputTape = inputTape.getData(),
         registers = registers.map { it.getData() }
     )

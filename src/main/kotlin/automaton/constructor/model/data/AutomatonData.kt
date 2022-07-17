@@ -22,13 +22,11 @@ data class AutomatonData(
 /**
  * Retrieves the [data][AutomatonData] from the automaton.
  */
-fun Automaton.getData(): AutomatonData {
-    val type = getTypeDataOrNull()
-    val states = getStatesData()
-    val transitions = getTransitionsData()
-    requireNotNull(type) { "Cannot retrieve data from the ${this.typeName}" }
-    return AutomatonData(type, states, transitions)
-}
+fun Automaton.getData() = AutomatonData(
+    base = getTypeData(),
+    states = getStatesData(),
+    transitions = getTransitionsData()
+)
 
 /**
  * Creates an appropriate [automaton][Automaton] using this data.

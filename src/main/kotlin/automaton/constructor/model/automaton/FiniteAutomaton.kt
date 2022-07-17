@@ -10,8 +10,8 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
  */
 class FiniteAutomaton(
     val inputTape: InputTapeDescriptor
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape)) {
-    override fun getTypeDataOrNull() = FiniteAutomatonData(
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape)) {
+    override fun getTypeData() = FiniteAutomatonData(
         inputTape = inputTape.getData()
     )
 

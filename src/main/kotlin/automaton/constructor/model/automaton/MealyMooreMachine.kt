@@ -12,8 +12,8 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
 class MealyMooreMachine(
     val inputTape: InputTapeDescriptor,
     val mealyMooreOutputTape: MealyMooreOutputTapeDescriptor
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)) {
-    override fun getTypeDataOrNull() = MealyMooreMachineData(
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)) {
+    override fun getTypeData() = MealyMooreMachineData(
         inputTape = inputTape.getData(),
         mealyMooreOutputTape = mealyMooreOutputTape.getData()
     )

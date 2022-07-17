@@ -30,9 +30,9 @@ interface Automaton {
     val states: ObservableSet<State>
 
     /**
-     * Returns the [type data][AutomatonTypeData] of this automaton or `null` if no type data can be retrieved from this type of automaton.
+     * Returns the [type data][AutomatonTypeData] of this automaton.
      */
-    fun getTypeDataOrNull(): AutomatonTypeData?
+    fun getTypeData(): AutomatonTypeData
 
 
     /**

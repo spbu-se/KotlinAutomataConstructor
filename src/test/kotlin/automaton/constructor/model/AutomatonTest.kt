@@ -1,7 +1,8 @@
 package automaton.constructor.model
 
+import automaton.constructor.model.automaton.AbstractAutomaton
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.automaton.BaseAutomaton
+import automaton.constructor.model.data.AutomatonTypeData
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
@@ -42,7 +43,9 @@ class AutomatonTest {
             memoryUnitDescriptorMockks[0].displayName = any()
         } answers { fail("Unexpected first memory unit descriptor renaming") }
         justRun { memoryUnitDescriptorMockks[1].displayName = any() }
-        automaton = BaseAutomaton("typeName", memoryUnitDescriptorMockks)
+        automaton = object : AbstractAutomaton("typeName", memoryUnitDescriptorMockks) {
+            override fun getTypeData(): AutomatonTypeData = error("")
+        }
         transitions = automaton.transitions
         states = automaton.states
         notAddedState = State("", Point2D.ZERO, memoryUnitDescriptorMockks)
