@@ -1,7 +1,7 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 
 /**
  * Multi-tape Turing machine.
@@ -13,11 +13,11 @@ class MultiTapeTuringMachine(
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = tapes) {
     init {
         require(tapes.isNotEmpty() && tapes.all { it.trackCount == 1 }) {
-            labels.getString("MultiTapeTuringMachine.IllegalTapesArgument")
+            messages.getString("MultiTapeTuringMachine.IllegalTapesArgument")
         }
     }
 
     companion object {
-        val NAME: String = labels.getString("MultiTapeTuringMachine.NAME")
+        val NAME: String = messages.getString("MultiTapeTuringMachine")
     }
 }

@@ -3,7 +3,7 @@ package automaton.constructor.model.module.executor
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.module.executor.ExecutionStatus.RUNNING
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 
 class SteppingStrategy(
     val name: String,
@@ -23,7 +23,7 @@ class SteppingStrategy(
 }
 
 val STEP_BY_STATE_STRATEGY = SteppingStrategy(
-    labels.getString("SteppingStrategy.StepByState"),
+    messages.getString("SteppingStrategy.StepByState"),
     closureExtractor = { _, executionState -> listOf(executionState) },
     transitionExtractor = { automaton, executionState ->
         automaton.getPossibleTransitions(executionState.state, executionState.memory)
@@ -31,7 +31,7 @@ val STEP_BY_STATE_STRATEGY = SteppingStrategy(
 )
 
 val STEP_BY_CLOSURE_STRATEGY = SteppingStrategy(
-    labels.getString("SteppingStrategy.StepByClosure"),
+    messages.getString("SteppingStrategy.StepByClosure"),
     closureExtractor = { automaton, executionState -> automaton.getClosure(executionState) },
     transitionExtractor = { automaton, executionState ->
         automaton.getPossibleTransitions(executionState.state, executionState.memory).filter { !it.isPure() }

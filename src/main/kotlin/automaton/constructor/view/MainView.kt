@@ -3,8 +3,8 @@ package automaton.constructor.view
 import automaton.constructor.controller.AutomatonDocumentationController
 import automaton.constructor.controller.OpenedAutomatonController
 import automaton.constructor.controller.UndoRedoController
+import automaton.constructor.utils.I18N
 import automaton.constructor.utils.nonNullObjectBinding
-import automaton.constructor.utils.I18N.labels
 import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.TextInputControl
@@ -22,22 +22,22 @@ class MainView : View() {
 
     override val root = borderpane {
         top = menubar {
-            menu(labels.getString("MainView.File")) {
-                shortcutItem(labels.getString("MainView.File.New"), "Shortcut+N") {
+            menu(I18N.messages.getString("MainView.File")) {
+                shortcutItem(I18N.messages.getString("MainView.File.New"), "Shortcut+N") {
                     openedAutomatonController.onNew()
                 }
-                shortcutItem(labels.getString("MainView.File.Open"), "Shortcut+O") {
+                shortcutItem(I18N.messages.getString("MainView.File.Open"), "Shortcut+O") {
                     openedAutomatonController.onOpen()
                 }
-                shortcutItem(labels.getString("MainView.File.Save"), "Shortcut+S") {
+                shortcutItem(I18N.messages.getString("MainView.File.Save"), "Shortcut+S") {
                     openedAutomatonController.onSave()
                 }
-                shortcutItem(labels.getString("MainView.File.SaveAs"), "Shortcut+Shift+S") {
+                shortcutItem(I18N.messages.getString("MainView.File.SaveAs"), "Shortcut+Shift+S") {
                     openedAutomatonController.onSaveAs()
                 }
             }
-            menu(labels.getString("MainView.Edit")) {
-                shortcutItem(labels.getString("MainView.Edit.Undo"), "Shortcut+Z") {
+            menu(I18N.messages.getString("MainView.Edit")) {
+                shortcutItem(I18N.messages.getString("MainView.Edit.Undo"), "Shortcut+Z") {
                     val focusOwner = scene.focusOwner
                     when {
                         focusOwner is TextInputControl && focusOwner.isUndoable -> focusOwner.undo()
@@ -46,7 +46,7 @@ class MainView : View() {
                 }.apply {
                     enableWhen(automatonView.automaton.undoRedoManager.isUndoableProperty)
                 }
-                shortcutItem(labels.getString("MainView.Edit.Redo"), "Shortcut+Shift+Z") {
+                shortcutItem(I18N.messages.getString("MainView.Edit.Redo"), "Shortcut+Shift+Z") {
                     val focusOwner = scene.focusOwner
                     when {
                         focusOwner is TextInputControl && focusOwner.isRedoable -> focusOwner.redo()
@@ -56,11 +56,11 @@ class MainView : View() {
                     enableWhen(automatonView.automaton.undoRedoManager.isRedoableProperty)
                 }
             }
-            menu(labels.getString("MainView.Help")) {
-                shortcutItem(labels.getString("MainView.Help.UserDocumentation"), "Shortcut+D") {
+            menu(I18N.messages.getString("MainView.Help")) {
+                shortcutItem(I18N.messages.getString("MainView.Help.UserDocumentation"), "Shortcut+D") {
                     automatonDocumentationController.onUserDocumentation()
                 }
-                shortcutItem(labels.getString("MainView.Help.README"), "Shortcut+R") {
+                shortcutItem(I18N.messages.getString("MainView.Help.README"), "Shortcut+R") {
                     automatonDocumentationController.onREADME()
                 }
             }

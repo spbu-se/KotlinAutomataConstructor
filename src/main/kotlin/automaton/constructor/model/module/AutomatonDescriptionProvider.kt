@@ -2,7 +2,7 @@ package automaton.constructor.model.module
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.capitalize
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.value.ObservableValue
 import tornadofx.*
 import java.text.MessageFormat
@@ -14,8 +14,8 @@ val Automaton.description: String get() = descriptionBinding.value
 
 class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
     private val determinicityPartBinding = stringBinding(automaton.isDeterministicBinding) {
-        if (value) labels.getString("AutomatonDescriptionProvider.Deterministic")
-        else labels.getString("AutomatonDescriptionProvider.Nondeterministic")
+        if (value) messages.getString("AutomatonDescriptionProvider.Deterministic")
+        else messages.getString("AutomatonDescriptionProvider.Nondeterministic")
     }
     private val determinicityPart: String by determinicityPartBinding
 
@@ -23,12 +23,8 @@ class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
         if (automaton.memoryDescriptors.any { memoryUnitDescriptor ->
                 (memoryUnitDescriptor.transitionFilters + memoryUnitDescriptor.transitionSideEffects + memoryUnitDescriptor.stateFilters + memoryUnitDescriptor.stateSideEffects).any { it.canBeDeemedEpsilon }
             }) stringBinding(automaton.hasEpsilonBinding) {
-            (if (value) MessageFormat.format(
-                labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.With"), " "
-            )
-            else MessageFormat.format(
-                labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.Without"), " "
-            )) + labels.getString("AutomatonDescriptionProvider.EpsilonPartBinding.EpsilonTransitions")
+            (if (value) messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
+            else messages.getString("AutomatonDescriptionProvider.WithoutEpsilonTransitions")) + messages.getString("AutomatonDescriptionProvider.EpsilonTransitions")
         }
         else "".toProperty()
     private val epsilonPart: String by epsilonPartBinding

@@ -2,7 +2,7 @@ package automaton.constructor.view.module.executor
 
 import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.utils.hoverableTooltip
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import automaton.constructor.view.StateView
 import javafx.collections.SetChangeListener
 import javafx.geometry.Orientation
@@ -32,7 +32,7 @@ fun StateView.installExecutionStateTooltip() = group.hoverableTooltip {
             separator(Orientation.HORIZONTAL)
             label(
                 MessageFormat.format(
-                    labels.getString("ExecutionStateTooltip.NotShownExecutionStates"),
+                    messages.getString("ExecutionStateTooltip.NotShownExecutionStates"),
                     notShownExecutionStates
                 )
             ) { paddingAll = 5.0 }

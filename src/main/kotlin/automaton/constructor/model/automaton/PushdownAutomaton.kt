@@ -2,7 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 
 /**
  * Pushdown automaton.
@@ -15,11 +15,11 @@ class PushdownAutomaton(
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape) + stacks) {
     init {
         require(stacks.isNotEmpty()) {
-            labels.getString("PushDownAutomaton.IllegalStacksArgument")
+            messages.getString("PushDownAutomaton.IllegalStacksArgument")
         }
     }
 
     companion object {
-        val NAME: String = labels.getString("PushdownAutomaton.NAME")
+        val NAME: String = messages.getString("PushdownAutomaton")
     }
 }

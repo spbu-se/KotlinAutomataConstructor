@@ -9,7 +9,7 @@ fun executionLeafView(executionState: ExecutionState) =
     SettingGroupEditor(
         SettingGroup(
             executionState.state.nameProperty.stringBinding(executionState.statusProperty) {
-                "$it ${executionState.status}"
+                "$it [${executionState.status}]"
             }, executionState.createSettings()
         )
     ).apply {

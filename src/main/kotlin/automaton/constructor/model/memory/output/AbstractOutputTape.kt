@@ -6,7 +6,7 @@ import automaton.constructor.model.property.*
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.scrollToRightWhenUnfocused
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import javafx.scene.Node
 import tornadofx.*
 
@@ -17,7 +17,7 @@ abstract class AbstractOutputTapeDescriptor : MemoryUnitDescriptor {
     abstract override val stateSideEffects: List<DynamicPropertyDescriptor<*>>
 
     val outputCharDescriptor = DynamicPropertyDescriptors.charOrEps(
-        name = labels.getString("AbstractOutput.OutputChar"),
+        name = messages.getString("AbstractOutputTape.OutputChar"),
         canBeDeemedEpsilon = false
     ).copy(displayValueFactory = { if (it == EPSILON_VALUE) "" else it.toString() })
 

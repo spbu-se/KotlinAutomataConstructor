@@ -8,7 +8,7 @@ import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.monospaced
 import automaton.constructor.utils.surrogateSerializer
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import javafx.scene.layout.VBox
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -20,11 +20,11 @@ import java.text.MessageFormat
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
     val headMoveDirection =
-        DynamicPropertyDescriptors.enum<HeadMoveDirection>(labels.getString("MultiTrackTapeDescriptor.HeadMoveDirection"))
+        DynamicPropertyDescriptors.enum<HeadMoveDirection>(messages.getString("MultitrackTape.HeadMoveDirection"))
     val expectedChars = List(trackCount) { i ->
         DynamicPropertyDescriptors.charOrBlank(
             MessageFormat.format(
-                labels.getString("MultiTrackTapeDescriptor.ExpectedChar"),
+                messages.getString("MultitrackTape.ExpectedChar"),
                 getIndexSuffix(i)
             )
         )
@@ -32,15 +32,15 @@ class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val newChars = List(trackCount) { i ->
         DynamicPropertyDescriptors.charOrBlank(
             MessageFormat.format(
-                labels.getString("MultiTrackTapeDescriptor.NewChar"),
+                messages.getString("MultitrackTape.NewChar"),
                 getIndexSuffix(i)
             )
         )
     }
     override val transitionFilters = expectedChars
     override val transitionSideEffects = newChars + headMoveDirection
-    override var displayName = if (trackCount == 1) labels.getString("MultiTrackTapeDescriptor.DisplayName.Tape")
-    else labels.getString("MultiTrackTapeDescriptor.DisplayName.Multi-trackTape")
+    override var displayName = if (trackCount == 1) messages.getString("MultitrackTape.Tape")
+    else messages.getString("MultitrackTape.Multi-trackTape")
 
     override fun createMemoryUnit() = MultiTrackTape(this, valueProperties.map { Track(it.value) })
 

@@ -8,7 +8,7 @@ import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.surrogateSerializer
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.VBox
 import kotlinx.serialization.KSerializer
@@ -16,21 +16,21 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import tornadofx.*
 
-private val NAME: String = labels.getString("Stack.NAME")
+private const val NAME = "Stack"
 
 @Serializable(with = StackDescriptorSerializer::class)
 class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableString("z"), MemoryUnitDescriptor {
     val expectedChar = DynamicPropertyDescriptors.charOrEps(
-        labels.getString("Stack.StackDescriptor.ExpectedChar"),
+        messages.getString("Stack.ExpectedChar"),
         canBeDeemedEpsilon = false
     )
     val pushedString = DynamicPropertyDescriptors.stringOrEps(
-        labels.getString("Stack.StackDescriptor.PushedString"),
+        messages.getString("Stack.PushedString"),
         canBeDeemedEpsilon = false
     )
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = listOf(pushedString)
-    override var displayName = NAME
+    override var displayName: String = messages.getString("Stack")
     override val mayRequireAcceptance get() = true
 
     val acceptsByEmptyStackProperty = acceptsByEmptyStack.toProperty()
@@ -42,7 +42,7 @@ class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableS
         add(super.createTextFieldEditor())
         hbox {
             checkbox { selectedProperty().bindBidirectional(acceptsByEmptyStackProperty) }
-            label(labels.getString("Stack.StackDescriptor.AcceptByEmptyStack"))
+            label(messages.getString("Stack.AcceptByEmptyStack"))
         }
     }
 }

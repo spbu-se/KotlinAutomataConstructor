@@ -5,7 +5,7 @@ import automaton.constructor.utils.Setting
 import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.createUnmodifiableSettingControl
 import automaton.constructor.utils.nonNullObjectBinding
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Binding
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -25,13 +25,13 @@ class TransitionView(
 
     override fun getSettings() = listOf(
         SettingGroup(
-            labels.getString("TransitionView.Transition").toProperty(), listOf(
+            messages.getString("TransitionView.Transition").toProperty(), listOf(
                 Setting(
-                    labels.getString("TransitionView.Source"),
+                    messages.getString("TransitionView.Source"),
                     createUnmodifiableSettingControl(transition.source.nameProperty)
                 ),
                 Setting(
-                    labels.getString("TransitionView.Target"),
+                    messages.getString("TransitionView.Target"),
                     createUnmodifiableSettingControl(transition.target.nameProperty)
                 )
             )

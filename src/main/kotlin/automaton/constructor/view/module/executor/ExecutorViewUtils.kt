@@ -6,7 +6,7 @@ import automaton.constructor.utils.Setting
 import automaton.constructor.utils.SettingListEditor
 import automaton.constructor.utils.createSettings
 import automaton.constructor.utils.nonNullObjectBinding
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Bindings.isEmpty
 import javafx.geometry.Insets
 import javafx.scene.control.CheckBox
@@ -37,7 +37,7 @@ val ExecutionState.backgroundBinding
         )
     }
 
-fun ExecutionState.createSettings() = memory.createSettings() + Setting(labels.getString("ExecutorViewUtils.Frozen"),
+fun ExecutionState.createSettings() = memory.createSettings() + Setting(messages.getString("ExecutorViewUtils.Frozen"),
     CheckBox().apply {
         visibleWhen(isEmpty(children).and(statusProperty.booleanBinding { it == ExecutionStatus.RUNNING || it == ExecutionStatus.FROZEN }))
         managedWhen(visibleProperty())

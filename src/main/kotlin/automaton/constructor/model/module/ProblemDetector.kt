@@ -1,7 +1,7 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Bindings.isEmpty
 import javafx.beans.binding.Bindings.isNotEmpty
 import javafx.beans.value.ObservableBooleanValue
@@ -22,10 +22,10 @@ class ProblemDetector(automaton: Automaton) : AutomatonModule {
     val problems: ObservableList<PotentialProblem> = potentialProblems.filtered { it.predicate.value }
 
     companion object {
-        val ADD_INIT_STATE_MESSAGE: String = labels.getString("ProblemDetector.ADD_INIT_STATE_MESSAGE")
-        val ADD_FINAL_STATE_MESSAGE: String = labels.getString("ProblemDetector.ADD_FINAL_STATE_MESSAGE")
+        val ADD_INIT_STATE_MESSAGE: String = messages.getString("ProblemDetector.AddInitState")
+        val ADD_FINAL_STATE_MESSAGE: String = messages.getString("ProblemDetector.AddFinalState")
         val REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE: String =
-            labels.getString("ProblemDetector.REMOVE_TRANSITIONS_FROM_FINAL_STATES_MESSAGE")
+            messages.getString("ProblemDetector.RemoveTransitionsFromFinalStates")
     }
 
     init {

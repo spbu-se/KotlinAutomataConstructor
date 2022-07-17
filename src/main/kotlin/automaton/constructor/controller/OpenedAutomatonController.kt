@@ -6,7 +6,7 @@ import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers
 import automaton.constructor.model.toAutomaton
 import automaton.constructor.model.toData
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.*
 import javafx.concurrent.Task
 import javafx.geometry.Pos
@@ -25,7 +25,7 @@ class OpenedAutomatonController(val view: View) {
 
     private val nameBinding = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
         it?.toString() ?: MessageFormat.format(
-            labels.getString("OpenedAutomatonController.UntitledAutomaton"),
+            messages.getString("OpenedAutomatonController.UntitledAutomaton"),
             openedAutomaton.typeName
         )
     }
@@ -46,13 +46,13 @@ class OpenedAutomatonController(val view: View) {
 
     fun onNew() {
         if (!suggestSavingChanges()) return
-        view.dialog(labels.getString("OpenedAutomatonController.SelectAutomatonType")) {
+        view.dialog(messages.getString("OpenedAutomatonController.NewAutomaton")) {
             clear()
             stage.x = 100.0
             stage.y = 100.0
             stage.isResizable = false
             vbox(10.0) {
-                label(labels.getString("OpenedAutomatonController.NewAutomaton"))
+                label(messages.getString("OpenedAutomatonController.SelectAutomatonType"))
                 val listview = listview(getAllAutomatonFactories().toObservable()) {
                     prefHeight = 200.0
                 }
@@ -64,7 +64,7 @@ class OpenedAutomatonController(val view: View) {
                 }
                 hbox(10.0) {
                     alignment = Pos.CENTER_RIGHT
-                    button(labels.getString("OpenedAutomatonController.OK")) {
+                    button(messages.getString("OpenedAutomatonController.OK")) {
                         enableWhen(listview.selectionModel.selectedItemProperty().isNotNull)
                         action {
                             listview.selectedItem?.let {
@@ -74,7 +74,7 @@ class OpenedAutomatonController(val view: View) {
                             close()
                         }
                     }
-                    button(labels.getString("OpenedAutomatonController.Cancel")) { action { close() } }
+                    button(messages.getString("OpenedAutomatonController.Cancel")) { action { close() } }
                 }
             }
             scene.widthProperty().onChange { stage.sizeToScene() }
@@ -84,7 +84,7 @@ class OpenedAutomatonController(val view: View) {
 
     fun onOpen() {
         if (!suggestSavingChanges()) return
-        val file = chooseFile(labels.getString("MainView.File.Open"), FileChooserMode.Single) ?: return
+        val file = chooseFile(messages.getString("MainView.File.Open"), FileChooserMode.Single) ?: return
         findFileAutomatonSerializer(file).loadAsync(file)
     }
 
@@ -101,7 +101,7 @@ class OpenedAutomatonController(val view: View) {
      */
     fun onSaveAs(): Boolean {
         saveAs(
-            chooseFile(labels.getString("MainView.File.SaveAs"), FileChooserMode.Save)
+            chooseFile(messages.getString("MainView.File.SaveAs"), FileChooserMode.Save)
                 ?: return false
         )
         return true
@@ -130,7 +130,7 @@ class OpenedAutomatonController(val view: View) {
             serializer.extensionFilter.extensions.any { file.path.endsWith(it.drop(1)) }
         } ?: throw IllegalArgumentException(
             MessageFormat.format(
-                labels.getString("OpenedAutomatonController.FindFileAutomatonSerializer.IllegalArgumentException"),
+                messages.getString("OpenedAutomatonController.UnknownFileExtension"),
                 file.extension, file
             )
         )
@@ -139,7 +139,7 @@ class OpenedAutomatonController(val view: View) {
         val automatonData = openedAutomaton.toData()
         openedAutomaton.undoRedoManager.wasModified = false
         return view.runAsyncWithDialog(
-            MessageFormat.format(labels.getString("OpenedAutomatonController.SavingAutomaton"), file),
+            MessageFormat.format(messages.getString("OpenedAutomatonController.SavingAutomaton"), file),
             daemon = false
         ) {
             serialize(file, automatonData)
@@ -149,7 +149,7 @@ class OpenedAutomatonController(val view: View) {
             openedAutomaton.undoRedoManager.wasModified = true
             throw RuntimeException(
                 MessageFormat.format(
-                    labels.getString("OpenedAutomatonController.SaveAsync.RuntimeException"),
+                    messages.getString("OpenedAutomatonController.UnableToSaveAutomaton"),
                     file
                 ), it
             )
@@ -160,7 +160,7 @@ class OpenedAutomatonController(val view: View) {
 
     private fun AutomatonSerializer.loadAsync(file: File): Task<Automaton> =
         view.runAsyncWithDialog(
-            MessageFormat.format(labels.getString("OpenedAutomatonController.LoadingAutomaton"), file),
+            MessageFormat.format(messages.getString("OpenedAutomatonController.LoadingAutomaton"), file),
             daemon = true
         ) {
             deserialize(file).toAutomaton()
@@ -170,7 +170,7 @@ class OpenedAutomatonController(val view: View) {
         } addOnFail {
             throw RuntimeException(
                 MessageFormat.format(
-                    labels.getString("OpenedAutomatonController.LoadAsync.RuntimeException"),
+                    messages.getString("OpenedAutomatonController.UnableToLoadAutomaton"),
                     file
                 ), it
             )
@@ -183,7 +183,7 @@ class OpenedAutomatonController(val view: View) {
         if (!openedAutomaton.undoRedoManager.wasModified) return true
         val result = alert(
             Alert.AlertType.CONFIRMATION,
-            MessageFormat.format(labels.getString("OpenedAutomatonController.SuggestSavingChanges"), name),
+            MessageFormat.format(messages.getString("OpenedAutomatonController.SuggestSavingChanges"), name),
             null,
             ButtonType.YES,
             ButtonType.NO,

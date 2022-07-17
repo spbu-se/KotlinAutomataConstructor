@@ -2,7 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
-import automaton.constructor.utils.I18N.labels
+import automaton.constructor.utils.I18N.messages
 
 /**
  * Register automaton.
@@ -15,11 +15,11 @@ class RegisterAutomaton(
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape) + registers) {
     init {
         require(registers.isNotEmpty()) {
-            labels.getString("RegisterAutomaton.IllegalRegistersArgument")
+            messages.getString("RegisterAutomaton.IllegalRegistersArgument")
         }
     }
 
     companion object {
-        val NAME: String = labels.getString("RegisterAutomaton.NAME")
+        val NAME: String = messages.getString("RegisterAutomaton")
     }
 }
