@@ -1,6 +1,8 @@
 package automaton.constructor.model
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.data.createAutomaton
+import automaton.constructor.model.data.getData
 import automaton.constructor.model.serializers.JsonAutomatonSerializer
 import java.io.File
 import kotlin.io.path.Path
@@ -22,8 +24,8 @@ object TestAutomatons {
     private fun getAutomatonFromJson(path: String): Automaton {
         val file = File(requireNotNull(javaClass.getResource(path)) { "Missing resource $path" }.file)
         val tempFile = (Path(file.parent) / "temp.atmtn").toFile()
-        val automaton = JsonAutomatonSerializer.deserialize(file).toAutomaton()
-        JsonAutomatonSerializer.serialize(tempFile, automaton.toData()) // serialize it back to test serialization
-        return JsonAutomatonSerializer.deserialize(tempFile).toAutomaton().also { tempFile.delete() }
+        val automaton = JsonAutomatonSerializer.deserialize(file).createAutomaton()
+        JsonAutomatonSerializer.serialize(tempFile, automaton.getData()) // serialize it back to test serialization
+        return JsonAutomatonSerializer.deserialize(tempFile).createAutomaton().also { tempFile.delete() }
     }
 }

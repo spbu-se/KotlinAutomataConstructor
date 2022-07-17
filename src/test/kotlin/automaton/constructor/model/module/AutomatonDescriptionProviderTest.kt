@@ -7,9 +7,9 @@ import kotlin.test.assertEquals
 
 class AutomatonDescriptionProviderTest {
     @Test
-    fun `bfs should be nondeterministic bfs`() =
+    fun `bfs should be nondeterministic custom automaton`() =
         assertEquals(
-            "Nondeterministic BFS",
+            "Nondeterministic custom automaton",
             TestAutomatons.BFS.description
         )
 

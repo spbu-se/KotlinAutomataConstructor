@@ -27,7 +27,7 @@ import javafx.beans.Observable
 import javafx.beans.binding.Binding
 import javafx.beans.value.ObservableValue
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 inline fun <T, R> ObservableValue<T>.nonNullObjectBinding(
     vararg dependencies: Observable,
     crossinline op: (T) -> R

@@ -1,9 +1,9 @@
 package automaton.constructor.model.memory
 
+import automaton.constructor.model.data.MemoryUnitDescriptorData
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
 import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
 import automaton.constructor.model.property.DynamicPropertyDescriptor
-import automaton.constructor.model.property.DynamicPropertyDescriptorGroup
 import automaton.constructor.utils.Editable
 
 /**
@@ -30,6 +30,8 @@ interface MemoryUnitDescriptor : Editable {
     val mayRequireAcceptance: Boolean get() = false
 
     override var displayName: String
+
+    fun getData(): MemoryUnitDescriptorData
 
     /**
      * Creates [MemoryUnit] described by this descriptor with initial data specified in editor returned by

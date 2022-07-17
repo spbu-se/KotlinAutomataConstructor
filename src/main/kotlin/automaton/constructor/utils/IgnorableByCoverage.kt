@@ -5,4 +5,4 @@ package automaton.constructor.utils
  * should be ignored by JaCoCo
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class MostlyGeneratedOrInline
+annotation class IgnorableByCoverage

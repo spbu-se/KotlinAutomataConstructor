@@ -1,33 +1,30 @@
 package automaton.constructor.model.memory
 
-import automaton.constructor.model.memory.MemoryUnitStatus.*
+import automaton.constructor.model.data.StackDescriptorData
+import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
+import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
+import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_TERMINATION
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
-import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.nonNullObjectBinding
-import automaton.constructor.utils.surrogateSerializer
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.VBox
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import tornadofx.*
 
-private const val NAME = "Stack"
-
-@Serializable(with = StackDescriptorSerializer::class)
 class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableString("z"), MemoryUnitDescriptor {
     val expectedChar = DynamicPropertyDescriptors.charOrEps("Expected char", canBeDeemedEpsilon = false)
     val pushedString = DynamicPropertyDescriptors.stringOrEps("Pushed string", canBeDeemedEpsilon = false)
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = listOf(pushedString)
-    override var displayName = NAME
-    override val mayRequireAcceptance get() = true
+    override var displayName = "Stack"
+    override val mayRequireAcceptance = true
 
     val acceptsByEmptyStackProperty = acceptsByEmptyStack.toProperty()
     var acceptsByEmptyStack by acceptsByEmptyStackProperty
+
+    override fun getData() = StackDescriptorData(acceptsByEmptyStack)
 
     override fun createMemoryUnit() = Stack(this, value)
 
@@ -64,13 +61,3 @@ class Stack(
 
     override fun copy() = Stack(descriptor, value)
 }
-
-@Serializable
-@SerialName(NAME)
-@MostlyGeneratedOrInline
-data class StackDescriptorData(val acceptsByEmptyStack: Boolean)
-
-object StackDescriptorSerializer : KSerializer<StackDescriptor> by surrogateSerializer(
-    { StackDescriptorData(it.acceptsByEmptyStack) },
-    { StackDescriptor(it.acceptsByEmptyStack) }
-)

@@ -1,5 +1,6 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.data.TuringMachineWithRegistersData
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 
@@ -11,7 +12,7 @@ import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 class TuringMachineWithRegisters(
     val tape: MultiTrackTapeDescriptor,
     val registers: List<RegisterDescriptor>
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(tape) + registers) {
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(tape) + registers) {
     init {
         require(tape.trackCount == 1) {
             "Illegal `tape` argument when creating `TuringMachineWithRegisters`"
@@ -20,6 +21,11 @@ class TuringMachineWithRegisters(
             "Illegal `registers` argument when creating `TuringMachineWithRegisters`"
         }
     }
+
+    override fun getTypeData() = TuringMachineWithRegistersData(
+        tape = tape.getData(),
+        registers = registers.map { it.getData() }
+    )
 
     companion object {
         const val NAME = "Turing machine with registers"

@@ -1,24 +1,23 @@
 package automaton.constructor.model.memory
 
+import automaton.constructor.model.data.RegisterDescriptorData
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
-import automaton.constructor.utils.noPropertiesSerializer
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import tornadofx.*
 
 private const val NAME = "Register"
 
-@Serializable(with = RegisterDescriptorSerializer::class)
 class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
     val expectedValue = DynamicPropertyDescriptors.stringOrEps("Expected value", canBeDeemedEpsilon = false)
     val newValue = DynamicPropertyDescriptors.stringOrEps("New value", canBeDeemedEpsilon = false)
     override val transitionFilters = listOf(expectedValue)
     override val transitionSideEffects = listOf(newValue)
     override var displayName = NAME
+
+    override fun getData() = RegisterDescriptorData
 
     override fun createMemoryUnit() = Register(this, value)
 }
@@ -39,8 +38,3 @@ class Register(
 
     override fun copy() = Register(descriptor, value)
 }
-
-object RegisterDescriptorSerializer : KSerializer<RegisterDescriptor> by noPropertiesSerializer(
-    NAME,
-    { RegisterDescriptor() }
-)

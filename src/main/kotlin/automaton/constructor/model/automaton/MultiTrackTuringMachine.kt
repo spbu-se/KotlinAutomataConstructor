@@ -1,5 +1,6 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.data.MultiTrackTuringMachineData
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 
 /**
@@ -9,12 +10,16 @@ import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
  */
 class MultiTrackTuringMachine(
     val tracks: MultiTrackTapeDescriptor
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(tracks)) {
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(tracks)) {
     init {
         require(tracks.trackCount > 1) {
             "Illegal `tracks` argument when creating `MultiTrackTuringMachine`"
         }
     }
+
+    override fun getTypeData() = MultiTrackTuringMachineData(
+        tracks = tracks.getData()
+    )
 
     companion object {
         const val NAME = "multi-track Turing machine"

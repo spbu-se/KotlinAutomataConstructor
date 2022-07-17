@@ -1,13 +1,9 @@
 {
-  "typeName": "Mealy machine",
-  "memoryDescriptors": [
-    {
-      "type": "Input tape"
-    },
-    {
-      "type": "Mealy/Moore output tape"
-    }
-  ],
+  "base": {
+    "type": "Mealy/Moore machine",
+    "inputTape": {},
+    "mealyMooreOutputTape": {}
+  },
   "states": [
     {
       "id": 0,
