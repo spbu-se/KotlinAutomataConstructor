@@ -1,5 +1,6 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.data.MultiTrackTuringMachineData
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 
 /**
@@ -15,6 +16,10 @@ class MultiTrackTuringMachine(
             "Illegal `tracks` argument when creating `MultiTrackTuringMachine`"
         }
     }
+
+    override fun getTypeDataOrNull() = MultiTrackTuringMachineData(
+        tracks = tracks.getData()
+    )
 
     companion object {
         const val NAME = "multi-track Turing machine"

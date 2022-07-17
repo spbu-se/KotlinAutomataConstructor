@@ -9,7 +9,7 @@ class AutomatonDescriptionProviderTest {
     @Test
     fun `bfs should be nondeterministic bfs`() =
         assertEquals(
-            "Nondeterministic BFS",
+            "Nondeterministic custom automaton",
             TestAutomatons.BFS.description
         )
 

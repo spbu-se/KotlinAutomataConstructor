@@ -2,6 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.State
 import automaton.constructor.model.action.AutomatonElementAction
+import automaton.constructor.model.data.AutomatonTypeData
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
@@ -27,6 +28,8 @@ interface Automaton {
 
     val transitions: ObservableSet<Transition>
     val states: ObservableSet<State>
+
+    fun getTypeDataOrNull(): AutomatonTypeData?
 
 
     /**

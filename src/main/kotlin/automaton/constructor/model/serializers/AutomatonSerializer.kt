@@ -1,6 +1,6 @@
 package automaton.constructor.model.serializers
 
-import automaton.constructor.model.AutomatonData
+import automaton.constructor.model.data.AutomatonData
 import javafx.stage.FileChooser.ExtensionFilter
 import java.io.File
 

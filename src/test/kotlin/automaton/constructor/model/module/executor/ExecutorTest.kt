@@ -1,7 +1,7 @@
 package automaton.constructor.model.module.executor
 
-import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.TestAutomatons
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.output.OutputTape
 import automaton.constructor.model.memory.tape.InputTapeDescriptor

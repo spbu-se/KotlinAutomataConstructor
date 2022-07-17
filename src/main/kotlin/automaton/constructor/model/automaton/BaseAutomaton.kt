@@ -51,6 +51,8 @@ class BaseAutomaton(
     override val transitions = observableSetOf<Transition>()
     override val states = observableSetOf<State>()
 
+    override fun getTypeDataOrNull() = null
+
     private val nextStateSuffix: Int
         get() {
             val takenSuffixes = states

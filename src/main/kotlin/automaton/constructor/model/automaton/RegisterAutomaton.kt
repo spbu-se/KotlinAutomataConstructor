@@ -1,5 +1,6 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.data.RegisterAutomatonData
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 
@@ -17,6 +18,11 @@ class RegisterAutomaton(
             "Illegal `registers` argument when creating `RegisterAutomaton`"
         }
     }
+
+    override fun getTypeDataOrNull() = RegisterAutomatonData(
+        inputTape = inputTape.getData(),
+        registers = registers.map { it.getData() }
+    )
 
     companion object {
         const val NAME = "register automaton"
