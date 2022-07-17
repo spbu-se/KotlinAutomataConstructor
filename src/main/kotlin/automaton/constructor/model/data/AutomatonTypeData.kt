@@ -8,13 +8,22 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
+/**
+ * The type data of an [automaton][Automaton].
+ */
 @IgnorableByCoverage
 @Serializable
 abstract class AutomatonTypeData {
+    /**
+     * Creates an appropriate empty [automaton][Automaton] using this type data.
+     */
     abstract fun createEmptyAutomaton(): Automaton
 }
 
 
+/**
+ * The data of a [finite automaton][FiniteAutomaton] with an [input tape][inputTape].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(FiniteAutomaton.NAME)
@@ -26,6 +35,9 @@ data class FiniteAutomatonData(
     )
 }
 
+/**
+ * The data of a [pushdown automaton][PushdownAutomaton] with an [input tape][inputTape] and several [stacks].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(PushdownAutomaton.NAME)
@@ -39,6 +51,9 @@ data class PushdownAutomatonData(
     )
 }
 
+/**
+ * The data of a [register automaton][RegisterAutomaton] with an [input tape][inputTape] and several [registers].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(RegisterAutomaton.NAME)
@@ -52,6 +67,9 @@ data class RegisterAutomatonData(
     )
 }
 
+/**
+ * The data of a [Mealy/Moore machine][MealyMooreMachine] with an [input tape][inputTape] and a [Mealy/Moore output tape][mealyMooreOutputTape].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(MealyMooreMachine.NAME)
@@ -65,6 +83,9 @@ data class MealyMooreMachineData(
     )
 }
 
+/**
+ * The data of a [Turing machine][TuringMachine] with a [tape].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(TuringMachine.NAME)
@@ -76,6 +97,9 @@ data class TuringMachineData(
     )
 }
 
+/**
+ * The data of a [multi-track Turing machine][MultiTrackTuringMachine] with several [tracks].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(MultiTrackTuringMachine.NAME)
@@ -87,6 +111,9 @@ data class MultiTrackTuringMachineData(
     )
 }
 
+/**
+ * The data of a [multi-tape Turing machine][MultiTapeTuringMachine] with several [tapes].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(MultiTapeTuringMachine.NAME)
@@ -98,6 +125,9 @@ data class MultiTapeTuringMachineData(
     )
 }
 
+/**
+ * The data of a [Turing machine with registers][TuringMachineWithRegisters] with a [tape] and several [registers].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(TuringMachineWithRegisters.NAME)
@@ -111,6 +141,9 @@ data class TuringMachineWithRegistersData(
     )
 }
 
+/**
+ * The data of a [custom automaton][CustomAutomaton] with a custom list of [memory descriptors][memoryUnitDescriptors].
+ */
 @IgnorableByCoverage
 @Serializable
 @SerialName(CustomAutomaton.NAME)

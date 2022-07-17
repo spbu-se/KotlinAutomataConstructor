@@ -4,6 +4,12 @@ import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.Serializable
 
+/**
+ * The data of a [state][automaton.constructor.model.State].
+ *
+ * It consists of an [id], a [name], [isInitial] and [isFinal] statuses, [x] and [y] coordinates, and a list of [properties].
+ * The data can be converted to a state with the appropriate [name][automaton.constructor.model.State.name], [isInitial][automaton.constructor.model.State.isInitial] and [isFinal][automaton.constructor.model.State.isFinal] statuses, [position][automaton.constructor.model.State.position], and [dynamic properties][automaton.constructor.model.State.properties].
+ */
 @IgnorableByCoverage
 @Serializable
 data class StateData(
@@ -16,6 +22,9 @@ data class StateData(
     val properties: List<String> = emptyList()
 )
 
+/**
+ * Retrieves all [state data][StateData] from the automaton.
+ */
 fun Automaton.getStatesData(): List<StateData> = states.mapIndexed { i, state ->
     StateData(
         id = i,

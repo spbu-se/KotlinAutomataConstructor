@@ -29,6 +29,9 @@ interface Automaton {
     val transitions: ObservableSet<Transition>
     val states: ObservableSet<State>
 
+    /**
+     * Returns the [type data][AutomatonTypeData] of this automaton or `null` if no type data can be retrieved from this type of automaton.
+     */
     fun getTypeDataOrNull(): AutomatonTypeData?
 
 

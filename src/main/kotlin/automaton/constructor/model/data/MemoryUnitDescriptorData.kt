@@ -13,13 +13,22 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
+/**
+ * The data of a [memory unit descriptor][MemoryUnitDescriptor].
+ */
 @Serializable
 @IgnorableByCoverage
 abstract class MemoryUnitDescriptorData {
+    /**
+     * Creates an appropriate [memory unit descriptor][MemoryUnitDescriptor] using this data.
+     */
     abstract fun createDescriptor(): MemoryUnitDescriptor
 }
 
 
+/**
+ * The data of an [input tape descriptor][InputTapeDescriptor].
+ */
 @Serializable
 @SerialName("Input tape")
 @IgnorableByCoverage
@@ -27,6 +36,9 @@ object InputTapeDescriptorData : MemoryUnitDescriptorData() {
     override fun createDescriptor() = InputTapeDescriptor()
 }
 
+/**
+ * The data of a [multi-track tape descriptor][MultiTrackTapeDescriptor] with the [trackCount] number of tracks.
+ */
 @Serializable
 @SerialName("Multi-track tape")
 @IgnorableByCoverage
@@ -34,6 +46,9 @@ data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescrip
     override fun createDescriptor() = MultiTrackTapeDescriptor(trackCount)
 }
 
+/**
+ * The data of a [stack descriptor][StackDescriptor] with the [acceptsByEmptyStack] status.
+ */
 @Serializable
 @SerialName("Stack")
 @IgnorableByCoverage
@@ -41,6 +56,9 @@ data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDes
     override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack)
 }
 
+/**
+ * The data of a [register descriptor][RegisterDescriptor].
+ */
 @Serializable
 @SerialName("Register")
 @IgnorableByCoverage
@@ -48,6 +66,9 @@ object RegisterDescriptorData : MemoryUnitDescriptorData() {
     override fun createDescriptor() = RegisterDescriptor()
 }
 
+/**
+ * The data of a [Mealy/Moore output tape descriptor][MealyMooreOutputTapeDescriptor].
+ */
 @Serializable
 @SerialName("Mealy/Moore output tape")
 @IgnorableByCoverage

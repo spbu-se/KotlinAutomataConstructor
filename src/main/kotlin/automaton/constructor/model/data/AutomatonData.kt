@@ -5,6 +5,11 @@ import automaton.constructor.utils.IgnorableByCoverage
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
 
+/**
+ * The data of an [automaton][Automaton].
+ *
+ * It consists of a [base] type data, a list of [states] data, and a list of [transitions] data.
+ */
 @IgnorableByCoverage
 @Serializable
 data class AutomatonData(
@@ -14,6 +19,9 @@ data class AutomatonData(
 )
 
 
+/**
+ * Retrieves the [data][AutomatonData] from the automaton.
+ */
 fun Automaton.getData(): AutomatonData {
     val type = getTypeDataOrNull()
     val states = getStatesData()
@@ -22,6 +30,9 @@ fun Automaton.getData(): AutomatonData {
     return AutomatonData(type, states, transitions)
 }
 
+/**
+ * Creates an appropriate [automaton][Automaton] using this data.
+ */
 fun AutomatonData.createAutomaton() = base.createEmptyAutomaton().also { automaton ->
     val idToStateMap = states.associate {
         it.id to automaton.addState(it.name, Point2D(it.x, it.y)).apply {
