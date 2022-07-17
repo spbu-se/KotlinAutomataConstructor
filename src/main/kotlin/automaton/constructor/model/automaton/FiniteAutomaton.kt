@@ -1,7 +1,6 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.data.FiniteAutomatonData
-import automaton.constructor.model.data.InputTapeDescriptorData
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 
 /**
@@ -13,7 +12,7 @@ class FiniteAutomaton(
     val inputTape: InputTapeDescriptor
 ) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape)) {
     override fun getTypeDataOrNull() = FiniteAutomatonData(
-        inputTape = InputTapeDescriptorData
+        inputTape = inputTape.getData()
     )
 
     companion object {

@@ -16,13 +16,13 @@ import kotlinx.serialization.modules.subclass
 /**
  * The data of a [memory unit descriptor][MemoryUnitDescriptor].
  */
-@Serializable
-@IgnorableByCoverage
-abstract class MemoryUnitDescriptorData {
+interface MemoryUnitDescriptorData {
     /**
      * Creates an appropriate [memory unit descriptor][MemoryUnitDescriptor] using this data.
      */
-    abstract fun createDescriptor(): MemoryUnitDescriptor
+    fun createDescriptor(): MemoryUnitDescriptor
+
+    companion object
 }
 
 
@@ -32,7 +32,7 @@ abstract class MemoryUnitDescriptorData {
 @Serializable
 @SerialName("Input tape")
 @IgnorableByCoverage
-object InputTapeDescriptorData : MemoryUnitDescriptorData() {
+object InputTapeDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = InputTapeDescriptor()
 }
 
@@ -42,7 +42,7 @@ object InputTapeDescriptorData : MemoryUnitDescriptorData() {
 @Serializable
 @SerialName("Multi-track tape")
 @IgnorableByCoverage
-data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescriptorData() {
+data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescriptorData {
     override fun createDescriptor() = MultiTrackTapeDescriptor(trackCount)
 }
 
@@ -52,7 +52,7 @@ data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescrip
 @Serializable
 @SerialName("Stack")
 @IgnorableByCoverage
-data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDescriptorData() {
+data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDescriptorData {
     override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack)
 }
 
@@ -62,7 +62,7 @@ data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDes
 @Serializable
 @SerialName("Register")
 @IgnorableByCoverage
-object RegisterDescriptorData : MemoryUnitDescriptorData() {
+object RegisterDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = RegisterDescriptor()
 }
 
@@ -72,7 +72,7 @@ object RegisterDescriptorData : MemoryUnitDescriptorData() {
 @Serializable
 @SerialName("Mealy/Moore output tape")
 @IgnorableByCoverage
-object MealyMooreOutputTapeDescriptorData : MemoryUnitDescriptorData() {
+object MealyMooreOutputTapeDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = MealyMooreOutputTapeDescriptor()
 }
 

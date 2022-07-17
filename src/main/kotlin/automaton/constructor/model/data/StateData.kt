@@ -1,14 +1,17 @@
 package automaton.constructor.model.data
 
+import automaton.constructor.model.State
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.Serializable
 
 /**
- * The data of a [state][automaton.constructor.model.State].
+ * The data of a [state][State].
  *
  * It consists of an [id], a [name], [isInitial] and [isFinal] statuses, [x] and [y] coordinates, and a list of [properties].
- * The data can be converted to a state with the appropriate [name][automaton.constructor.model.State.name], [isInitial][automaton.constructor.model.State.isInitial] and [isFinal][automaton.constructor.model.State.isFinal] statuses, [position][automaton.constructor.model.State.position], and [dynamic properties][automaton.constructor.model.State.properties].
+ * The data can be converted to a state with the appropriate [name][State.name],
+ * [isInitial][State.isInitial] and [isFinal][State.isFinal] statuses,
+ * [position][State.position], and [dynamic properties][State.properties].
  */
 @IgnorableByCoverage
 @Serializable

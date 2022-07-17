@@ -1,14 +1,16 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.Serializable
 
 /**
- * The data of a [transition][automaton.constructor.model.transition.Transition].
+ * The data of a [transition][Transition].
  *
  * It consists of a [source] index, a [target] index, and a list of [properties].
- * The data can be converted to a transition with the appropriate [source state][automaton.constructor.model.transition.Transition.source], [target state][automaton.constructor.model.transition.Transition.target], and [dynamic properties][automaton.constructor.model.transition.Transition.properties].
+ * The data can be converted to a transition with the appropriate [source state][Transition.source],
+ * [target state][Transition.target], and [dynamic properties][Transition.properties].
  */
 @IgnorableByCoverage
 @Serializable

@@ -11,13 +11,13 @@ import kotlinx.serialization.modules.subclass
 /**
  * The type data of an [automaton][Automaton].
  */
-@IgnorableByCoverage
-@Serializable
-abstract class AutomatonTypeData {
+interface AutomatonTypeData {
     /**
      * Creates an appropriate empty [automaton][Automaton] using this type data.
      */
-    abstract fun createEmptyAutomaton(): Automaton
+    fun createEmptyAutomaton(): Automaton
+
+    companion object
 }
 
 
@@ -29,7 +29,7 @@ abstract class AutomatonTypeData {
 @SerialName(FiniteAutomaton.NAME)
 data class FiniteAutomatonData(
     val inputTape: InputTapeDescriptorData
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = FiniteAutomaton(
         inputTape = inputTape.createDescriptor()
     )
@@ -44,7 +44,7 @@ data class FiniteAutomatonData(
 data class PushdownAutomatonData(
     val inputTape: InputTapeDescriptorData,
     val stacks: List<StackDescriptorData>
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = PushdownAutomaton(
         inputTape = inputTape.createDescriptor(),
         stacks = stacks.map { it.createDescriptor() }
@@ -60,7 +60,7 @@ data class PushdownAutomatonData(
 data class RegisterAutomatonData(
     val inputTape: InputTapeDescriptorData,
     val registers: List<RegisterDescriptorData>
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = RegisterAutomaton(
         inputTape = inputTape.createDescriptor(),
         registers = registers.map { it.createDescriptor() }
@@ -76,7 +76,7 @@ data class RegisterAutomatonData(
 data class MealyMooreMachineData(
     val inputTape: InputTapeDescriptorData,
     val mealyMooreOutputTape: MealyMooreOutputTapeDescriptorData
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = MealyMooreMachine(
         inputTape = inputTape.createDescriptor(),
         mealyMooreOutputTape = mealyMooreOutputTape.createDescriptor()
@@ -91,7 +91,7 @@ data class MealyMooreMachineData(
 @SerialName(TuringMachine.NAME)
 data class TuringMachineData(
     val tape: MultiTrackTapeDescriptorData
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = TuringMachine(
         tape = tape.createDescriptor()
     )
@@ -105,7 +105,7 @@ data class TuringMachineData(
 @SerialName(MultiTrackTuringMachine.NAME)
 data class MultiTrackTuringMachineData(
     val tracks: MultiTrackTapeDescriptorData
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = MultiTrackTuringMachine(
         tracks = tracks.createDescriptor()
     )
@@ -119,7 +119,7 @@ data class MultiTrackTuringMachineData(
 @SerialName(MultiTapeTuringMachine.NAME)
 data class MultiTapeTuringMachineData(
     val tapes: List<MultiTrackTapeDescriptorData>
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = MultiTapeTuringMachine(
         tapes = tapes.map { it.createDescriptor() }
     )
@@ -134,7 +134,7 @@ data class MultiTapeTuringMachineData(
 data class TuringMachineWithRegistersData(
     val tape: MultiTrackTapeDescriptorData,
     val registers: List<RegisterDescriptorData>
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = TuringMachineWithRegisters(
         tape = tape.createDescriptor(),
         registers = registers.map { it.createDescriptor() }
@@ -149,7 +149,7 @@ data class TuringMachineWithRegistersData(
 @SerialName(CustomAutomaton.NAME)
 data class CustomAutomatonData(
     val memoryUnitDescriptors: List<MemoryUnitDescriptorData>
-) : AutomatonTypeData() {
+) : AutomatonTypeData {
     override fun createEmptyAutomaton() = CustomAutomaton(
         memoryDescriptors = memoryUnitDescriptors.map { it.createDescriptor() }
     )
