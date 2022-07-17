@@ -1,6 +1,6 @@
 package automaton.constructor.model.property
 
-import automaton.constructor.utils.MostlyGeneratedOrInline
+import automaton.constructor.utils.IgnorableByCoverage
 import automaton.constructor.utils.setControlNewText
 import javafx.scene.control.*
 import javafx.util.StringConverter
@@ -30,7 +30,7 @@ object DynamicPropertyDescriptors {
         charConverter = { it }
     )
 
-    @MostlyGeneratedOrInline
+    @IgnorableByCoverage
     private inline fun <T> charOrElse(
         name: String,
         canBeDeemedEpsilon: Boolean,
@@ -60,7 +60,7 @@ object DynamicPropertyDescriptors {
         }
     )
 
-    @MostlyGeneratedOrInline
+    @IgnorableByCoverage
     inline fun <reified E : Enum<E>> enum(name: String) = choice(
         name = name,
         canBeDeemedEpsilon = false,

@@ -1,21 +1,21 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.*
-import automaton.constructor.utils.MostlyGeneratedOrInline
+import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 abstract class AutomatonTypeData {
     abstract fun createEmptyAutomaton(): Automaton
 }
 
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(FiniteAutomaton.NAME)
 data class FiniteAutomatonData(
@@ -26,7 +26,7 @@ data class FiniteAutomatonData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(PushdownAutomaton.NAME)
 data class PushdownAutomatonData(
@@ -39,7 +39,7 @@ data class PushdownAutomatonData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(RegisterAutomaton.NAME)
 data class RegisterAutomatonData(
@@ -52,7 +52,7 @@ data class RegisterAutomatonData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(MealyMooreMachine.NAME)
 data class MealyMooreMachineData(
@@ -65,7 +65,7 @@ data class MealyMooreMachineData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(TuringMachine.NAME)
 data class TuringMachineData(
@@ -76,7 +76,7 @@ data class TuringMachineData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(MultiTrackTuringMachine.NAME)
 data class MultiTrackTuringMachineData(
@@ -87,7 +87,7 @@ data class MultiTrackTuringMachineData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(MultiTapeTuringMachine.NAME)
 data class MultiTapeTuringMachineData(
@@ -98,7 +98,7 @@ data class MultiTapeTuringMachineData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(TuringMachineWithRegisters.NAME)
 data class TuringMachineWithRegistersData(
@@ -111,7 +111,7 @@ data class TuringMachineWithRegistersData(
     )
 }
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 @SerialName(CustomAutomaton.NAME)
 data class CustomAutomatonData(

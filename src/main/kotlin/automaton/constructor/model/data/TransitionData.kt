@@ -1,10 +1,10 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.utils.MostlyGeneratedOrInline
+import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.Serializable
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 data class TransitionData(
     val source: Int,

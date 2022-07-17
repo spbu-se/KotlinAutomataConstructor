@@ -6,7 +6,7 @@ import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.output.MealyMooreOutputTapeDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
-import automaton.constructor.utils.MostlyGeneratedOrInline
+import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
@@ -14,7 +14,7 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
 @Serializable
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 abstract class MemoryUnitDescriptorData {
     abstract fun createDescriptor(): MemoryUnitDescriptor
 }
@@ -22,35 +22,35 @@ abstract class MemoryUnitDescriptorData {
 
 @Serializable
 @SerialName("Input tape")
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 object InputTapeDescriptorData : MemoryUnitDescriptorData() {
     override fun createDescriptor() = InputTapeDescriptor()
 }
 
 @Serializable
 @SerialName("Multi-track tape")
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescriptorData() {
     override fun createDescriptor() = MultiTrackTapeDescriptor(trackCount)
 }
 
 @Serializable
 @SerialName("Stack")
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDescriptorData() {
     override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack)
 }
 
 @Serializable
 @SerialName("Register")
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 object RegisterDescriptorData : MemoryUnitDescriptorData() {
     override fun createDescriptor() = RegisterDescriptor()
 }
 
 @Serializable
 @SerialName("Mealy/Moore output tape")
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 object MealyMooreOutputTapeDescriptorData : MemoryUnitDescriptorData() {
     override fun createDescriptor() = MealyMooreOutputTapeDescriptor()
 }

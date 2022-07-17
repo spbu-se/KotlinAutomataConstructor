@@ -1,11 +1,11 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.utils.MostlyGeneratedOrInline
+import automaton.constructor.utils.IgnorableByCoverage
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
 
-@MostlyGeneratedOrInline
+@IgnorableByCoverage
 @Serializable
 data class AutomatonData(
     val base: AutomatonTypeData,
