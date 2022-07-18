@@ -81,7 +81,7 @@ class StateView(val state: State) : AutomatonElementView(state) {
     override fun getSettings() = listOf(
         SettingGroup(
             messages.getString("StateView.State").toProperty(), listOf(
-                Setting(messages.getString("StateView.StateName"),
+                Setting(messages.getString("StateView.Name"),
                     TextField().apply { textProperty().bindBidirectional(state.nameProperty) }),
                 Setting(messages.getString("StateView.Initial"),
                     CheckBox().apply { selectedProperty().bindBidirectional(state.isInitialProperty) }),

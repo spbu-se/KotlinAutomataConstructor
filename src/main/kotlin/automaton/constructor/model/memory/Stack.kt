@@ -73,7 +73,7 @@ class Stack(
 }
 
 @Serializable
-@SerialName("Stack")
+@SerialName(NAME)
 @MostlyGeneratedOrInline
 data class StackDescriptorData(val acceptsByEmptyStack: Boolean)
 

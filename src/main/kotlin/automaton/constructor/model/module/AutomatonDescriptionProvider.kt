@@ -23,8 +23,8 @@ class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
         if (automaton.memoryDescriptors.any { memoryUnitDescriptor ->
                 (memoryUnitDescriptor.transitionFilters + memoryUnitDescriptor.transitionSideEffects + memoryUnitDescriptor.stateFilters + memoryUnitDescriptor.stateSideEffects).any { it.canBeDeemedEpsilon }
             }) stringBinding(automaton.hasEpsilonBinding) {
-            (if (value) messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
-            else messages.getString("AutomatonDescriptionProvider.WithoutEpsilonTransitions")) + messages.getString("AutomatonDescriptionProvider.EpsilonTransitions")
+            if (value) messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
+            else messages.getString("AutomatonDescriptionProvider.WithoutEpsilonTransitions")
         }
         else "".toProperty()
     private val epsilonPart: String by epsilonPartBinding
