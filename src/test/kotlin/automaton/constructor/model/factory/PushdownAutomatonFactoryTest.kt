@@ -1,7 +1,7 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.model.memory.StackDescriptor
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.module.tape.InputTapeDescriptor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

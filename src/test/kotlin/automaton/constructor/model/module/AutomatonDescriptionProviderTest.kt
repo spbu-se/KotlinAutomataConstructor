@@ -1,15 +1,15 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.TestAutomatons
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.module.tape.InputTapeDescriptor
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class AutomatonDescriptionProviderTest {
     @Test
-    fun `bfs should be nondeterministic bfs`() =
+    fun `bfs should be nondeterministic custom automaton`() =
         assertEquals(
-            "Nondeterministic BFS",
+            "Nondeterministic custom automaton",
             TestAutomatons.BFS.description
         )
 

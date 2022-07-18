@@ -1,22 +1,17 @@
-package automaton.constructor.model.memory.tape
+package automaton.constructor.model.module.tape
 
+import automaton.constructor.model.data.MultiTrackTapeDescriptorData
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.MemoryUnitStatus
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.transition.Transition
-import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.monospaced
-import automaton.constructor.utils.surrogateSerializer
 import automaton.constructor.utils.I18N.messages
 import javafx.scene.layout.VBox
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import tornadofx.*
 import java.text.MessageFormat
 
-@Serializable(with = MultiTrackTapeDescriptorSerializer::class)
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
     val headMoveDirection =
@@ -41,6 +36,8 @@ class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     override val transitionSideEffects = newChars + headMoveDirection
     override var displayName = if (trackCount == 1) messages.getString("MultitrackTape.Tape")
     else messages.getString("MultitrackTape.Multi-trackTape")
+
+    override fun getData() = MultiTrackTapeDescriptorData(trackCount)
 
     override fun createMemoryUnit() = MultiTrackTape(this, valueProperties.map { Track(it.value) })
 
@@ -67,13 +64,3 @@ class MultiTrackTape(
 
     override fun copy() = MultiTrackTape(descriptor, tracks.map { Track(it) })
 }
-
-@Serializable
-@SerialName("Multi-track tape")
-@MostlyGeneratedOrInline
-data class MultiTrackTapeDescriptorData(val trackCount: Int)
-
-object MultiTrackTapeDescriptorSerializer : KSerializer<MultiTrackTapeDescriptor> by surrogateSerializer(
-    { MultiTrackTapeDescriptorData(it.trackCount) },
-    { MultiTrackTapeDescriptor(it.trackCount) }
-)

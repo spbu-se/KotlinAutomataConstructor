@@ -1,7 +1,8 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.data.PushdownAutomatonData
 import automaton.constructor.model.memory.StackDescriptor
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.module.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N.messages
 
 /**
@@ -12,14 +13,19 @@ import automaton.constructor.utils.I18N.messages
 class PushdownAutomaton(
     val inputTape: InputTapeDescriptor,
     val stacks: List<StackDescriptor>
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape) + stacks) {
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape) + stacks) {
     init {
         require(stacks.isNotEmpty()) {
             messages.getString("PushDownAutomaton.IllegalStacksArgument")
         }
     }
 
+    override fun getTypeData() = PushdownAutomatonData(
+        inputTape = inputTape.getData(),
+        stacks = stacks.map { it.getData() }
+    )
+
     companion object {
-        val NAME: String = messages.getString("PushdownAutomaton")
+        const val NAME = "pushdown automaton"
     }
 }

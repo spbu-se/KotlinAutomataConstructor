@@ -1,13 +1,11 @@
 {
-  "typeName": "register automaton",
-  "memoryDescriptors": [
-    {
-      "type": "Input tape"
-    },
-    {
-      "type": "Register"
-    }
-  ],
+  "base": {
+    "type": "register automaton",
+    "inputTape": {},
+    "registers": [
+      {}
+    ]
+  },
   "states": [
     {
       "id": 0,

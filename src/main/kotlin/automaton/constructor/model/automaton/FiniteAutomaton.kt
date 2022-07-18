@@ -1,6 +1,7 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.data.FiniteAutomatonData
+import automaton.constructor.model.module.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N.messages
 
 /**
@@ -10,8 +11,12 @@ import automaton.constructor.utils.I18N.messages
  */
 class FiniteAutomaton(
     val inputTape: InputTapeDescriptor
-) : Automaton by BaseAutomaton(NAME, memoryDescriptors = listOf(inputTape)) {
+) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape)) {
+    override fun getTypeData() = FiniteAutomatonData(
+        inputTape = inputTape.getData()
+    )
+
     companion object {
-        val NAME: String = messages.getString("FiniteAutomaton")
+        const val NAME = "finite automaton"
     }
 }

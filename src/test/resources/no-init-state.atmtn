@@ -1,10 +1,8 @@
 {
-  "typeName": "finite automaton",
-  "memoryDescriptors": [
-    {
-      "type": "Input tape"
-    }
-  ],
+  "base": {
+    "type": "finite automaton",
+    "inputTape": {}
+  },
   "states": [
     {
       "id": 0,

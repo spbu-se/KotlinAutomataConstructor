@@ -1,13 +1,17 @@
 package automaton.constructor.controller
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.data.createAutomaton
+import automaton.constructor.model.data.getData
 import automaton.constructor.model.factory.getAllAutomatonFactories
 import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers
-import automaton.constructor.model.toAutomaton
-import automaton.constructor.model.toData
 import automaton.constructor.utils.I18N.messages
-import automaton.constructor.utils.*
+import automaton.constructor.utils.addOnCancel
+import automaton.constructor.utils.addOnFail
+import automaton.constructor.utils.addOnSuccess
+import automaton.constructor.utils.nonNullObjectBinding
+import automaton.constructor.utils.runAsyncWithDialog
 import javafx.concurrent.Task
 import javafx.geometry.Pos
 import javafx.scene.control.Alert
@@ -136,7 +140,7 @@ class OpenedAutomatonController(val view: View) {
         )
 
     private fun AutomatonSerializer.saveAsync(file: File): Task<Unit> {
-        val automatonData = openedAutomaton.toData()
+        val automatonData = openedAutomaton.getData()
         openedAutomaton.undoRedoManager.wasModified = false
         return view.runAsyncWithDialog(
             MessageFormat.format(messages.getString("OpenedAutomatonController.SavingAutomaton"), file),
@@ -163,7 +167,7 @@ class OpenedAutomatonController(val view: View) {
             MessageFormat.format(messages.getString("OpenedAutomatonController.LoadingAutomaton"), file),
             daemon = true
         ) {
-            deserialize(file).toAutomaton()
+            deserialize(file).createAutomaton()
         } addOnSuccess {
             openedAutomaton = it
             openedFile = file

@@ -1,7 +1,7 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.model.memory.RegisterDescriptor
-import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.module.tape.MultiTrackTapeDescriptor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

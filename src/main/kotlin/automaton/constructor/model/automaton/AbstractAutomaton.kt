@@ -23,11 +23,11 @@ import tornadofx.*
  *  - fixed list of [MemoryUnitDescriptor]-s
  *  - dynamically extendable set of [AutomatonModule]-s
  *
- * It's recommended to delegate to the `BaseAutomaton` implementation when creating new ones.
+ * It's recommended to extend the `AbstractAutomaton` when creating new ones.
  */
-class BaseAutomaton(
-    override val typeName: String,
-    override val memoryDescriptors: List<MemoryUnitDescriptor>,
+abstract class AbstractAutomaton(
+    final override val typeName: String,
+    final override val memoryDescriptors: List<MemoryUnitDescriptor>,
 ) : Automaton {
     private val transitionStorages = mutableMapOf<State, TransitionStorage>()
     private val outgoingTransitions = mutableMapOf<State, ObservableSet<Transition>>()

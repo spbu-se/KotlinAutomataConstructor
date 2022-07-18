@@ -1,14 +1,13 @@
 {
-  "typeName": "pushdown automaton",
-  "memoryDescriptors": [
-    {
-      "type": "Input tape"
-    },
-    {
-      "type": "Stack",
-      "acceptsByEmptyStack": false
-    }
-  ],
+  "base": {
+    "type": "pushdown automaton",
+    "inputTape": {},
+    "stacks": [
+      {
+        "acceptsByEmptyStack": false
+      }
+    ]
+  },
   "states": [
     {
       "id": 0,

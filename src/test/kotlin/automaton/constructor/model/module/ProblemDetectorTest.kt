@@ -1,7 +1,7 @@
 package automaton.constructor.model.module
 
-import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.TestAutomatons
+import automaton.constructor.model.automaton.Automaton
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.Test

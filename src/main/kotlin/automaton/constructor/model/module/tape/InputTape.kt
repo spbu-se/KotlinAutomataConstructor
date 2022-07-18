@@ -1,5 +1,6 @@
-package automaton.constructor.model.memory.tape
+package automaton.constructor.model.module.tape
 
+import automaton.constructor.model.data.InputTapeDescriptorData
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.MemoryUnitStatus
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
@@ -10,17 +11,13 @@ import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHA
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
-import automaton.constructor.utils.noPropertiesSerializer
 import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Bindings.`when`
 import javafx.beans.value.ObservableValue
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import tornadofx.*
 
 private const val NAME = "Input tape"
 
-@Serializable(with = InputTapeDescriptorSerializer::class)
 class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
     val expectedChar = DynamicPropertyDescriptors.charOrEps(
         messages.getString("InputTape.ExpectedChar"),
@@ -31,6 +28,8 @@ class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
     override val transitionSideEffects = emptyList<DynamicPropertyDescriptor<*>>()
     override var displayName: String = messages.getString("InputTape")
     override val isAlwaysReadyToTerminate get() = false
+
+    override fun getData() = InputTapeDescriptorData
 
     override fun createMemoryUnit() = InputTape(this, Track(value))
 }
@@ -52,8 +51,3 @@ class InputTape(
 
     override fun copy() = InputTape(descriptor, Track(track))
 }
-
-object InputTapeDescriptorSerializer : KSerializer<InputTapeDescriptor> by noPropertiesSerializer(
-    NAME,
-    { InputTapeDescriptor() }
-)

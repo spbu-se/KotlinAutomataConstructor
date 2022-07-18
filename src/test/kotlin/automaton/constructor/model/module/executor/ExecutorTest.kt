@@ -1,12 +1,12 @@
 package automaton.constructor.model.module.executor
 
-import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.TestAutomatons
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.output.OutputTape
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
-import automaton.constructor.model.memory.tape.MultiTrackTape
-import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.module.tape.InputTapeDescriptor
+import automaton.constructor.model.module.tape.MultiTrackTape
+import automaton.constructor.model.module.tape.MultiTrackTapeDescriptor
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

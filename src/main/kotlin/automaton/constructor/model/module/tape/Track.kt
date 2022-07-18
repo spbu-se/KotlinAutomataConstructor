@@ -1,4 +1,4 @@
-package automaton.constructor.model.memory.tape
+package automaton.constructor.model.module.tape
 
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHAR

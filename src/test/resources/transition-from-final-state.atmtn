@@ -1,11 +1,10 @@
 {
-  "typeName": "Turing machine",
-  "memoryDescriptors": [
-    {
-      "type": "Multi-track tape",
+  "base": {
+    "type": "Turing machine",
+    "tape": {
       "trackCount": 1
     }
-  ],
+  },
   "states": [
     {
       "id": 0,

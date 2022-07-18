@@ -2,7 +2,7 @@ package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.RegisterAutomaton
 import automaton.constructor.model.memory.RegisterDescriptor
-import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.module.tape.InputTapeDescriptor
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.I18N.messages
 import javafx.scene.control.Spinner
