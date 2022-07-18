@@ -3,6 +3,7 @@ package automaton.constructor.model.automaton
 import automaton.constructor.model.data.MealyMooreMachineData
 import automaton.constructor.model.memory.output.MealyMooreOutputTapeDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.utils.I18N.messages
 
 /**
  * Mealy/Moore machine.
@@ -12,13 +13,13 @@ import automaton.constructor.model.memory.tape.InputTapeDescriptor
 class MealyMooreMachine(
     val inputTape: InputTapeDescriptor,
     val mealyMooreOutputTape: MealyMooreOutputTapeDescriptor
-) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)) {
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)) {
     override fun getTypeData() = MealyMooreMachineData(
         inputTape = inputTape.getData(),
         mealyMooreOutputTape = mealyMooreOutputTape.getData()
     )
 
     companion object {
-        const val NAME = "Mealy/Moore machine"
+        val DISPLAY_NAME: String = messages.getString("MealyMooreMachine")
     }
 }

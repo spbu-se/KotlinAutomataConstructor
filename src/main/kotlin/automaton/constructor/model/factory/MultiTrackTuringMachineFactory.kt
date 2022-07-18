@@ -3,10 +3,11 @@ package automaton.constructor.model.factory
 import automaton.constructor.model.automaton.MultiTrackTuringMachine
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.Setting
+import automaton.constructor.utils.I18N.messages
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(MultiTrackTuringMachine.NAME) {
+class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(MultiTrackTuringMachine.DISPLAY_NAME) {
     val trackCountProperty = DEFAULT_TRACK_COUNT.toProperty()
     var trackCount by trackCountProperty
 
@@ -16,7 +17,7 @@ class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(MultiTrackTuring
 
     override fun createSettings() = listOf(
         Setting(
-            displayName = "Number of tracks",
+            displayName = messages.getString("MultiTrackTuringMachineFactory.NumberOfTracks"),
             editor = Spinner<Int>(MIN_TRACK_COUNT, MAX_TRACK_COUNT, DEFAULT_TRACK_COUNT).apply {
                 trackCountProperty.bind(valueProperty())
             }

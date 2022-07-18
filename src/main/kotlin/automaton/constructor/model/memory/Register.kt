@@ -6,16 +6,21 @@ import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
+import automaton.constructor.utils.I18N.messages
 import tornadofx.*
 
-private const val NAME = "Register"
-
 class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
-    val expectedValue = DynamicPropertyDescriptors.stringOrEps("Expected value", canBeDeemedEpsilon = false)
-    val newValue = DynamicPropertyDescriptors.stringOrEps("New value", canBeDeemedEpsilon = false)
+    val expectedValue = DynamicPropertyDescriptors.stringOrEps(
+        messages.getString("Register.ExpectedValue"),
+        canBeDeemedEpsilon = false
+    )
+    val newValue = DynamicPropertyDescriptors.stringOrEps(
+        messages.getString("Register.NewValue"),
+        canBeDeemedEpsilon = false
+    )
     override val transitionFilters = listOf(expectedValue)
     override val transitionSideEffects = listOf(newValue)
-    override var displayName = NAME
+    override var displayName: String = messages.getString("Register")
 
     override fun getData() = RegisterDescriptorData
 

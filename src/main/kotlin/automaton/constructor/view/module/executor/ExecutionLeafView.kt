@@ -10,8 +10,7 @@ fun executionLeafView(executionState: ExecutionState) =
         SettingGroup(
             executionState.state.nameProperty.stringBinding(executionState.statusProperty) {
                 "$it [${executionState.status}]"
-            },
-            executionState.createSettings()
+            }, executionState.createSettings()
         )
     ).apply {
         gridpane.backgroundProperty().bind(executionState.backgroundBinding)

@@ -6,17 +6,20 @@ import automaton.constructor.model.data.getData
 import automaton.constructor.model.factory.getAllAutomatonFactories
 import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers
+import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.addOnCancel
 import automaton.constructor.utils.addOnFail
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.runAsyncWithDialog
+import javafx.beans.binding.Binding
 import javafx.concurrent.Task
 import javafx.geometry.Pos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import tornadofx.*
 import java.io.File
+import java.text.MessageFormat
 
 class OpenedAutomatonController(val view: View) {
     private val openedFileProperty = objectProperty<File?>(null)
@@ -25,8 +28,11 @@ class OpenedAutomatonController(val view: View) {
     val openedAutomatonProperty = getAllAutomatonFactories().first().createAutomaton().toProperty()
     var openedAutomaton: Automaton by openedAutomatonProperty
 
-    private val nameBinding = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
-        it?.toString() ?: "Untitled ${openedAutomaton.typeName}"
+    private val nameBinding: Binding<String> = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
+        it?.toString() ?: MessageFormat.format(
+            messages.getString("OpenedAutomatonController.UntitledAutomaton"),
+            openedAutomaton.typeDisplayName
+        )
     }
     private val name: String by nameBinding
 
@@ -45,13 +51,13 @@ class OpenedAutomatonController(val view: View) {
 
     fun onNew() {
         if (!suggestSavingChanges()) return
-        view.dialog("New automaton") {
+        view.dialog(messages.getString("OpenedAutomatonController.NewAutomaton")) {
             clear()
             stage.x = 100.0
             stage.y = 100.0
             stage.isResizable = false
             vbox(10.0) {
-                label("Select automaton type")
+                label(messages.getString("OpenedAutomatonController.SelectAutomatonType"))
                 val listview = listview(getAllAutomatonFactories().toObservable()) {
                     prefHeight = 200.0
                 }
@@ -63,7 +69,7 @@ class OpenedAutomatonController(val view: View) {
                 }
                 hbox(10.0) {
                     alignment = Pos.CENTER_RIGHT
-                    button("OK") {
+                    button(messages.getString("OpenedAutomatonController.OK")) {
                         enableWhen(listview.selectionModel.selectedItemProperty().isNotNull)
                         action {
                             listview.selectedItem?.let {
@@ -73,7 +79,7 @@ class OpenedAutomatonController(val view: View) {
                             close()
                         }
                     }
-                    button("Cancel") { action { close() } }
+                    button(messages.getString("OpenedAutomatonController.Cancel")) { action { close() } }
                 }
             }
             scene.widthProperty().onChange { stage.sizeToScene() }
@@ -83,7 +89,7 @@ class OpenedAutomatonController(val view: View) {
 
     fun onOpen() {
         if (!suggestSavingChanges()) return
-        val file = chooseFile("Open", FileChooserMode.Single) ?: return
+        val file = chooseFile(messages.getString("MainView.File.Open"), FileChooserMode.Single) ?: return
         findFileAutomatonSerializer(file).loadAsync(file)
     }
 
@@ -99,7 +105,10 @@ class OpenedAutomatonController(val view: View) {
      * @return false if CANCEL is pressed
      */
     fun onSaveAs(): Boolean {
-        saveAs(chooseFile("Save As", FileChooserMode.Save) ?: return false)
+        saveAs(
+            chooseFile(messages.getString("MainView.File.SaveAs"), FileChooserMode.Save)
+                ?: return false
+        )
         return true
     }
 
@@ -124,31 +133,52 @@ class OpenedAutomatonController(val view: View) {
     private fun findFileAutomatonSerializer(file: File) =
         automatonSerializers().find { serializer ->
             serializer.extensionFilter.extensions.any { file.path.endsWith(it.drop(1)) }
-        } ?: throw IllegalArgumentException("Unknown file extension \"${file.extension}\" of $file")
+        } ?: throw IllegalArgumentException(
+            MessageFormat.format(
+                messages.getString("OpenedAutomatonController.UnknownFileExtension"),
+                file.extension, file
+            )
+        )
 
     private fun AutomatonSerializer.saveAsync(file: File): Task<Unit> {
         val automatonData = openedAutomaton.getData()
         openedAutomaton.undoRedoManager.wasModified = false
-        return view.runAsyncWithDialog("Saving automaton to $file", daemon = false) {
+        return view.runAsyncWithDialog(
+            MessageFormat.format(messages.getString("OpenedAutomatonController.SavingAutomaton"), file),
+            daemon = false
+        ) {
             serialize(file, automatonData)
         } addOnSuccess {
             openedFile = file
         } addOnFail {
             openedAutomaton.undoRedoManager.wasModified = true
-            throw RuntimeException("Unable to save automaton to $file", it)
+            throw RuntimeException(
+                MessageFormat.format(
+                    messages.getString("OpenedAutomatonController.UnableToSaveAutomaton"),
+                    file
+                ), it
+            )
         } addOnCancel {
             openedAutomaton.undoRedoManager.wasModified = true
         }
     }
 
     private fun AutomatonSerializer.loadAsync(file: File): Task<Automaton> =
-        view.runAsyncWithDialog("Loading automaton from $file", daemon = true) {
+        view.runAsyncWithDialog(
+            MessageFormat.format(messages.getString("OpenedAutomatonController.LoadingAutomaton"), file),
+            daemon = true
+        ) {
             deserialize(file).createAutomaton()
         } addOnSuccess {
             openedAutomaton = it
             openedFile = file
         } addOnFail {
-            throw RuntimeException("Unable to load automaton from $file", it)
+            throw RuntimeException(
+                MessageFormat.format(
+                    messages.getString("OpenedAutomatonController.UnableToLoadAutomaton"),
+                    file
+                ), it
+            )
         }
 
     /**
@@ -158,7 +188,7 @@ class OpenedAutomatonController(val view: View) {
         if (!openedAutomaton.undoRedoManager.wasModified) return true
         val result = alert(
             Alert.AlertType.CONFIRMATION,
-            "Do you want to save $name?",
+            MessageFormat.format(messages.getString("OpenedAutomatonController.SuggestSavingChanges"), name),
             null,
             ButtonType.YES,
             ButtonType.NO,

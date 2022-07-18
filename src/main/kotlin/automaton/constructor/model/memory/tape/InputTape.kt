@@ -11,18 +11,20 @@ import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHA
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Bindings.`when`
 import javafx.beans.value.ObservableValue
 import tornadofx.*
 
-private const val NAME = "Input tape"
-
 class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
-    val expectedChar = DynamicPropertyDescriptors.charOrEps("Expected char", canBeDeemedEpsilon = true)
+    val expectedChar = DynamicPropertyDescriptors.charOrEps(
+        messages.getString("InputTape.ExpectedChar"),
+        canBeDeemedEpsilon = true
+    )
 
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = emptyList<DynamicPropertyDescriptor<*>>()
-    override var displayName = NAME
+    override var displayName: String = messages.getString("InputTape")
     override val isAlwaysReadyToTerminate get() = false
 
     override fun getData() = InputTapeDescriptorData

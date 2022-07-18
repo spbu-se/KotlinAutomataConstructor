@@ -7,21 +7,35 @@ import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.monospaced
+import automaton.constructor.utils.I18N.messages
 import javafx.scene.layout.VBox
 import tornadofx.*
+import java.text.MessageFormat
 
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
-    val headMoveDirection = DynamicPropertyDescriptors.enum<HeadMoveDirection>("Head move")
+    val headMoveDirection =
+        DynamicPropertyDescriptors.enum<HeadMoveDirection>(messages.getString("MultitrackTape.HeadMoveDirection"))
     val expectedChars = List(trackCount) { i ->
-        DynamicPropertyDescriptors.charOrBlank("Expected char${getIndexSuffix(i)}")
+        DynamicPropertyDescriptors.charOrBlank(
+            MessageFormat.format(
+                messages.getString("MultitrackTape.ExpectedChar"),
+                getIndexSuffix(i)
+            )
+        )
     }
     val newChars = List(trackCount) { i ->
-        DynamicPropertyDescriptors.charOrBlank("New char${getIndexSuffix(i)}")
+        DynamicPropertyDescriptors.charOrBlank(
+            MessageFormat.format(
+                messages.getString("MultitrackTape.NewChar"),
+                getIndexSuffix(i)
+            )
+        )
     }
     override val transitionFilters = expectedChars
     override val transitionSideEffects = newChars + headMoveDirection
-    override var displayName = if (trackCount == 1) "Tape" else "Multi-track tape"
+    override var displayName: String = if (trackCount == 1) messages.getString("MultitrackTape.Tape")
+    else messages.getString("MultitrackTape.Multi-trackTape")
 
     override fun getData() = MultiTrackTapeDescriptorData(trackCount)
 

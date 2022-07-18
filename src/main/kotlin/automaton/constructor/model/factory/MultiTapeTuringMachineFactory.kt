@@ -3,10 +3,11 @@ package automaton.constructor.model.factory
 import automaton.constructor.model.automaton.MultiTapeTuringMachine
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.Setting
+import automaton.constructor.utils.I18N.messages
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class MultiTapeTuringMachineFactory : AbstractAutomatonFactory(MultiTapeTuringMachine.NAME) {
+class MultiTapeTuringMachineFactory : AbstractAutomatonFactory(MultiTapeTuringMachine.DISPLAY_NAME) {
     val tapeCountProperty = DEFAULT_TAPE_COUNT.toProperty()
     var tapeCount by tapeCountProperty
 
@@ -16,7 +17,7 @@ class MultiTapeTuringMachineFactory : AbstractAutomatonFactory(MultiTapeTuringMa
 
     override fun createSettings() = listOf(
         Setting(
-            displayName = "Number of tapes",
+            displayName = messages.getString("MultiTapeTuringMachineFactory.NumberOfTapes"),
             editor = Spinner<Int>(MIN_TAPE_COUNT, MAX_TAPE_COUNT, DEFAULT_TAPE_COUNT).apply {
                 tapeCountProperty.bind(valueProperty())
             }

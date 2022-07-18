@@ -5,6 +5,7 @@ import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.SteppingStrategy
 import automaton.constructor.model.module.problems
 import automaton.constructor.view.module.executor.executionLeafView
+import automaton.constructor.utils.I18N.messages
 import tornadofx.*
 
 class ExecutorController(val executor: Executor, val view: View) : Controller() {
@@ -17,14 +18,16 @@ class ExecutorController(val executor: Executor, val view: View) : Controller() 
             if (!tryStart()) return
             executor.runFor(1_000)
             val executionResult = when (executor.status) {
-                ACCEPTED -> "Input accepted"
-                REJECTED -> "Input rejected"
-                FROZEN -> "Execution has been frozen"
-                RUNNING -> "The automaton didn't halt in one second"
+                ACCEPTED -> messages.getString("ExecutorController.Executor.Status.Accepted")
+                REJECTED -> messages.getString("ExecutorController.Executor.Status.Rejected")
+                FROZEN -> messages.getString("ExecutorController.Executor.Status.Frozen")
+                RUNNING -> messages.getString("ExecutorController.Executor.Status.Running")
             }
             val graphic = executor.acceptedStates.firstOrNull()?.let { executionLeafView(it) }
             executor.stop()
-            information("Execution result", executionResult, graphic = graphic)
+            information(
+                messages.getString("ExecutorController.ExecutionResult"), executionResult, graphic = graphic
+            )
         }
     }
 
@@ -35,7 +38,8 @@ class ExecutorController(val executor: Executor, val view: View) : Controller() 
 
     private fun tryStart(): Boolean {
         if (automaton.problems.isNotEmpty()) {
-            error("Execution failed", automaton.problems.joinToString("\n") { it.message })
+            error(messages.getString("ExecutorController.Error.ExecutionFailed"),
+                automaton.problems.joinToString("\n") { it.message })
             return false
         }
         executor.start()

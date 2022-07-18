@@ -4,6 +4,7 @@ import automaton.constructor.model.data.AutomatonData
 import automaton.constructor.model.data.AutomatonTypeData
 import automaton.constructor.model.data.MemoryUnitDescriptorData
 import automaton.constructor.model.data.serializersModule
+import automaton.constructor.utils.I18N.messages
 import javafx.stage.FileChooser.ExtensionFilter
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -20,7 +21,8 @@ object JsonAutomatonSerializer : AutomatonSerializer {
         }
     }
 
-    override val extensionFilter = ExtensionFilter("Automaton constructor file", "*.atmtn", "*.json")
+    override val extensionFilter =
+        ExtensionFilter(messages.getString("JsonAutomatonSerializer.AutomatonConstructorFile"), "*.atmtn", "*.json")
 
     override fun serialize(file: File, automatonData: AutomatonData) =
         file.writeText(format.encodeToString(automatonData))

@@ -4,10 +4,11 @@ import automaton.constructor.model.automaton.RegisterAutomaton
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.Setting
+import automaton.constructor.utils.I18N.messages
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class RegisterAutomatonFactory : AbstractAutomatonFactory(RegisterAutomaton.NAME) {
+class RegisterAutomatonFactory : AbstractAutomatonFactory(RegisterAutomaton.DISPLAY_NAME) {
     val registerCountProperty = DEFAULT_REGISTER_COUNT.toProperty()
     var registerCount by registerCountProperty
 
@@ -18,7 +19,7 @@ class RegisterAutomatonFactory : AbstractAutomatonFactory(RegisterAutomaton.NAME
 
     override fun createSettings() = listOf(
         Setting(
-            displayName = "Number of registers",
+            displayName = messages.getString("RegisterAutomatonFactory.NumberOfRegisters"),
             editor = Spinner<Int>(MIN_REGISTER_COUNT, MAX_REGISTER_COUNT, DEFAULT_REGISTER_COUNT).apply {
                 registerCountProperty.bind(valueProperty())
             }

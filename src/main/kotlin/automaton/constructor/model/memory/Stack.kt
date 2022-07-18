@@ -1,25 +1,30 @@
 package automaton.constructor.model.memory
 
 import automaton.constructor.model.data.StackDescriptorData
-import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
-import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
-import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_TERMINATION
+import automaton.constructor.model.memory.MemoryUnitStatus.*
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.nonNullObjectBinding
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.VBox
 import tornadofx.*
 
 class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableString("z"), MemoryUnitDescriptor {
-    val expectedChar = DynamicPropertyDescriptors.charOrEps("Expected char", canBeDeemedEpsilon = false)
-    val pushedString = DynamicPropertyDescriptors.stringOrEps("Pushed string", canBeDeemedEpsilon = false)
+    val expectedChar = DynamicPropertyDescriptors.charOrEps(
+        messages.getString("Stack.ExpectedChar"),
+        canBeDeemedEpsilon = false
+    )
+    val pushedString = DynamicPropertyDescriptors.stringOrEps(
+        messages.getString("Stack.PushedString"),
+        canBeDeemedEpsilon = false
+    )
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = listOf(pushedString)
-    override var displayName = "Stack"
-    override val mayRequireAcceptance = true
+    override var displayName: String = messages.getString("Stack")
+    override val mayRequireAcceptance get() = true
 
     val acceptsByEmptyStackProperty = acceptsByEmptyStack.toProperty()
     var acceptsByEmptyStack by acceptsByEmptyStackProperty
@@ -32,7 +37,7 @@ class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableS
         add(super.createTextFieldEditor())
         hbox {
             checkbox { selectedProperty().bindBidirectional(acceptsByEmptyStackProperty) }
-            label("Accept by empty stack")
+            label(messages.getString("Stack.AcceptByEmptyStack"))
         }
     }
 }
