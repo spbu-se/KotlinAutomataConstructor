@@ -2,7 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.data.RegisterAutomatonData
 import automaton.constructor.model.memory.RegisterDescriptor
-import automaton.constructor.model.module.tape.InputTapeDescriptor
+import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N.messages
 
 /**
@@ -13,7 +13,7 @@ import automaton.constructor.utils.I18N.messages
 class RegisterAutomaton(
     val inputTape: InputTapeDescriptor,
     val registers: List<RegisterDescriptor>
-) : AbstractAutomaton(NAME, memoryDescriptors = listOf(inputTape) + registers) {
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape) + registers) {
     init {
         require(registers.isNotEmpty()) {
             messages.getString("RegisterAutomaton.IllegalRegistersArgument")
@@ -26,6 +26,6 @@ class RegisterAutomaton(
     )
 
     companion object {
-        const val NAME = "register automaton"
+        val DISPLAY_NAME: String = messages.getString("RegisterAutomaton")
     }
 }

@@ -15,13 +15,13 @@ import javafx.geometry.Point2D
  * Automaton
  *
  * It has:
- *  - the [type name][typeName]
+ *  - the [type name][typeDisplayName]
  *  - modifiable graph with vertices of type [State] and edges of type [Transition]
  *  - fixed list of [MemoryUnitDescriptor]-s
  *  - dynamically extendable set of [AutomatonModule]-s
  */
 interface Automaton {
-    val typeName: String
+    val typeDisplayName: String
     val memoryDescriptors: List<MemoryUnitDescriptor>
 
     val undoRedoManager: UndoRedoManager

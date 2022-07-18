@@ -5,7 +5,6 @@ import automaton.constructor.utils.capitalize
 import automaton.constructor.utils.I18N.messages
 import javafx.beans.value.ObservableValue
 import tornadofx.*
-import java.text.MessageFormat
 
 private val automatonDescriptionProviderFactory = { automaton: Automaton -> AutomatonDescriptionProvider(automaton) }
 val Automaton.automatonDescriptionProvider get() = getModule(automatonDescriptionProviderFactory)
@@ -30,7 +29,7 @@ class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
     private val epsilonPart: String by epsilonPartBinding
 
     val descriptionBinding = stringBinding(determinicityPartBinding, epsilonPartBinding) {
-        listOf(determinicityPart, automaton.typeName, epsilonPart).filter { it.isNotEmpty() }.joinToString(" ")
+        listOf(determinicityPart, automaton.typeDisplayName, epsilonPart).filter { it.isNotEmpty() }.joinToString(" ")
             .capitalize()
     }
 }

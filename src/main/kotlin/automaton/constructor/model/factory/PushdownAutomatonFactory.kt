@@ -2,13 +2,13 @@ package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.memory.StackDescriptor
-import automaton.constructor.model.module.tape.InputTapeDescriptor
+import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.I18N.messages
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class PushdownAutomatonFactory : AbstractAutomatonFactory(PushdownAutomaton.NAME) {
+class PushdownAutomatonFactory : AbstractAutomatonFactory(PushdownAutomaton.DISPLAY_NAME) {
     val stackCountProperty = DEFAULT_STACK_COUNT.toProperty()
     var stackCount by stackCountProperty
 

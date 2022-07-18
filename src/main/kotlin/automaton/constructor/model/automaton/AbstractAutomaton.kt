@@ -18,7 +18,7 @@ import tornadofx.*
  * The base automaton for every other automaton.
  *
  * It has:
- *  - the fixed [type name][typeName]
+ *  - the fixed [type display name][typeDisplayName]
  *  - modifiable graph with vertices of type [State] and edges of type [Transition]
  *  - fixed list of [MemoryUnitDescriptor]-s
  *  - dynamically extendable set of [AutomatonModule]-s
@@ -26,7 +26,7 @@ import tornadofx.*
  * It's recommended to extend the `AbstractAutomaton` when creating new ones.
  */
 abstract class AbstractAutomaton(
-    final override val typeName: String,
+    final override val typeDisplayName: String,
     final override val memoryDescriptors: List<MemoryUnitDescriptor>,
 ) : Automaton {
     private val transitionStorages = mutableMapOf<State, TransitionStorage>()

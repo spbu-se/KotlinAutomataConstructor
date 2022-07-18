@@ -1,7 +1,7 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.TestAutomatons
-import automaton.constructor.model.module.tape.InputTapeDescriptor
+import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

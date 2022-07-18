@@ -4,8 +4,8 @@ import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.output.MealyMooreOutputTapeDescriptor
-import automaton.constructor.model.module.tape.InputTapeDescriptor
-import automaton.constructor.model.module.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

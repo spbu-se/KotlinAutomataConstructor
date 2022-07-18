@@ -2,13 +2,13 @@ package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.TuringMachineWithRegisters
 import automaton.constructor.model.memory.RegisterDescriptor
-import automaton.constructor.model.module.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.I18N.messages
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class TuringMachineWithRegistersFactory : AbstractAutomatonFactory(TuringMachineWithRegisters.NAME) {
+class TuringMachineWithRegistersFactory : AbstractAutomatonFactory(TuringMachineWithRegisters.DISPLAY_NAME) {
     val registerCountProperty = DEFAULT_REGISTER_COUNT.toProperty()
     var registerCount by registerCountProperty
 

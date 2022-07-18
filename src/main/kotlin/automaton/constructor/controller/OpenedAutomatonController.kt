@@ -12,6 +12,7 @@ import automaton.constructor.utils.addOnFail
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.runAsyncWithDialog
+import javafx.beans.binding.Binding
 import javafx.concurrent.Task
 import javafx.geometry.Pos
 import javafx.scene.control.Alert
@@ -27,10 +28,10 @@ class OpenedAutomatonController(val view: View) {
     val openedAutomatonProperty = getAllAutomatonFactories().first().createAutomaton().toProperty()
     var openedAutomaton: Automaton by openedAutomatonProperty
 
-    private val nameBinding = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
+    private val nameBinding: Binding<String> = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
         it?.toString() ?: MessageFormat.format(
             messages.getString("OpenedAutomatonController.UntitledAutomaton"),
-            openedAutomaton.typeName
+            openedAutomaton.typeDisplayName
         )
     }
     private val name: String by nameBinding

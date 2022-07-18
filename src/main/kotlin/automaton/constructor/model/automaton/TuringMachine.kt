@@ -1,7 +1,7 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.data.TuringMachineData
-import automaton.constructor.model.module.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.I18N.messages
 
 /**
@@ -11,7 +11,7 @@ import automaton.constructor.utils.I18N.messages
  */
 class TuringMachine(
     val tape: MultiTrackTapeDescriptor
-) : AbstractAutomaton(NAME, memoryDescriptors = listOf(tape)) {
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(tape)) {
     init {
         require(tape.trackCount == 1) {
             messages.getString("TuringMachine.IllegalTapeArgument")
@@ -23,6 +23,6 @@ class TuringMachine(
     )
 
     companion object {
-        const val NAME = "Turing machine"
+        val DISPLAY_NAME: String = messages.getString("TuringMachine")
     }
 }

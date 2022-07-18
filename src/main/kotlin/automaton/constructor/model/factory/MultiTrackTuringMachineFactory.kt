@@ -1,13 +1,13 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.model.automaton.MultiTrackTuringMachine
-import automaton.constructor.model.module.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.I18N.messages
 import javafx.scene.control.Spinner
 import tornadofx.*
 
-class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(MultiTrackTuringMachine.NAME) {
+class MultiTrackTuringMachineFactory : AbstractAutomatonFactory(MultiTrackTuringMachine.DISPLAY_NAME) {
     val trackCountProperty = DEFAULT_TRACK_COUNT.toProperty()
     var trackCount by trackCountProperty
 

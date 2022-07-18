@@ -2,6 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.data.CustomAutomatonData
 import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.utils.I18N.messages
 
 /**
  * Custom automaton.
@@ -10,12 +11,12 @@ import automaton.constructor.model.memory.MemoryUnitDescriptor
  */
 class CustomAutomaton(
     memoryDescriptors: List<MemoryUnitDescriptor>
-) : AbstractAutomaton(NAME, memoryDescriptors) {
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors) {
     override fun getTypeData() = CustomAutomatonData(
         memoryUnitDescriptors = memoryDescriptors.map { it.getData() }
     )
 
     companion object {
-        const val NAME = "custom automaton"
+        val DISPLAY_NAME: String = messages.getString("CustomAutomaton")
     }
 }

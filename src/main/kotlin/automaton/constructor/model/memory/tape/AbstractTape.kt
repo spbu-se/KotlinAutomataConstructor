@@ -1,4 +1,4 @@
-package automaton.constructor.model.module.tape
+package automaton.constructor.model.memory.tape
 
 import automaton.constructor.model.memory.MemoryUnit
 import javafx.scene.layout.GridPane

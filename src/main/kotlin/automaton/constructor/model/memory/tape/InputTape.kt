@@ -1,4 +1,4 @@
-package automaton.constructor.model.module.tape
+package automaton.constructor.model.memory.tape
 
 import automaton.constructor.model.data.InputTapeDescriptorData
 import automaton.constructor.model.memory.MemoryUnitDescriptor
@@ -15,8 +15,6 @@ import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Bindings.`when`
 import javafx.beans.value.ObservableValue
 import tornadofx.*
-
-private const val NAME = "Input tape"
 
 class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
     val expectedChar = DynamicPropertyDescriptors.charOrEps(

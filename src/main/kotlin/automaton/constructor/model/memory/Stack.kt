@@ -12,8 +12,6 @@ import javafx.beans.value.ObservableValue
 import javafx.scene.layout.VBox
 import tornadofx.*
 
-private const val NAME = "Stack"
-
 class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableString("z"), MemoryUnitDescriptor {
     val expectedChar = DynamicPropertyDescriptors.charOrEps(
         messages.getString("Stack.ExpectedChar"),

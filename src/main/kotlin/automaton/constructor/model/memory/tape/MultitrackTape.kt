@@ -1,4 +1,4 @@
-package automaton.constructor.model.module.tape
+package automaton.constructor.model.memory.tape
 
 import automaton.constructor.model.data.MultiTrackTapeDescriptorData
 import automaton.constructor.model.memory.MemoryUnitDescriptor
@@ -34,7 +34,7 @@ class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     }
     override val transitionFilters = expectedChars
     override val transitionSideEffects = newChars + headMoveDirection
-    override var displayName = if (trackCount == 1) messages.getString("MultitrackTape.Tape")
+    override var displayName: String = if (trackCount == 1) messages.getString("MultitrackTape.Tape")
     else messages.getString("MultitrackTape.Multi-trackTape")
 
     override fun getData() = MultiTrackTapeDescriptorData(trackCount)

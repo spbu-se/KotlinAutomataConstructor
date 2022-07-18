@@ -1,4 +1,4 @@
-package automaton.constructor.model.module.tape
+package automaton.constructor.model.memory.tape
 
 enum class HeadMoveDirection(val displayName: String, val shift: Int) {
     RIGHT("R", 1),
