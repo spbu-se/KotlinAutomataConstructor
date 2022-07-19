@@ -1,6 +1,6 @@
 {
   "base": {
-    "type": "register automaton",
+    "type": "register-automaton",
     "inputTape": {},
     "registers": [
       {}

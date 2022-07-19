@@ -30,7 +30,7 @@ interface MemoryUnitDescriptorData {
  * The data of an [input tape descriptor][InputTapeDescriptor].
  */
 @Serializable
-@SerialName("Input tape")
+@SerialName("input-tape")
 @IgnorableByCoverage
 object InputTapeDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = InputTapeDescriptor()
@@ -40,7 +40,7 @@ object InputTapeDescriptorData : MemoryUnitDescriptorData {
  * The data of a [multi-track tape descriptor][MultiTrackTapeDescriptor] with the [trackCount] number of tracks.
  */
 @Serializable
-@SerialName("Multi-track tape")
+@SerialName("multi-track-tape")
 @IgnorableByCoverage
 data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescriptorData {
     override fun createDescriptor() = MultiTrackTapeDescriptor(trackCount)
@@ -50,7 +50,7 @@ data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescrip
  * The data of a [stack descriptor][StackDescriptor] with the [acceptsByEmptyStack] status.
  */
 @Serializable
-@SerialName("Stack")
+@SerialName("stack")
 @IgnorableByCoverage
 data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDescriptorData {
     override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack)
@@ -60,7 +60,7 @@ data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDes
  * The data of a [register descriptor][RegisterDescriptor].
  */
 @Serializable
-@SerialName("Register")
+@SerialName("register")
 @IgnorableByCoverage
 object RegisterDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = RegisterDescriptor()
@@ -70,7 +70,7 @@ object RegisterDescriptorData : MemoryUnitDescriptorData {
  * The data of a [Mealy/Moore output tape descriptor][MealyMooreOutputTapeDescriptor].
  */
 @Serializable
-@SerialName("Mealy/Moore output tape")
+@SerialName("mealy-moore-output-tape")
 @IgnorableByCoverage
 object MealyMooreOutputTapeDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = MealyMooreOutputTapeDescriptor()

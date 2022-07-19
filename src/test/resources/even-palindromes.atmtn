@@ -1,6 +1,6 @@
 {
   "base": {
-    "type": "pushdown automaton",
+    "type": "pushdown-automaton",
     "inputTape": {},
     "stacks": [
       {

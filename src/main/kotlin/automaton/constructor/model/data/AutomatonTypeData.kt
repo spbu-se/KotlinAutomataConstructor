@@ -26,7 +26,7 @@ interface AutomatonTypeData {
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("finite automaton")
+@SerialName("finite-automaton")
 data class FiniteAutomatonData(
     val inputTape: InputTapeDescriptorData
 ) : AutomatonTypeData {
@@ -40,7 +40,7 @@ data class FiniteAutomatonData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("pushdown automaton")
+@SerialName("pushdown-automaton")
 data class PushdownAutomatonData(
     val inputTape: InputTapeDescriptorData,
     val stacks: List<StackDescriptorData>
@@ -56,7 +56,7 @@ data class PushdownAutomatonData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("register automaton")
+@SerialName("register-automaton")
 data class RegisterAutomatonData(
     val inputTape: InputTapeDescriptorData,
     val registers: List<RegisterDescriptorData>
@@ -72,7 +72,7 @@ data class RegisterAutomatonData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("Mealy/Moore machine")
+@SerialName("mealy-moore-machine")
 data class MealyMooreMachineData(
     val inputTape: InputTapeDescriptorData,
     val mealyMooreOutputTape: MealyMooreOutputTapeDescriptorData
@@ -88,7 +88,7 @@ data class MealyMooreMachineData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("Turing machine")
+@SerialName("turing-machine")
 data class TuringMachineData(
     val tape: MultiTrackTapeDescriptorData
 ) : AutomatonTypeData {
@@ -102,7 +102,7 @@ data class TuringMachineData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("multi-track Turing machine")
+@SerialName("multi-track-turing-machine")
 data class MultiTrackTuringMachineData(
     val tracks: MultiTrackTapeDescriptorData
 ) : AutomatonTypeData {
@@ -116,7 +116,7 @@ data class MultiTrackTuringMachineData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("multi-tape Turing machine")
+@SerialName("multi-tape-turing-machine")
 data class MultiTapeTuringMachineData(
     val tapes: List<MultiTrackTapeDescriptorData>
 ) : AutomatonTypeData {
@@ -130,7 +130,7 @@ data class MultiTapeTuringMachineData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("Turing machine with registers")
+@SerialName("turing-machine-with-registers")
 data class TuringMachineWithRegistersData(
     val tape: MultiTrackTapeDescriptorData,
     val registers: List<RegisterDescriptorData>
@@ -146,7 +146,7 @@ data class TuringMachineWithRegistersData(
  */
 @IgnorableByCoverage
 @Serializable
-@SerialName("custom automaton")
+@SerialName("custom-automaton")
 data class CustomAutomatonData(
     val memoryUnitDescriptors: List<MemoryUnitDescriptorData>
 ) : AutomatonTypeData {
