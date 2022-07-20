@@ -1,6 +1,6 @@
 {
   "base": {
-    "type": "custom automaton",
+    "type": "custom-automaton",
     "memoryUnitDescriptors": []
   },
   "states": [

@@ -1,6 +1,6 @@
 {
   "base": {
-    "type": "Mealy/Moore machine",
+    "type": "mealy-moore-machine",
     "inputTape": {},
     "mealyMooreOutputTape": {}
   },

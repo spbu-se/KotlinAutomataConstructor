@@ -1,6 +1,6 @@
 {
   "base": {
-    "type": "finite automaton",
+    "type": "finite-automaton",
     "inputTape": {}
   },
   "states": [],
