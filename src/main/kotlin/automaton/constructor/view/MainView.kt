@@ -44,7 +44,7 @@ class MainView : View() {
                         else -> undoRedoController.onUndo()
                     }
                 }.apply {
-                    enableWhen(automatonView.automaton.undoRedoManager.isUndoableProperty)
+                    enableWhen(automatonViewBinding.select { it.automaton.undoRedoManager.isUndoableProperty })
                 }
                 shortcutItem(I18N.messages.getString("MainView.Edit.Redo"), "Shortcut+Shift+Z") {
                     val focusOwner = scene.focusOwner
@@ -53,7 +53,7 @@ class MainView : View() {
                         else -> undoRedoController.onRedo()
                     }
                 }.apply {
-                    enableWhen(automatonView.automaton.undoRedoManager.isRedoableProperty)
+                    enableWhen(automatonViewBinding.select { it.automaton.undoRedoManager.isRedoableProperty })
                 }
             }
             menu(I18N.messages.getString("MainView.Help")) {
