@@ -70,7 +70,9 @@ abstract class AbstractAutomaton(
     override fun getPureTransitions(state: State): Set<Transition> =
         transitionStorages[state]?.getPureTransitions() ?: emptySet()
 
-    override fun getTransitions(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
+    override fun getTransitionsFrom(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
+
+    override fun getTransitionsTo(state: State): Set<Transition> = incomingTransitions.getValue(state)
 
     override fun addTransition(source: State, target: State): Transition {
         val transition = Transition(source, target, memoryDescriptors)

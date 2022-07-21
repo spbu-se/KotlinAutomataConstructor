@@ -51,7 +51,12 @@ interface Automaton {
      *
      * Returned set is modified whenever the set of transitions from [state] changes
      */
-    fun getTransitions(state: State): ObservableSet<Transition>
+    fun getTransitionsFrom(state: State): ObservableSet<Transition>
+
+    /**
+     * Returns set containing all transition to a given [state]
+     */
+    fun getTransitionsTo(state: State): Set<Transition>
 
     /**
      * Adds transition from [source] to [target]
