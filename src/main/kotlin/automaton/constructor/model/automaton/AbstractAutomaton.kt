@@ -2,6 +2,8 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.State
 import automaton.constructor.model.action.AutomatonElementAction
+import automaton.constructor.model.action.RemoveStateAction
+import automaton.constructor.model.action.RemoveTransitionAction
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
@@ -136,9 +138,13 @@ abstract class AbstractAutomaton(
     }
 
 
-    override val transitionActions: List<AutomatonElementAction<Transition>> = emptyList()
+    override val transitionActions: List<AutomatonElementAction<Transition>> = listOf(
+        RemoveTransitionAction(automaton = this)
+    )
 
-    override val stateActions: List<AutomatonElementAction<State>> = emptyList()
+    override val stateActions: List<AutomatonElementAction<State>> = listOf(
+        RemoveStateAction(automaton = this)
+    )
 
 
     @Suppress("UNCHECKED_CAST")
