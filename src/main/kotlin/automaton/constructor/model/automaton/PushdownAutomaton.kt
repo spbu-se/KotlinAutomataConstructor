@@ -1,5 +1,6 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.action.EliminateEpsilonTransitionAction
 import automaton.constructor.model.data.PushdownAutomatonData
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
@@ -19,6 +20,10 @@ class PushdownAutomaton(
             messages.getString("PushDownAutomaton.IllegalStacksArgument")
         }
     }
+
+    override val transitionActions = super.transitionActions + listOf(
+        EliminateEpsilonTransitionAction(automaton = this)
+    )
 
     override fun getTypeData() = PushdownAutomatonData(
         inputTape = inputTape.getData(),

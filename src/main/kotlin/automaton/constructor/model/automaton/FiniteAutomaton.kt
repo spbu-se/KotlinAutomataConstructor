@@ -1,8 +1,9 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.action.EliminateEpsilonTransitionAction
 import automaton.constructor.model.data.FiniteAutomatonData
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
-import automaton.constructor.utils.I18N.messages
+import automaton.constructor.utils.I18N
 
 /**
  * Finite automaton.
@@ -16,7 +17,11 @@ class FiniteAutomaton(
         inputTape = inputTape.getData()
     )
 
+    override val transitionActions = super.transitionActions + listOf(
+        EliminateEpsilonTransitionAction(automaton = this)
+    )
+
     companion object {
-        val DISPLAY_NAME: String = messages.getString("FiniteAutomaton")
+        val DISPLAY_NAME: String = I18N.messages.getString("FiniteAutomaton")
     }
 }

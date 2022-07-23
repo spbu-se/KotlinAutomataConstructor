@@ -1,5 +1,6 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.action.EliminateEpsilonTransitionAction
 import automaton.constructor.model.data.RegisterAutomatonData
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
@@ -19,6 +20,10 @@ class RegisterAutomaton(
             messages.getString("RegisterAutomaton.IllegalRegistersArgument")
         }
     }
+
+    override val transitionActions = super.transitionActions + listOf(
+        EliminateEpsilonTransitionAction(automaton = this)
+    )
 
     override fun getTypeData() = RegisterAutomatonData(
         inputTape = inputTape.getData(),
