@@ -19,17 +19,14 @@ class EliminateEpsilonTransitionAction(private val automaton: Automaton) : Autom
             source: State? = null,
             target: State? = null
         ) {
-            filterNot { it.source == it.target && it.isPure() }.forEach { transition ->
+            for (transition in filterNot { it.isLoop() && it.isPure() }) {
+                val (s, t) = (source ?: transition.source) to (target ?: transition.target)
                 if (
-                    automaton.getTransitionsFrom(state = source ?: transition.source).none {
-                        it.target == (target ?: transition.target) &&
-                                it.readProperties() == transition.readProperties()
+                    automaton.getTransitionsFrom(s).none {
+                        it.target == t && it.readProperties() == transition.readProperties()
                     }
                 ) {
-                    automaton.addTransition(
-                        source = source ?: transition.source,
-                        target = target ?: transition.target
-                    ).also { newTransition ->
+                    automaton.addTransition(s, t).also { newTransition ->
                         newTransition.writeProperties(transition.readProperties())
                     }
                 }
@@ -49,7 +46,7 @@ class EliminateEpsilonTransitionAction(private val automaton: Automaton) : Autom
             automaton.removeTransition(element)
 
             when {
-                element.source == element.target -> Unit
+                element.isLoop() -> Unit
                 transitionsToTarget.all { it.source == source && it.isPure() } && !target.isInitial -> {
                     transitionsFromTarget.copyTransitions(source = source)
                     automaton.removeState(target)

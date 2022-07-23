@@ -40,4 +40,9 @@ class Transition(
      * Executor may take pure transition without asking nor informing memory units
      */
     fun isPure() = allProperties.all { it.value == EPSILON_VALUE }
+
+    /**
+     * Transition is a loop if its source is equal to its target.
+     */
+    fun isLoop() = source == target
 }
