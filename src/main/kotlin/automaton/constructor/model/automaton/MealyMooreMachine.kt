@@ -1,9 +1,11 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.action.MealyToMooreAction
+import automaton.constructor.model.action.MooreToMealyAction
 import automaton.constructor.model.data.MealyMooreMachineData
 import automaton.constructor.model.memory.output.MealyMooreOutputTapeDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
-import automaton.constructor.utils.I18N.messages
+import automaton.constructor.utils.I18N
 
 /**
  * Mealy/Moore machine.
@@ -19,7 +21,12 @@ class MealyMooreMachine(
         mealyMooreOutputTape = mealyMooreOutputTape.getData()
     )
 
+    override val stateActions = super.stateActions + listOf(
+        MooreToMealyAction(automaton = this),
+        MealyToMooreAction(automaton = this)
+    )
+
     companion object {
-        val DISPLAY_NAME: String = messages.getString("MealyMooreMachine")
+        val DISPLAY_NAME: String = I18N.messages.getString("MealyMooreMachine")
     }
 }
