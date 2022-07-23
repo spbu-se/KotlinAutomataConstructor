@@ -24,6 +24,10 @@ class Transition(
         it.transitionSideEffects
     )
 }) {
+    val transitionFilters = super.filters
+    val transitionSideEffects = super.sideEffects
+    val transitionAllProperties = super.allProperties
+
     override val filters: List<DynamicProperty<*>> = super.filters + target.filters
     override val sideEffects: List<DynamicProperty<*>> = super.sideEffects + target.sideEffects
     override val allProperties: Collection<DynamicProperty<*>> = super.allProperties + target.allProperties
