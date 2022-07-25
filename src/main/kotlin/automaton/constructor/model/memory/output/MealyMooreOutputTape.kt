@@ -5,12 +5,12 @@ import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.I18N
 
 class MealyMooreOutputTapeDescriptor : AbstractOutputTapeDescriptor() {
-    override val transitionSideEffects = listOf(outputStringDescriptor)
-    override val stateSideEffects = listOf(outputStringDescriptor)
+    override val transitionSideEffects = listOf(outputValue)
+    override val stateSideEffects = listOf(outputValue)
     override var displayName: String = I18N.messages.getString("MealyMooreOutputTape")
     override fun getOutput(transition: Transition): String = listOfNotNull(
-        transition[outputStringDescriptor],
-        transition.target[outputStringDescriptor]
+        transition[outputValue],
+        transition.target[outputValue]
     ).joinToString(separator = "")
 
     override fun getData() = MealyMooreOutputTapeDescriptorData

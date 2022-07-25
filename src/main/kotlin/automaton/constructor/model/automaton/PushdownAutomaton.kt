@@ -1,6 +1,8 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.action.EliminateEpsilonTransitionAction
+import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
+import automaton.constructor.model.automaton.flavours.AutomatonWithStacks
 import automaton.constructor.model.data.PushdownAutomatonData
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
@@ -12,9 +14,10 @@ import automaton.constructor.utils.I18N.messages
  * It's an automaton with an [input tape][inputTape] and several [stacks] as [memory descriptors][memoryDescriptors].
  */
 class PushdownAutomaton(
-    val inputTape: InputTapeDescriptor,
-    val stacks: List<StackDescriptor>
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape) + stacks) {
+    override val inputTape: InputTapeDescriptor,
+    override val stacks: List<StackDescriptor>
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape) + stacks),
+    AutomatonWithInputTape, AutomatonWithStacks {
     init {
         require(stacks.isNotEmpty()) {
             messages.getString("PushDownAutomaton.IllegalStacksArgument")

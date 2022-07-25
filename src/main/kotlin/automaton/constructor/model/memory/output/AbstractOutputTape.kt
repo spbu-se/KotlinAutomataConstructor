@@ -20,7 +20,7 @@ abstract class AbstractOutputTapeDescriptor : MemoryUnitDescriptor {
     abstract override val transitionSideEffects: List<DynamicPropertyDescriptor<*>>
     abstract override val stateSideEffects: List<DynamicPropertyDescriptor<*>>
 
-    val outputStringDescriptor = DynamicPropertyDescriptors.stringOrEps(
+    val outputValue = DynamicPropertyDescriptors.stringOrEps(
         name = messages.getString("AbstractOutputTape.OutputString"),
         canBeDeemedEpsilon = false
     ).copy(displayValueFactory = { if (it == EPSILON_VALUE) "" else it.toString() })

@@ -1,6 +1,7 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.action.EliminateEpsilonTransitionAction
+import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.data.FiniteAutomatonData
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N
@@ -11,8 +12,9 @@ import automaton.constructor.utils.I18N
  * It's an automaton with an [input tape][inputTape] as a [memory descriptor][memoryDescriptors].
  */
 class FiniteAutomaton(
-    val inputTape: InputTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape)) {
+    override val inputTape: InputTapeDescriptor
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape)),
+    AutomatonWithInputTape {
     override fun getTypeData() = FiniteAutomatonData(
         inputTape = inputTape.getData()
     )
