@@ -2,8 +2,8 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.State
 import automaton.constructor.model.action.AutomatonElementAction
-import automaton.constructor.model.action.RemoveStateAction
-import automaton.constructor.model.action.RemoveTransitionAction
+import automaton.constructor.model.action.element.createRemoveStateAction
+import automaton.constructor.model.action.element.createRemoveTransitionAction
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
@@ -72,9 +72,9 @@ abstract class AbstractAutomaton(
     override fun getPureTransitions(state: State): Set<Transition> =
         transitionStorages[state]?.getPureTransitions() ?: emptySet()
 
-    override fun getTransitionsFrom(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
+    override fun getOutgoingTransitions(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
 
-    override fun getTransitionsTo(state: State): Set<Transition> = incomingTransitions.getValue(state)
+    override fun getIncomingTransitions(state: State): Set<Transition> = incomingTransitions.getValue(state)
 
     override fun addTransition(source: State, target: State): Transition {
         val transition = Transition(source, target, memoryDescriptors)
@@ -139,11 +139,11 @@ abstract class AbstractAutomaton(
 
 
     override val transitionActions: List<AutomatonElementAction<Transition>> = listOf(
-        RemoveTransitionAction(automaton = this)
+        createRemoveTransitionAction(automaton = this)
     )
 
     override val stateActions: List<AutomatonElementAction<State>> = listOf(
-        RemoveStateAction(automaton = this)
+        createRemoveStateAction(automaton = this)
     )
 
 

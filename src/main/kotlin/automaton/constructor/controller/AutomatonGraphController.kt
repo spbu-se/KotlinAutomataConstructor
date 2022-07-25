@@ -96,7 +96,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                 }
             } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
                 val actionsWithAvailability = automaton.stateActions.map { action ->
-                    action to action.isAvailableFor(stateView.state)
+                    action to action.getAvailabilityFor(stateView.state)
                 }
                 if (actionsWithAvailability.any { (_, availability) -> availability != ActionAvailability.HIDDEN }) {
                     ContextMenu().apply {
@@ -110,6 +110,10 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                         show(stateView.group.scene.window, it.screenX, it.screenY)
                     }
                 }
+                clearSelection()
+                selectedStateViews.add(stateView)
+                stateView.selected = true
+                lastSelectedElement = stateView
             }
         }
         stateView.group.setOnMouseDragged {
@@ -189,7 +193,7 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                 }
             } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
                 val actionsWithAvailability = automaton.transitionActions.map { action ->
-                    action to action.isAvailableFor(transitionView.transition)
+                    action to action.getAvailabilityFor(transitionView.transition)
                 }
                 if (actionsWithAvailability.any { (_, availability) -> availability != ActionAvailability.HIDDEN }) {
                     ContextMenu().apply {
@@ -203,6 +207,10 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                         show(transitionView.text.scene.window, it.screenX, it.screenY)
                     }
                 }
+                clearSelection()
+                selectedTransitionViews.add(transitionView)
+                transitionView.selected = true
+                lastSelectedElement = transitionView
             }
         }
         clearSelection()

@@ -9,6 +9,6 @@ val Automaton.finalStatesWithTransitions get() = getModule(finalStateWithTransit
 
 class FinalStateWithTransitionDetector(val automaton: Automaton) : AutomatonModule {
     val finalStatesWithTransitions = automaton.finalStates.filteredSet {
-        isNotEmpty(automaton.getTransitionsFrom(it))
+        isNotEmpty(automaton.getOutgoingTransitions(it))
     }
 }

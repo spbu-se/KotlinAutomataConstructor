@@ -1,8 +1,8 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.action.EliminateEpsilonTransitionAction
-import automaton.constructor.model.action.MealyToMooreAction
-import automaton.constructor.model.action.MooreToMealyAction
+import automaton.constructor.model.action.element.createEliminateEpsilonTransitionAction
+import automaton.constructor.model.action.element.createMealyToMooreElementAction
+import automaton.constructor.model.action.element.createMooreToMealyElementAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.automaton.flavours.AutomatonWithMealyMooreOutputTape
 import automaton.constructor.model.data.MealyMooreMachineData
@@ -26,12 +26,12 @@ class MealyMooreMachine(
     )
 
     override val transitionActions = super.transitionActions + listOf(
-        EliminateEpsilonTransitionAction(automaton = this)
+        createEliminateEpsilonTransitionAction(automaton = this)
     )
 
     override val stateActions = super.stateActions + listOf(
-        MooreToMealyAction(automaton = this),
-        MealyToMooreAction(automaton = this)
+        createMooreToMealyElementAction(mealyMooreMachine = this),
+        createMealyToMooreElementAction(mealyMooreMachine = this)
     )
 
     companion object {

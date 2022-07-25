@@ -39,3 +39,12 @@ fun <E> ObservableSet<E>.filteredSet(predicateFactory: (E) -> ObservableBooleanV
     })
     return filteredSet
 }
+
+inline fun <T> Iterable<T>.partitionToSets(predicate: (T) -> Boolean): Pair<Set<T>, Set<T>> {
+    val first = mutableSetOf<T>()
+    val second = mutableSetOf<T>()
+    for (element in this) {
+        if (predicate(element)) first.add(element) else second.add(element)
+    }
+    return Pair(first, second)
+}

@@ -1,8 +1,9 @@
 package automaton.constructor.view
 
 import automaton.constructor.model.State
-import automaton.constructor.utils.I18N.messages
+import automaton.constructor.model.State.Companion.RADIUS
 import automaton.constructor.utils.*
+import automaton.constructor.utils.I18N.messages
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
 import javafx.scene.Group
@@ -14,12 +15,6 @@ import javafx.scene.text.Font
 import tornadofx.*
 
 class StateView(val state: State) : AutomatonElementView(state) {
-
-    companion object {
-        const val RADIUS = 50.0
-        val DEFAULT_COLOR: Color get() = Color.YELLOW
-    }
-
     val positionProperty: Property<Point2D> = state.position.toProperty().apply { bind(state.positionProperty) }
     val colorProperty: Property<Color> = DEFAULT_COLOR.toProperty().apply {
         bind(selectedProperty.nonNullObjectBinding(state.isCurrentBinding) {
@@ -90,4 +85,9 @@ class StateView(val state: State) : AutomatonElementView(state) {
             )
         )
     ) + super.getSettings()
+
+
+    companion object {
+        val DEFAULT_COLOR: Color = Color.YELLOW
+    }
 }

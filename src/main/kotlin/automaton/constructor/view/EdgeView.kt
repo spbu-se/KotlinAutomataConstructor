@@ -1,6 +1,7 @@
 package automaton.constructor.view
 
 import automaton.constructor.model.State
+import automaton.constructor.model.State.Companion.RADIUS
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.*
 import javafx.beans.value.ObservableBooleanValue
@@ -25,9 +26,9 @@ enum class TransitionLabelPosition {
 
 class LoopEdgeRenderData(val center: ObservableValue<Point2D>) : EdgeRenderData {
     companion object {
-        private const val ARROW_START_OFFSET_Y = -0.5 * StateView.RADIUS
+        private const val ARROW_START_OFFSET_Y = -0.5 * RADIUS
         private val ARROW_START_OFFSET_X =
-            sqrt(StateView.RADIUS * StateView.RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
+            sqrt(RADIUS * RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
     }
 
     override val normXProperty = 0.0.toProperty()
@@ -36,14 +37,14 @@ class LoopEdgeRenderData(val center: ObservableValue<Point2D>) : EdgeRenderData 
     override val midPointX by midPointXProperty
     override val normYProperty = (-1.0).toProperty()
     override val normY by normYProperty
-    override val midPointYProperty = center.y - (2.0 * StateView.RADIUS)
+    override val midPointYProperty = center.y - (2.0 * RADIUS)
     override val midPointY by midPointYProperty
     override val textAngleInDegreesProperty = 0.0.toProperty()
     override val children = listOf(
         Circle().apply {
-            radius = StateView.RADIUS
+            radius = RADIUS
             centerXProperty().bind(center.x)
-            centerYProperty().bind(center.y - StateView.RADIUS)
+            centerYProperty().bind(center.y - RADIUS)
             fill = Color.TRANSPARENT
             stroke = Color.BLACK
         },
@@ -110,7 +111,7 @@ class NonLoopEdgeRenderData(
             line.startXProperty().bind(midPointXProperty)
             line.startYProperty().bind(midPointYProperty)
             val endProperty = targetCenter.nonNullObjectBinding(midPointXProperty, midPointYProperty) {
-                targetCenter.value - StateView.RADIUS * Vector2D(
+                targetCenter.value - RADIUS * Vector2D(
                     targetCenter.value.x - midPointX,
                     targetCenter.value.y - midPointY
                 ).normalize()

@@ -16,7 +16,7 @@ val Automaton.isDeterministicBinding get() = nonDeterminismDetector.isDeterminis
 class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
     val nonDeterministicStates = automaton.states.filteredSet { state ->
         val isNonDeterministic = true.toProperty()
-        val transitions = automaton.getTransitionsFrom(state)
+        val transitions = automaton.getOutgoingTransitions(state)
         fun recheckDeterminism() {
             isNonDeterministic.value = transitions.any { transition1 ->
                 transitions.any { transition2 ->

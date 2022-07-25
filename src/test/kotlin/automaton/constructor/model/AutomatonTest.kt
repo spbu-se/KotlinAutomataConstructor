@@ -120,7 +120,7 @@ class AutomatonTest {
                 every { createTransitionStorageTree(memoryUnitDescriptorMockks) } returns state1TransitionStorageMockk
                 state1 = automaton.addState()
             }
-            transitionsFromState1 = automaton.getTransitionsFrom(state1)
+            transitionsFromState1 = automaton.getOutgoingTransitions(state1)
         }
 
         @Test
@@ -222,7 +222,7 @@ class AutomatonTest {
                         state2 = automaton.addState()
                     }
                     state2ToState1Transition = automaton.addTransition(state2, state1)
-                    transitionsFromState2 = automaton.getTransitionsFrom(state2)
+                    transitionsFromState2 = automaton.getOutgoingTransitions(state2)
                 }
 
                 @Test
