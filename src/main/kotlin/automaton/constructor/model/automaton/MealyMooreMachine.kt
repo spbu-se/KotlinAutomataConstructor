@@ -1,6 +1,5 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.action.element.createEliminateEpsilonTransitionAction
 import automaton.constructor.model.action.element.createMealyToMooreElementAction
 import automaton.constructor.model.action.element.createMooreToMealyElementAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
@@ -23,10 +22,6 @@ class MealyMooreMachine(
     override fun getTypeData() = MealyMooreMachineData(
         inputTape = inputTape.getData(),
         mealyMooreOutputTape = mealyMooreOutputTape.getData()
-    )
-
-    override val transitionActions = super.transitionActions + listOf(
-        createEliminateEpsilonTransitionAction(automaton = this)
     )
 
     override val stateActions = super.stateActions + listOf(
