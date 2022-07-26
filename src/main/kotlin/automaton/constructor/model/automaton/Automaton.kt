@@ -47,11 +47,16 @@ interface Automaton {
     fun getPureTransitions(state: State): Set<Transition>
 
     /**
+     * Returns set containing all transition to a given [state]
+     */
+    fun getIncomingTransitions(state: State): Set<Transition>
+
+    /**
      * Returns observable set containing all transition from a given [state]
      *
      * Returned set is modified whenever the set of transitions from [state] changes
      */
-    fun getTransitions(state: State): ObservableSet<Transition>
+    fun getOutgoingTransitions(state: State): ObservableSet<Transition>
 
     /**
      * Adds transition from [source] to [target]
@@ -85,4 +90,74 @@ interface Automaton {
      * it's not invoked again and cached result of the previous invocation is returned
      */
     fun <T : AutomatonModule> getModule(moduleFactory: (Automaton) -> T): T
+}
+
+
+// Get specific transitions
+
+/**
+ * Returns set containing all loops of a given [state]
+ */
+fun Automaton.getLoops(state: State): Set<Transition> =
+    getIncomingTransitions(state).filterTo(mutableSetOf(), Transition::isLoop)
+
+/**
+ * Returns set containing all transition of a given [state]
+ */
+fun Automaton.getTransitions(state: State): Set<Transition> =
+    getIncomingTransitions(state) + getOutgoingTransitions(state)
+
+/**
+ * Returns set containing all non-loop transition of a given [state]
+ */
+fun Automaton.getTransitionsWithoutLoops(state: State): Set<Transition> =
+    getTransitions(state).filterNotTo(mutableSetOf(), Transition::isLoop)
+
+/**
+ * Returns set containing all transition to a given [state] without loops
+ */
+fun Automaton.getIncomingTransitionsWithoutLoops(state: State): Set<Transition> =
+    getIncomingTransitions(state).filterNotTo(mutableSetOf(), Transition::isLoop)
+
+/**
+ * Returns set containing all transition from a given [state] without loops
+ */
+fun Automaton.getOutgoingTransitionsWithoutLoops(state: State): Set<Transition> =
+    getOutgoingTransitions(state).filterNotTo(mutableSetOf(), Transition::isLoop)
+
+
+// Copy and add automaton elements
+
+fun Automaton.copyAndAddState(state: State, newName: String? = null, newPosition: Point2D? = null): State {
+    val name = newName ?: state.name
+    val position = newPosition ?: state.position
+    return addState(name, position).apply { writeProperties(state.readProperties()) }
+}
+
+fun Automaton.copyAndAddTransition(
+    transition: Transition,
+    newSource: State? = null, newTarget: State? = null,
+    ignoreIfTransitionIsPureLoop: Boolean = false,
+    ignoreIfCopyIsPureLoop: Boolean = false,
+    ignoreIfCopyAlreadyExists: Boolean = false
+): Transition? {
+    val source = newSource ?: transition.source
+    val target = newTarget ?: transition.target
+    return when {
+        ignoreIfTransitionIsPureLoop && transition.isLoop() && transition.isPure() -> null
+        ignoreIfCopyIsPureLoop && source == target && transition.isPure() -> null
+        ignoreIfCopyAlreadyExists && getOutgoingTransitions(source).any {
+            it.target == target && it.readProperties() == transition.readProperties()
+        } -> null
+        else -> copyAndAddTransition(transition, newSource, newTarget)
+    }
+}
+
+fun Automaton.copyAndAddTransition(
+    transition: Transition,
+    newSource: State? = null, newTarget: State? = null
+): Transition {
+    val source = newSource ?: transition.source
+    val target = newTarget ?: transition.target
+    return addTransition(source, target).apply { writeProperties(transition.readProperties()) }
 }

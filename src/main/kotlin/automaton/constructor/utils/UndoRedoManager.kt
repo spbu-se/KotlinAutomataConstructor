@@ -20,11 +20,12 @@ class UndoRedoManager(val maxUndo: Int = 20) {
     private var inGroups = 0
     private var group: UndoableActionGroup? = null
 
-    fun group(action: () -> Unit) {
+    fun <T> group(action: () -> T): T {
         inGroups++
-        action()
+        val returnValue = action()
         inGroups--
         if (inGroups == 0) group = null
+        return returnValue
     }
 
     @IgnorableByCoverage

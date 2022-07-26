@@ -1,5 +1,6 @@
 package automaton.constructor.controller
 
+import automaton.constructor.model.action.ActionAvailability
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.utils.x
 import automaton.constructor.utils.y
@@ -94,19 +95,25 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                     }
                 }
             } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
-                val actions = automaton.stateActions.filter { action ->
-                    action.isAvailableFor(stateView.state)
+                val actionsWithAvailability = automaton.stateActions.map { action ->
+                    action to action.getAvailabilityFor(stateView.state)
                 }
-                if (actions.isNotEmpty()) {
+                if (actionsWithAvailability.any { (_, availability) -> availability != ActionAvailability.HIDDEN }) {
                     ContextMenu().apply {
-                        for (action in actions) {
-                            item(action.displayName) {
+                        for ((action, availability) in actionsWithAvailability) {
+                            item(action.displayName, action.keyCombination) {
                                 action { action.performOn(stateView.state) }
+                                isVisible = availability != ActionAvailability.HIDDEN
+                                isDisable = availability == ActionAvailability.DISABLED
                             }
                         }
                         show(stateView.group.scene.window, it.screenX, it.screenY)
                     }
                 }
+                clearSelection()
+                selectedStateViews.add(stateView)
+                stateView.selected = true
+                lastSelectedElement = stateView
             }
         }
         stateView.group.setOnMouseDragged {
@@ -185,19 +192,25 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                     }
                 }
             } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
-                val actions = automaton.transitionActions.filter { action ->
-                    action.isAvailableFor(transitionView.transition)
+                val actionsWithAvailability = automaton.transitionActions.map { action ->
+                    action to action.getAvailabilityFor(transitionView.transition)
                 }
-                if (actions.isNotEmpty()) {
+                if (actionsWithAvailability.any { (_, availability) -> availability != ActionAvailability.HIDDEN }) {
                     ContextMenu().apply {
-                        for (action in actions) {
-                            item(action.displayName) {
+                        for ((action, availability) in actionsWithAvailability) {
+                            item(action.displayName, action.keyCombination) {
                                 action { action.performOn(transitionView.transition) }
+                                isVisible = availability != ActionAvailability.HIDDEN
+                                isDisable = availability == ActionAvailability.DISABLED
                             }
                         }
                         show(transitionView.text.scene.window, it.screenX, it.screenY)
                     }
                 }
+                clearSelection()
+                selectedTransitionViews.add(transitionView)
+                transitionView.selected = true
+                lastSelectedElement = transitionView
             }
         }
         clearSelection()

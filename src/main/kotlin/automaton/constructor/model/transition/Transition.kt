@@ -24,6 +24,10 @@ class Transition(
         it.transitionSideEffects
     )
 }) {
+    val transitionFilters = super.filters
+    val transitionSideEffects = super.sideEffects
+    val transitionAllProperties = super.allProperties
+
     override val filters: List<DynamicProperty<*>> = super.filters + target.filters
     override val sideEffects: List<DynamicProperty<*>> = super.sideEffects + target.sideEffects
     override val allProperties: Collection<DynamicProperty<*>> = super.allProperties + target.allProperties
@@ -36,4 +40,9 @@ class Transition(
      * Executor may take pure transition without asking nor informing memory units
      */
     fun isPure() = allProperties.all { it.value == EPSILON_VALUE }
+
+    /**
+     * Transition is a loop if its source is equal to its target.
+     */
+    fun isLoop() = source == target
 }

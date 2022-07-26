@@ -17,12 +17,12 @@ class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableS
         messages.getString("Stack.ExpectedChar"),
         canBeDeemedEpsilon = false
     )
-    val pushedString = DynamicPropertyDescriptors.stringOrEps(
+    val pushedValue = DynamicPropertyDescriptors.stringOrEps(
         messages.getString("Stack.PushedString"),
         canBeDeemedEpsilon = false
     )
     override val transitionFilters = listOf(expectedChar)
-    override val transitionSideEffects = listOf(pushedString)
+    override val transitionSideEffects = listOf(pushedValue)
     override var displayName: String = messages.getString("Stack")
     override val mayRequireAcceptance get() = true
 
@@ -59,7 +59,7 @@ class Stack(
     override val status: MemoryUnitStatus by observableStatus
 
     override fun takeTransition(transition: Transition) {
-        var pushedString = transition[descriptor.pushedString]
+        var pushedString = transition[descriptor.pushedValue]
         if (pushedString == EPSILON_VALUE) pushedString = ""
         value = pushedString + (if (transition[descriptor.expectedChar] == EPSILON_VALUE) value else value.drop(1))
     }

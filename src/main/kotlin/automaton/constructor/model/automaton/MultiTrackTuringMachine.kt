@@ -1,5 +1,6 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.automaton.flavours.AutomatonWithTracks
 import automaton.constructor.model.data.MultiTrackTuringMachineData
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.I18N.messages
@@ -10,8 +11,9 @@ import automaton.constructor.utils.I18N.messages
  * It's an automaton with several [tracks] as [memory descriptors][memoryDescriptors].
  */
 class MultiTrackTuringMachine(
-    val tracks: MultiTrackTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(tracks)) {
+    override val tracks: MultiTrackTapeDescriptor
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(tracks)),
+    AutomatonWithTracks {
     init {
         require(tracks.trackCount > 1) {
             messages.getString("MultiTrackTuringMachine.IllegalTracksArgument")

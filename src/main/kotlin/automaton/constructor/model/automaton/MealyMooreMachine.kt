@@ -1,9 +1,13 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.action.element.createMealyToMooreElementAction
+import automaton.constructor.model.action.element.createMooreToMealyElementAction
+import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
+import automaton.constructor.model.automaton.flavours.AutomatonWithMealyMooreOutputTape
 import automaton.constructor.model.data.MealyMooreMachineData
 import automaton.constructor.model.memory.output.MealyMooreOutputTapeDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
-import automaton.constructor.utils.I18N.messages
+import automaton.constructor.utils.I18N
 
 /**
  * Mealy/Moore machine.
@@ -11,15 +15,21 @@ import automaton.constructor.utils.I18N.messages
  * It's an automaton with an [input tape][inputTape] and a [Mealy/Moore output tape][mealyMooreOutputTape] as [memory descriptors][memoryDescriptors].
  */
 class MealyMooreMachine(
-    val inputTape: InputTapeDescriptor,
-    val mealyMooreOutputTape: MealyMooreOutputTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)) {
+    override val inputTape: InputTapeDescriptor,
+    override val mealyMooreOutputTape: MealyMooreOutputTapeDescriptor
+) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)),
+    AutomatonWithInputTape, AutomatonWithMealyMooreOutputTape {
     override fun getTypeData() = MealyMooreMachineData(
         inputTape = inputTape.getData(),
         mealyMooreOutputTape = mealyMooreOutputTape.getData()
     )
 
+    override val stateActions = super.stateActions + listOf(
+        createMooreToMealyElementAction(mealyMooreMachine = this),
+        createMealyToMooreElementAction(mealyMooreMachine = this)
+    )
+
     companion object {
-        val DISPLAY_NAME: String = messages.getString("MealyMooreMachine")
+        val DISPLAY_NAME: String = I18N.messages.getString("MealyMooreMachine")
     }
 }
