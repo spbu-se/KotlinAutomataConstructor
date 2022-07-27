@@ -5,6 +5,7 @@ import automaton.constructor.model.automaton.flavours.AutomatonWithTape
 import automaton.constructor.model.data.TuringMachineWithRegistersData
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
+import automaton.constructor.utils.I18N
 import automaton.constructor.utils.I18N.messages
 
 /**
@@ -19,12 +20,19 @@ class TuringMachineWithRegisters(
     AutomatonWithTape, AutomatonWithRegisters {
     init {
         require(tape.trackCount == 1) {
-            messages.getString("TuringMachineWithRegisters.IllegalTapeArgument")
+            "Illegal `tape` argument when creating `TuringMachineWithRegisters`"
         }
         require(registers.isNotEmpty()) {
-            messages.getString("TuringMachineWithRegisters.IllegalRegistersArgument")
+            "Illegal `registers` argument when creating `TuringMachineWithRegisters`"
         }
     }
+
+    override val deterministicDisplayName: String =
+        I18N.messages.getString("AutomatonDescriptionProvider.TuringMachine.Deterministic")
+    override val nondeterministicDisplayName: String =
+        I18N.messages.getString("AutomatonDescriptionProvider.TuringMachine.Nondeterministic")
+    override val untitledDisplayName: String =
+        I18N.messages.getString("OpenedAutomatonController.UntitledTuringMachine")
 
     override fun getTypeData() = TuringMachineWithRegistersData(
         tape = tape.getData(),

@@ -6,6 +6,7 @@ import automaton.constructor.model.automaton.flavours.AutomatonWithRegisters
 import automaton.constructor.model.data.RegisterAutomatonData
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.utils.I18N
 import automaton.constructor.utils.I18N.messages
 
 /**
@@ -20,9 +21,16 @@ class RegisterAutomaton(
     AutomatonWithInputTape, AutomatonWithRegisters {
     init {
         require(registers.isNotEmpty()) {
-            messages.getString("RegisterAutomaton.IllegalRegistersArgument")
+            "Illegal `registers` argument when creating `RegisterAutomaton`"
         }
     }
+
+    override val deterministicDisplayName: String =
+        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Deterministic")
+    override val nondeterministicDisplayName: String =
+        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Nondeterministic")
+    override val untitledDisplayName: String =
+        I18N.messages.getString("OpenedAutomatonController.UntitledFiniteAutomaton")
 
     override val transitionActions = super.transitionActions + listOf(
         createEliminateEpsilonTransitionAction(automaton = this)

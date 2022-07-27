@@ -30,7 +30,7 @@ class OpenedAutomatonController(val view: View) {
 
     private val nameBinding: Binding<String> = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) {
         it?.toString() ?: MessageFormat.format(
-            messages.getString("OpenedAutomatonController.UntitledAutomaton"),
+            openedAutomaton.untitledDisplayName,
             openedAutomaton.typeDisplayName
         )
     }

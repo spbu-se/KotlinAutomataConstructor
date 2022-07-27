@@ -29,6 +29,10 @@ interface Automaton {
     val transitions: ObservableSet<Transition>
     val states: ObservableSet<State>
 
+    val deterministicDisplayName: String
+    val nondeterministicDisplayName: String
+    val untitledDisplayName: String
+
     /**
      * Returns the [type data][AutomatonTypeData] of this automaton.
      */

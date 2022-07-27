@@ -19,6 +19,13 @@ class FiniteAutomaton(
         inputTape = inputTape.getData()
     )
 
+    override val deterministicDisplayName: String =
+        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Deterministic")
+    override val nondeterministicDisplayName: String =
+        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Nondeterministic")
+    override val untitledDisplayName: String =
+        I18N.messages.getString("OpenedAutomatonController.UntitledFiniteAutomaton")
+
     override val transitionActions = super.transitionActions + listOf(
         createEliminateEpsilonTransitionAction(automaton = this)
     )

@@ -2,6 +2,9 @@ package automaton.constructor.model.module
 
 import automaton.constructor.model.TestAutomatons
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.module.executor.ExecutorTest
+import automaton.constructor.utils.I18N
+import automaton.constructor.utils.capitalize
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -9,25 +12,41 @@ class AutomatonDescriptionProviderTest {
     @Test
     fun `bfs should be nondeterministic custom automaton`() =
         assertEquals(
-            "Nondeterministic custom automaton",
+            listOf(
+                TestAutomatons.BFS.nondeterministicDisplayName,
+                I18N.messages.getString("CustomAutomaton")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(),
             TestAutomatons.BFS.description
         )
 
     @Test
     fun `binary-increment should be deterministic Turing machine`() =
-        assertEquals("Deterministic Turing machine", TestAutomatons.BINARY_INCREMENT.description)
+        assertEquals(
+            listOf(
+                TestAutomatons.BINARY_INCREMENT.deterministicDisplayName,
+                I18N.messages.getString("TuringMachine")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), TestAutomatons.BINARY_INCREMENT.description
+        )
 
     @Test
     fun `empty-input-detector-with-epsilon-loop should be deterministic finite automaton with epsilon transitions`() =
         assertEquals(
-            "Deterministic finite automaton with epsilon transitions",
+            listOf(
+                TestAutomatons.EMPTY_INPUT_DETECTOR_WITH_EPSILON_LOOP.deterministicDisplayName,
+                I18N.messages.getString("FiniteAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(),
             TestAutomatons.EMPTY_INPUT_DETECTOR_WITH_EPSILON_LOOP.description
         )
 
     @Test
     fun `even-palindromes should be nondeterministic pushdown automaton with epsilon transitions`() =
         assertEquals(
-            "Nondeterministic pushdown automaton with epsilon transitions",
+            listOf(
+                TestAutomatons.EVEN_PALINDROMES.nondeterministicDisplayName,
+                I18N.messages.getString("PushdownAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(),
             TestAutomatons.EVEN_PALINDROMES.description
         )
 
@@ -35,17 +54,53 @@ class AutomatonDescriptionProviderTest {
     fun `description should update when automaton is edited`() {
         val automaton = TestAutomatons.NO_STATES
         val expectedChar = (automaton.memoryDescriptors[0] as InputTapeDescriptor).expectedChar
-        assertEquals("Deterministic finite automaton without epsilon transitions", automaton.description)
+        assertEquals(
+            listOf(
+                automaton.deterministicDisplayName,
+                I18N.messages.getString("FiniteAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithoutEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
+        )
         val s0 = automaton.addState()
         val t0 = automaton.addTransition(s0, s0)
-        assertEquals("Deterministic finite automaton with epsilon transitions", automaton.description)
+        assertEquals(
+            listOf(
+                automaton.deterministicDisplayName,
+                I18N.messages.getString("FiniteAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
+        )
         t0[expectedChar] = '0'
-        assertEquals("Deterministic finite automaton without epsilon transitions", automaton.description)
+        assertEquals(
+            listOf(
+                automaton.deterministicDisplayName,
+                I18N.messages.getString("FiniteAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithoutEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
+        )
         val t1 = automaton.addTransition(s0, s0)
-        assertEquals("Nondeterministic finite automaton with epsilon transitions", automaton.description)
+        assertEquals(
+            listOf(
+                automaton.nondeterministicDisplayName,
+                I18N.messages.getString("FiniteAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
+        )
         t1[expectedChar] = '0'
-        assertEquals("Nondeterministic finite automaton without epsilon transitions", automaton.description)
+        assertEquals(
+            listOf(
+                automaton.nondeterministicDisplayName,
+                I18N.messages.getString("FiniteAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithoutEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
+        )
         automaton.removeTransition(t0)
-        assertEquals("Deterministic finite automaton without epsilon transitions", automaton.description)
+        assertEquals(
+            listOf(
+                automaton.deterministicDisplayName,
+                I18N.messages.getString("FiniteAutomaton"),
+                I18N.messages.getString("AutomatonDescriptionProvider.WithoutEpsilonTransitions")
+            ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
+        )
     }
 }
