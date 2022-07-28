@@ -17,18 +17,18 @@ import automaton.constructor.utils.I18N
 class MealyMooreMachine(
     override val inputTape: InputTapeDescriptor,
     override val mealyMooreOutputTape: MealyMooreOutputTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)),
+) : AbstractAutomaton(
+    DISPLAY_NAME,
+    memoryDescriptors = listOf(inputTape, mealyMooreOutputTape),
+    I18N.messages.getString("MealyMooreMachine.Deterministic"),
+    I18N.messages.getString("MealyMooreMachine.Nondeterministic"),
+    I18N.messages.getString("OpenedAutomatonController.MealyMooreMachine.Untitled")
+),
     AutomatonWithInputTape, AutomatonWithMealyMooreOutputTape {
     override fun getTypeData() = MealyMooreMachineData(
         inputTape = inputTape.getData(),
         mealyMooreOutputTape = mealyMooreOutputTape.getData()
     )
-    override val deterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.TuringMachine.Deterministic")
-    override val nondeterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.TuringMachine.Nondeterministic")
-    override val untitledDisplayName: String =
-        I18N.messages.getString("OpenedAutomatonController.UntitledTuringMachine")
 
     override val stateActions = super.stateActions + listOf(
         createMooreToMealyElementAction(mealyMooreMachine = this),

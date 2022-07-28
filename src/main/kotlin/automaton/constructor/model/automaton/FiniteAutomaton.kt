@@ -13,18 +13,16 @@ import automaton.constructor.utils.I18N
  */
 class FiniteAutomaton(
     override val inputTape: InputTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape)),
-    AutomatonWithInputTape {
+) : AbstractAutomaton(
+    DISPLAY_NAME,
+    memoryDescriptors = listOf(inputTape),
+    I18N.messages.getString("FiniteAutomaton.Deterministic"),
+    I18N.messages.getString("FiniteAutomaton.Nondeterministic"),
+    I18N.messages.getString("OpenedAutomatonController.FiniteAutomaton.Untitled")
+), AutomatonWithInputTape {
     override fun getTypeData() = FiniteAutomatonData(
         inputTape = inputTape.getData()
     )
-
-    override val deterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Deterministic")
-    override val nondeterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Nondeterministic")
-    override val untitledDisplayName: String =
-        I18N.messages.getString("OpenedAutomatonController.UntitledFiniteAutomaton")
 
     override val transitionActions = super.transitionActions + listOf(
         createEliminateEpsilonTransitionAction(automaton = this)

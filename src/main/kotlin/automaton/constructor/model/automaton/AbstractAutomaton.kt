@@ -13,7 +13,6 @@ import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.UndoRedoManager
-import automaton.constructor.utils.I18N.messages
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
 import tornadofx.*
@@ -32,19 +31,15 @@ import tornadofx.*
 abstract class AbstractAutomaton(
     final override val typeDisplayName: String,
     final override val memoryDescriptors: List<MemoryUnitDescriptor>,
+    final override val deterministicAdjective: String,
+    final override val nondeterministicAdjective: String,
+    final override val untitledAdjective: String
 ) : Automaton {
     private val transitionStorages = mutableMapOf<State, TransitionStorage>()
     private val outgoingTransitions = mutableMapOf<State, ObservableSet<Transition>>()
     private val incomingTransitions = mutableMapOf<State, MutableSet<Transition>>()
 
     override val undoRedoManager = UndoRedoManager()
-
-    override val deterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Deterministic")
-    override val nondeterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Nondeterministic")
-    override val untitledDisplayName: String =
-        I18N.messages.getString("OpenedAutomatonController.UntitledFiniteAutomaton")
 
     init {
         val memoryNameToCountMap = mutableMapOf<String, Int>()

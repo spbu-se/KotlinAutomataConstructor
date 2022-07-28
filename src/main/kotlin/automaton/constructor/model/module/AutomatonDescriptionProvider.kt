@@ -13,8 +13,8 @@ val Automaton.description: String get() = descriptionBinding.value
 
 class AutomatonDescriptionProvider(val automaton: Automaton) : AutomatonModule {
     private val determinicityPartBinding = stringBinding(automaton.isDeterministicBinding) {
-        if (value) automaton.deterministicDisplayName
-        else automaton.nondeterministicDisplayName
+        if (value) automaton.deterministicAdjective
+        else automaton.nondeterministicAdjective
     }
     private val determinicityPart: String by determinicityPartBinding
 

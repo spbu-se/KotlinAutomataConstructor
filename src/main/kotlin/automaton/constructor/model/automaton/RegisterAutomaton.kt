@@ -7,7 +7,6 @@ import automaton.constructor.model.data.RegisterAutomatonData
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N
-import automaton.constructor.utils.I18N.messages
 
 /**
  * Register automaton.
@@ -17,20 +16,19 @@ import automaton.constructor.utils.I18N.messages
 class RegisterAutomaton(
     override val inputTape: InputTapeDescriptor,
     override val registers: List<RegisterDescriptor>
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape) + registers),
+) : AbstractAutomaton(
+    DISPLAY_NAME,
+    memoryDescriptors = listOf(inputTape) + registers,
+    I18N.messages.getString("RegisterAutomaton.Deterministic"),
+    I18N.messages.getString("RegisterAutomaton.Nondeterministic"),
+    I18N.messages.getString("OpenedAutomatonController.RegisterAutomaton.Untitled")
+),
     AutomatonWithInputTape, AutomatonWithRegisters {
     init {
         require(registers.isNotEmpty()) {
             "Illegal `registers` argument when creating `RegisterAutomaton`"
         }
     }
-
-    override val deterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Deterministic")
-    override val nondeterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Nondeterministic")
-    override val untitledDisplayName: String =
-        I18N.messages.getString("OpenedAutomatonController.UntitledFiniteAutomaton")
 
     override val transitionActions = super.transitionActions + listOf(
         createEliminateEpsilonTransitionAction(automaton = this)
@@ -42,6 +40,6 @@ class RegisterAutomaton(
     )
 
     companion object {
-        val DISPLAY_NAME: String = messages.getString("RegisterAutomaton")
+        val DISPLAY_NAME: String = I18N.messages.getString("RegisterAutomaton")
     }
 }

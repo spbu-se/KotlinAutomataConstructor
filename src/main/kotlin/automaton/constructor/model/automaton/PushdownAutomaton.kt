@@ -7,7 +7,6 @@ import automaton.constructor.model.data.PushdownAutomatonData
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N
-import automaton.constructor.utils.I18N.messages
 
 /**
  * Pushdown automaton.
@@ -16,20 +15,19 @@ import automaton.constructor.utils.I18N.messages
  */
 class PushdownAutomaton(
     override val inputTape: InputTapeDescriptor, override val stacks: List<StackDescriptor>
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape) + stacks), AutomatonWithInputTape,
+) : AbstractAutomaton(
+    DISPLAY_NAME,
+    memoryDescriptors = listOf(inputTape) + stacks,
+    I18N.messages.getString("PushdownAutomaton.Deterministic"),
+    I18N.messages.getString("PushdownAutomaton.Nondeterministic"),
+    I18N.messages.getString("OpenedAutomatonController.PushdownAutomaton.Untitled")
+), AutomatonWithInputTape,
     AutomatonWithStacks {
     init {
         require(stacks.isNotEmpty()) {
             "Illegal `stacks` argument when creating `PushdownAutomaton`"
         }
     }
-
-    override val deterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Deterministic")
-    override val nondeterministicDisplayName: String =
-        I18N.messages.getString("AutomatonDescriptionProvider.FiniteAutomaton.Nondeterministic")
-    override val untitledDisplayName: String =
-        I18N.messages.getString("OpenedAutomatonController.UntitledFiniteAutomaton")
 
     override val transitionActions = super.transitionActions + listOf(
         createEliminateEpsilonTransitionAction(automaton = this)
@@ -39,6 +37,6 @@ class PushdownAutomaton(
         PushdownAutomatonData(inputTape = inputTape.getData(), stacks = stacks.map { it.getData() })
 
     companion object {
-        val DISPLAY_NAME: String = messages.getString("PushdownAutomaton")
+        val DISPLAY_NAME: String = I18N.messages.getString("PushdownAutomaton")
     }
 }
