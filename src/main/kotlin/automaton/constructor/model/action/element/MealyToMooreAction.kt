@@ -18,7 +18,7 @@ fun createMealyToMooreElementAction(mealyMooreMachine: MealyMooreMachine) =
         automaton = mealyMooreMachine,
         displayName = I18N.messages.getString("AutomatonElementAction.MealyToMoore"),
         getAvailabilityFor = { state ->
-            if (getIncomingTransitions(state).any { it.mealyMooreOutputValue != EPSILON_VALUE }) {
+            if (getIncomingTransitions(state).any { it.outputValue != EPSILON_VALUE }) {
                 AVAILABLE
             } else {
                 DISABLED
@@ -29,13 +29,13 @@ fun createMealyToMooreElementAction(mealyMooreMachine: MealyMooreMachine) =
             val (incomingTransitionsWithoutLoops, loops) = getIncomingTransitions(state).partitionToSets { !it.isLoop() }
             val outgoingTransitionsWithoutLoops = getOutgoingTransitionsWithoutLoops(state)
 
-            val stateOutputString = state.mealyMooreNotNullOutputValue
+            val stateOutputString = state.notNullOutputValue
 
-            val incomingTransitionsGroups = incomingTransitions.groupBy { it.mealyMooreNotNullOutputValue }
+            val incomingTransitionsGroups = incomingTransitions.groupBy { it.notNullOutputValue }
 
             val mooreOutputStringsToMooreStates = incomingTransitionsGroups.keys.mapIndexed { i, incomingOutputString ->
                 val mooreState = addState(name = state.name, position = state.position + i * 4 * RADIUS).apply {
-                    mealyMooreOutputValue = "$incomingOutputString$stateOutputString"
+                    outputValue = "$incomingOutputString$stateOutputString"
                 }
                 incomingOutputString to mooreState
             }
@@ -47,13 +47,13 @@ fun createMealyToMooreElementAction(mealyMooreMachine: MealyMooreMachine) =
 
             for (t in incomingTransitionsWithoutLoops) {
                 copyAndAddTransition(t, newTarget = incomingTransitionsToTargets.getValue(t)).apply {
-                    mealyMooreOutputValue = EPSILON_VALUE
+                    outputValue = EPSILON_VALUE
                 }
             }
             for (mooreState in mooreStates) {
                 for (t in loops) {
                     copyAndAddTransition(t, newSource = mooreState, newTarget = incomingTransitionsToTargets.getValue(t)).apply {
-                        mealyMooreOutputValue = EPSILON_VALUE
+                        outputValue = EPSILON_VALUE
                     }
                 }
                 for (t in outgoingTransitionsWithoutLoops) {

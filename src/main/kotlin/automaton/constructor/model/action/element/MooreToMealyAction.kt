@@ -13,14 +13,14 @@ fun createMooreToMealyElementAction(mealyMooreMachine: MealyMooreMachine) =
         automaton = mealyMooreMachine,
         displayName = I18N.messages.getString("AutomatonElementAction.MooreToMealy"),
         getAvailabilityFor = { state ->
-            if (state.mealyMooreOutputValue != EPSILON_VALUE) AVAILABLE else DISABLED
+            if (state.outputValue != EPSILON_VALUE) AVAILABLE else DISABLED
         },
         performOn = { state ->
-            val mooreOutputString = state.mealyMooreOutputValue
-            state.mealyMooreOutputValue = EPSILON_VALUE
+            val mooreOutputString = state.outputValue
+            state.outputValue = EPSILON_VALUE
             for (incomingTransition in getIncomingTransitions(state)) {
-                val str = incomingTransition.mealyMooreNotNullOutputValue
-                incomingTransition.mealyMooreOutputValue = "$str$mooreOutputString"
+                val str = incomingTransition.notNullOutputValue
+                incomingTransition.outputValue = "$str$mooreOutputString"
             }
         }
     )

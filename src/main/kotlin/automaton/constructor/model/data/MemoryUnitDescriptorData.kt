@@ -3,7 +3,7 @@ package automaton.constructor.model.data
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.StackDescriptor
-import automaton.constructor.model.memory.output.MealyMooreOutputTapeDescriptor
+import automaton.constructor.model.memory.tape.OutputTapeDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.IgnorableByCoverage
@@ -67,13 +67,13 @@ object RegisterDescriptorData : MemoryUnitDescriptorData {
 }
 
 /**
- * The data of a [Mealy/Moore output tape descriptor][MealyMooreOutputTapeDescriptor].
+ * The data of a [Mealy/Moore output tape descriptor][OutputTapeDescriptor].
  */
 @Serializable
-@SerialName("mealy-moore-output-tape")
+@SerialName("output-tape")
 @IgnorableByCoverage
-object MealyMooreOutputTapeDescriptorData : MemoryUnitDescriptorData {
-    override fun createDescriptor() = MealyMooreOutputTapeDescriptor()
+object OutputTapeDescriptorData : MemoryUnitDescriptorData {
+    override fun createDescriptor() = OutputTapeDescriptor()
 }
 
 
@@ -84,6 +84,6 @@ val MemoryUnitDescriptorData.Companion.serializersModule
             subclass(MultiTrackTapeDescriptorData::class)
             subclass(StackDescriptorData::class)
             subclass(RegisterDescriptorData::class)
-            subclass(MealyMooreOutputTapeDescriptorData::class)
+            subclass(OutputTapeDescriptorData::class)
         }
     }

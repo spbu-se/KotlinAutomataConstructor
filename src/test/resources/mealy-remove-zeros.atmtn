@@ -2,7 +2,7 @@
   "base": {
     "type": "mealy-moore-machine",
     "inputTape": {},
-    "mealyMooreOutputTape": {}
+    "outputTape": {}
   },
   "states": [
     {

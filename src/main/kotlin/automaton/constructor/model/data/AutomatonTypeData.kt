@@ -68,18 +68,18 @@ data class RegisterAutomatonData(
 }
 
 /**
- * The data of a [Mealy/Moore machine][MealyMooreMachine] with an [input tape][inputTape] and a [Mealy/Moore output tape][mealyMooreOutputTape].
+ * The data of a [Mealy/Moore machine][MealyMooreMachine] with an [input tape][inputTape] and a [Mealy/Moore output tape][outputTape].
  */
 @IgnorableByCoverage
 @Serializable
 @SerialName("mealy-moore-machine")
 data class MealyMooreMachineData(
     val inputTape: InputTapeDescriptorData,
-    val mealyMooreOutputTape: MealyMooreOutputTapeDescriptorData
+    val outputTape: OutputTapeDescriptorData
 ) : AutomatonTypeData {
     override fun createEmptyAutomaton() = MealyMooreMachine(
         inputTape = inputTape.createDescriptor(),
-        mealyMooreOutputTape = mealyMooreOutputTape.createDescriptor()
+        outputTape = outputTape.createDescriptor()
     )
 }
 
