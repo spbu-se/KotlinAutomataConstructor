@@ -3,7 +3,7 @@ package automaton.constructor.model.automaton
 import automaton.constructor.model.automaton.flavours.AutomatonWithTape
 import automaton.constructor.model.data.TuringMachineData
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
-import automaton.constructor.utils.I18N.messages
+import automaton.constructor.utils.I18N
 
 /**
  * Turing machine.
@@ -12,11 +12,16 @@ import automaton.constructor.utils.I18N.messages
  */
 class TuringMachine(
     override val tape: MultiTrackTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(tape)),
-    AutomatonWithTape {
+) : AbstractAutomaton(
+    DISPLAY_NAME,
+    memoryDescriptors = listOf(tape),
+    I18N.messages.getString("TuringMachine.Deterministic"),
+    I18N.messages.getString("TuringMachine.Nondeterministic"),
+    I18N.messages.getString("TuringMachine.Untitled")
+), AutomatonWithTape {
     init {
         require(tape.trackCount == 1) {
-            messages.getString("TuringMachine.IllegalTapeArgument")
+            "Illegal `tape` argument when creating `TuringMachine`"
         }
     }
 
@@ -25,6 +30,6 @@ class TuringMachine(
     )
 
     companion object {
-        val DISPLAY_NAME: String = messages.getString("TuringMachine")
+        val DISPLAY_NAME: String = I18N.messages.getString("TuringMachine")
     }
 }

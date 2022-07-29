@@ -17,7 +17,13 @@ import automaton.constructor.utils.I18N
 class MealyMooreMachine(
     override val inputTape: InputTapeDescriptor,
     override val mealyMooreOutputTape: MealyMooreOutputTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape, mealyMooreOutputTape)),
+) : AbstractAutomaton(
+    DISPLAY_NAME,
+    memoryDescriptors = listOf(inputTape, mealyMooreOutputTape),
+    I18N.messages.getString("MealyMooreMachine.Deterministic"),
+    I18N.messages.getString("MealyMooreMachine.Nondeterministic"),
+    I18N.messages.getString("MealyMooreMachine.Untitled")
+),
     AutomatonWithInputTape, AutomatonWithMealyMooreOutputTape {
     override fun getTypeData() = MealyMooreMachineData(
         inputTape = inputTape.getData(),

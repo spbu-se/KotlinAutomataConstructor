@@ -13,8 +13,13 @@ import automaton.constructor.utils.I18N
  */
 class FiniteAutomaton(
     override val inputTape: InputTapeDescriptor
-) : AbstractAutomaton(DISPLAY_NAME, memoryDescriptors = listOf(inputTape)),
-    AutomatonWithInputTape {
+) : AbstractAutomaton(
+    DISPLAY_NAME,
+    memoryDescriptors = listOf(inputTape),
+    I18N.messages.getString("FiniteAutomaton.Deterministic"),
+    I18N.messages.getString("FiniteAutomaton.Nondeterministic"),
+    I18N.messages.getString("FiniteAutomaton.Untitled")
+), AutomatonWithInputTape {
     override fun getTypeData() = FiniteAutomatonData(
         inputTape = inputTape.getData()
     )

@@ -11,6 +11,7 @@ import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
+import automaton.constructor.utils.I18N
 import automaton.constructor.utils.UndoRedoManager
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
@@ -30,6 +31,9 @@ import tornadofx.*
 abstract class AbstractAutomaton(
     final override val typeDisplayName: String,
     final override val memoryDescriptors: List<MemoryUnitDescriptor>,
+    final override val deterministicAdjective: String,
+    final override val nondeterministicAdjective: String,
+    final override val untitledAdjective: String
 ) : Automaton {
     private val transitionStorages = mutableMapOf<State, TransitionStorage>()
     private val outgoingTransitions = mutableMapOf<State, ObservableSet<Transition>>()

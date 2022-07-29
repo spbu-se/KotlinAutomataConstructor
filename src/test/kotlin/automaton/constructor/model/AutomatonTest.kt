@@ -11,6 +11,7 @@ import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
+import automaton.constructor.utils.I18N
 import io.mockk.*
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
@@ -43,7 +44,13 @@ class AutomatonTest {
             memoryUnitDescriptorMockks[0].displayName = any()
         } answers { fail("Unexpected first memory unit descriptor renaming") }
         justRun { memoryUnitDescriptorMockks[1].displayName = any() }
-        automaton = object : AbstractAutomaton("typeName", memoryUnitDescriptorMockks) {
+        automaton = object : AbstractAutomaton(
+            "typeName",
+            memoryUnitDescriptorMockks,
+            I18N.messages.getString("CustomAutomaton.Deterministic"),
+            I18N.messages.getString("CustomAutomaton.Nondeterministic"),
+            I18N.messages.getString("CustomAutomaton.Untitled")
+            ) {
             override fun getTypeData(): AutomatonTypeData = error("")
         }
         transitions = automaton.transitions
