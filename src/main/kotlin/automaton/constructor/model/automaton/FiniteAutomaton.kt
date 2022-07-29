@@ -18,7 +18,7 @@ class FiniteAutomaton(
     memoryDescriptors = listOf(inputTape),
     I18N.messages.getString("FiniteAutomaton.Deterministic"),
     I18N.messages.getString("FiniteAutomaton.Nondeterministic"),
-    I18N.messages.getString("OpenedAutomatonController.FiniteAutomaton.Untitled")
+    I18N.messages.getString("FiniteAutomaton.Untitled")
 ), AutomatonWithInputTape {
     override fun getTypeData() = FiniteAutomatonData(
         inputTape = inputTape.getData()

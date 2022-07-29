@@ -49,7 +49,7 @@ class AutomatonTest {
             memoryUnitDescriptorMockks,
             I18N.messages.getString("CustomAutomaton.Deterministic"),
             I18N.messages.getString("CustomAutomaton.Nondeterministic"),
-            I18N.messages.getString("OpenedAutomatonController.CustomAutomaton.Untitled")
+            I18N.messages.getString("CustomAutomaton.Untitled")
             ) {
             override fun getTypeData(): AutomatonTypeData = error("")
         }

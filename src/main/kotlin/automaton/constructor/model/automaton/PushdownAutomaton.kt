@@ -20,7 +20,7 @@ class PushdownAutomaton(
     memoryDescriptors = listOf(inputTape) + stacks,
     I18N.messages.getString("PushdownAutomaton.Deterministic"),
     I18N.messages.getString("PushdownAutomaton.Nondeterministic"),
-    I18N.messages.getString("OpenedAutomatonController.PushdownAutomaton.Untitled")
+    I18N.messages.getString("PushdownAutomaton.Untitled")
 ), AutomatonWithInputTape,
     AutomatonWithStacks {
     init {

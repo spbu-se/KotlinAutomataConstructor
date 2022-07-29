@@ -19,7 +19,7 @@ class TuringMachineWithRegisters(
     memoryDescriptors = listOf(tape) + registers,
     I18N.messages.getString("TuringMachineWithRegisters.Deterministic"),
     I18N.messages.getString("TuringMachineWithRegisters.Nondeterministic"),
-    I18N.messages.getString("OpenedAutomatonController.TuringMachineWithRegisters.Untitled")
+    I18N.messages.getString("TuringMachineWithRegisters.Untitled")
 ), AutomatonWithTape, AutomatonWithRegisters {
     init {
         require(tape.trackCount == 1) {

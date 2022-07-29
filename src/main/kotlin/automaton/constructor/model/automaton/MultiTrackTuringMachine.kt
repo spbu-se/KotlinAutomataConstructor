@@ -17,7 +17,7 @@ class MultiTrackTuringMachine(
     memoryDescriptors = listOf(tracks),
     I18N.messages.getString("MultiTrackTuringMachine.Deterministic"),
     I18N.messages.getString("MultiTrackTuringMachine.Nondeterministic"),
-    I18N.messages.getString("OpenedAutomatonController.MultiTrackTuringMachine.Untitled")
+    I18N.messages.getString("MultiTrackTuringMachine.Untitled")
 ), AutomatonWithTracks {
     init {
         require(tracks.trackCount > 1) {

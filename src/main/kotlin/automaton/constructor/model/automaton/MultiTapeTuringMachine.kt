@@ -17,7 +17,7 @@ class MultiTapeTuringMachine(
     memoryDescriptors = tapes,
     I18N.messages.getString("MultiTapeTuringMachine.Deterministic"),
     I18N.messages.getString("MultiTapeTuringMachine.Nondeterministic"),
-    I18N.messages.getString("OpenedAutomatonController.MultiTapeTuringMachine.Untitled")
+    I18N.messages.getString("MultiTapeTuringMachine.Untitled")
 ), AutomatonWithTapes {
     init {
         require(tapes.isNotEmpty() && tapes.all { it.trackCount == 1 }) {

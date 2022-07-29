@@ -21,7 +21,7 @@ class RegisterAutomaton(
     memoryDescriptors = listOf(inputTape) + registers,
     I18N.messages.getString("RegisterAutomaton.Deterministic"),
     I18N.messages.getString("RegisterAutomaton.Nondeterministic"),
-    I18N.messages.getString("OpenedAutomatonController.RegisterAutomaton.Untitled")
+    I18N.messages.getString("RegisterAutomaton.Untitled")
 ),
     AutomatonWithInputTape, AutomatonWithRegisters {
     init {

@@ -22,7 +22,7 @@ class MealyMooreMachine(
     memoryDescriptors = listOf(inputTape, mealyMooreOutputTape),
     I18N.messages.getString("MealyMooreMachine.Deterministic"),
     I18N.messages.getString("MealyMooreMachine.Nondeterministic"),
-    I18N.messages.getString("OpenedAutomatonController.MealyMooreMachine.Untitled")
+    I18N.messages.getString("MealyMooreMachine.Untitled")
 ),
     AutomatonWithInputTape, AutomatonWithMealyMooreOutputTape {
     override fun getTypeData() = MealyMooreMachineData(
