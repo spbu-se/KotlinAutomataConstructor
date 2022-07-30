@@ -2,6 +2,7 @@ package automaton.constructor.view
 
 import automaton.constructor.model.State
 import automaton.constructor.model.State.Companion.RADIUS
+import automaton.constructor.model.memory.AcceptanceRequiringPolicy.ALWAYS
 import automaton.constructor.utils.*
 import automaton.constructor.utils.I18N.messages
 import javafx.beans.property.Property
@@ -79,9 +80,11 @@ class StateView(val state: State) : AutomatonElementView(state) {
                 Setting(messages.getString("StateView.Name"),
                     TextField().apply { textProperty().bindBidirectional(state.nameProperty) }),
                 Setting(messages.getString("StateView.Initial"),
-                    CheckBox().apply { selectedProperty().bindBidirectional(state.isInitialProperty) }),
+                    CheckBox().apply { selectedProperty().bindBidirectional(state.isInitialProperty) })
+            ) + if (state.propertyGroups.any { it.memoryUnitDescriptor.acceptanceRequiringPolicy == ALWAYS }) emptyList()
+            else listOf(
                 Setting(messages.getString("StateView.Final"),
-                    CheckBox().apply { selectedProperty().bindBidirectional(state.isFinalProperty) }),
+                    CheckBox().apply { selectedProperty().bindBidirectional(state.isFinalProperty) })
             )
         )
     ) + super.getSettings()

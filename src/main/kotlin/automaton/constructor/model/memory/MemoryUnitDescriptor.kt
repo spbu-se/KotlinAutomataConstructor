@@ -3,6 +3,7 @@ package automaton.constructor.model.memory
 import automaton.constructor.model.data.MemoryUnitDescriptorData
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
 import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
+import automaton.constructor.model.memory.AcceptanceRequiringPolicy.*
 import automaton.constructor.model.property.DynamicPropertyDescriptor
 import automaton.constructor.utils.Editable
 
@@ -24,10 +25,10 @@ interface MemoryUnitDescriptor : Editable {
     val isAlwaysReadyToTerminate: Boolean get() = true
 
     /**
-     * `true` if the memory unit described by this descriptor can have [REQUIRES_ACCEPTANCE] status
-     * If any memory unit may require acceptance then automaton can ran without final states
+     * specifies whether the memory unit described by this descriptor [requires acceptance][REQUIRES_ACCEPTANCE]
+     * [always][ALWAYS], [never][NEVER], or [sometimes][SOMETIMES]
      */
-    val mayRequireAcceptance: Boolean get() = false
+    val acceptanceRequiringPolicy: AcceptanceRequiringPolicy get() = NEVER
 
     override var displayName: String
 

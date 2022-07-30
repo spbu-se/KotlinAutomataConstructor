@@ -24,7 +24,7 @@ class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableS
     override val transitionFilters = listOf(expectedChar)
     override val transitionSideEffects = listOf(pushedValue)
     override var displayName: String = messages.getString("Stack")
-    override val mayRequireAcceptance get() = true
+    override val acceptanceRequiringPolicy get() = AcceptanceRequiringPolicy.SOMETIMES
 
     val acceptsByEmptyStackProperty = acceptsByEmptyStack.toProperty()
     var acceptsByEmptyStack by acceptsByEmptyStackProperty

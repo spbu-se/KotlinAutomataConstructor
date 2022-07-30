@@ -1,10 +1,11 @@
 package automaton.constructor.model.memory.tape
 
 import automaton.constructor.model.data.OutputTapeDescriptorData
+import automaton.constructor.model.memory.AcceptanceRequiringPolicy
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.MemoryUnitStatus
-import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
+import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
 import automaton.constructor.model.property.DynamicPropertyDescriptor
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
@@ -26,6 +27,8 @@ class OutputTapeDescriptor : MemoryUnitDescriptor {
     override val transitionSideEffects = listOf(outputValue)
     override val stateSideEffects = listOf(outputValue)
 
+    override val acceptanceRequiringPolicy get() = AcceptanceRequiringPolicy.ALWAYS
+
     override fun createMemoryUnit() = OutputTape(descriptor = this, initValue = "")
 
     override fun createEditor(): Node? = null
@@ -45,7 +48,7 @@ class OutputTape(
 ) : MonospaceEditableString(initValue), MemoryUnit {
     override fun getCurrentFilterValues() = listOf<Nothing>()
 
-    override val observableStatus = READY_TO_ACCEPT.toProperty()
+    override val observableStatus = REQUIRES_ACCEPTANCE.toProperty()
     override val status: MemoryUnitStatus by observableStatus
 
     override fun takeTransition(transition: Transition) {

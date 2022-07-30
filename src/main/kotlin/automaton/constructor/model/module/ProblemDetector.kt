@@ -1,6 +1,7 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.memory.AcceptanceRequiringPolicy.NEVER
 import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Bindings.isEmpty
 import javafx.beans.binding.Bindings.isNotEmpty
@@ -30,7 +31,7 @@ class ProblemDetector(automaton: Automaton) : AutomatonModule {
 
     init {
         potentialProblems.add(PotentialProblem(ADD_INIT_STATE_MESSAGE, isEmpty(automaton.initialStates)))
-        if (automaton.memoryDescriptors.none { it.mayRequireAcceptance })
+        if (automaton.memoryDescriptors.all { it.acceptanceRequiringPolicy == NEVER })
             potentialProblems.add(PotentialProblem(ADD_FINAL_STATE_MESSAGE, isEmpty(automaton.finalStates)))
         if (automaton.memoryDescriptors.all { it.isAlwaysReadyToTerminate })
             potentialProblems.add(
