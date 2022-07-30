@@ -132,10 +132,20 @@ fun Automaton.getOutgoingTransitionsWithoutLoops(state: State): Set<Transition> 
 
 // Copy and add automaton elements
 
-fun Automaton.copyAndAddState(state: State, newName: String? = null, newPosition: Point2D? = null): State {
+fun Automaton.copyAndAddState(
+    state: State,
+    newName: String? = null,
+    newPosition: Point2D? = null,
+    newIsInitial: Boolean? = null,
+    newIsFinal: Boolean? = null
+): State {
     val name = newName ?: state.name
     val position = newPosition ?: state.position
-    return addState(name, position).apply { writeProperties(state.readProperties()) }
+    return addState(name, position).apply {
+        isInitial = newIsInitial ?: state.isInitial
+        isFinal = newIsFinal ?: state.isFinal
+        writeProperties(state.readProperties())
+    }
 }
 
 fun Automaton.copyAndAddTransition(

@@ -6,6 +6,7 @@ import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.action.ActionAvailability.DISABLED
 import automaton.constructor.model.action.createAutomatonElementAction
 import automaton.constructor.model.automaton.MealyMooreMachine
+import automaton.constructor.model.automaton.copyAndAddState
 import automaton.constructor.model.automaton.copyAndAddTransition
 import automaton.constructor.model.automaton.getOutgoingTransitionsWithoutLoops
 import automaton.constructor.model.property.EPSILON_VALUE
@@ -34,7 +35,11 @@ fun createMealyToMooreElementAction(mealyMooreMachine: MealyMooreMachine) =
             val incomingTransitionsGroups = incomingTransitions.groupBy { it.notNullOutputValue }
 
             val mooreOutputStringsToMooreStates = incomingTransitionsGroups.keys.mapIndexed { i, incomingOutputString ->
-                val mooreState = addState(name = state.name, position = state.position + i * 4 * RADIUS).apply {
+                val mooreState = copyAndAddState(
+                    state,
+                    newPosition = state.position + i * 4 * RADIUS,
+                    newIsInitial = state.isInitial && i == 0
+                ).apply {
                     outputValue = "$incomingOutputString$stateOutputString"
                 }
                 incomingOutputString to mooreState
@@ -52,7 +57,11 @@ fun createMealyToMooreElementAction(mealyMooreMachine: MealyMooreMachine) =
             }
             for (mooreState in mooreStates) {
                 for (t in loops) {
-                    copyAndAddTransition(t, newSource = mooreState, newTarget = incomingTransitionsToTargets.getValue(t)).apply {
+                    copyAndAddTransition(
+                        t,
+                        newSource = mooreState,
+                        newTarget = incomingTransitionsToTargets.getValue(t)
+                    ).apply {
                         outputValue = EPSILON_VALUE
                     }
                 }
