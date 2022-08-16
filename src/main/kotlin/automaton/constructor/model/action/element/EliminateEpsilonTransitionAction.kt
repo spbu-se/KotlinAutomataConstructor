@@ -43,8 +43,12 @@ fun createEliminateEpsilonTransitionAction(automaton: Automaton) =
                     sourceIncomingTransitions.any { it.isLoop() }
                 ) {
                     targetOutgoingTransitions.copyAndAddTransitions(newSource = source)
+                    if ((source.isInitial || !target.isInitial) && getIncomingTransitions(target).isEmpty())
+                        removeState(target)
                 } else {
                     sourceIncomingTransitions.copyAndAddTransitions(newTarget = target)
+                    if ((target.isFinal || !source.isFinal) && getOutgoingTransitions(source).isEmpty())
+                        removeState(source)
                 }
             }
         }
