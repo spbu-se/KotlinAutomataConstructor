@@ -2,7 +2,7 @@ package automaton.constructor.model.action
 
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.property.AutomatonElement
+import automaton.constructor.model.element.AutomatonElement
 import javafx.scene.input.KeyCombination
 
 interface AutomatonElementAction<in T : AutomatonElement> {

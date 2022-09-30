@@ -29,6 +29,8 @@ class TuringMachine(
         tape = tape.getData()
     )
 
+    override fun createSubAutomaton() = TuringMachine(tape)
+
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("TuringMachine")
     }

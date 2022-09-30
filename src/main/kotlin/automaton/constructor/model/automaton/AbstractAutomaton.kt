@@ -1,18 +1,21 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.State
 import automaton.constructor.model.action.AutomatonElementAction
+import automaton.constructor.model.action.element.createRemoveBuildingBlockAction
 import automaton.constructor.model.action.element.createRemoveStateAction
 import automaton.constructor.model.action.element.createRemoveTransitionAction
+import automaton.constructor.model.element.AutomatonVertex
+import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.property.EPSILON_VALUE
-import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
-import automaton.constructor.utils.I18N
 import automaton.constructor.utils.UndoRedoManager
+import automaton.constructor.utils.filteredSet
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
 import tornadofx.*
@@ -22,7 +25,7 @@ import tornadofx.*
  *
  * It has:
  *  - the fixed [type display name][typeDisplayName]
- *  - modifiable graph with vertices of type [State] and edges of type [Transition]
+ *  - modifiable graph with vertices of type [AutomatonVertex] and edges of type [Transition]
  *  - fixed list of [MemoryUnitDescriptor]-s
  *  - dynamically extendable set of [AutomatonModule]-s
  *
@@ -35,9 +38,10 @@ abstract class AbstractAutomaton(
     final override val nondeterministicAdjective: String,
     final override val untitledAdjective: String
 ) : Automaton {
-    private val transitionStorages = mutableMapOf<State, TransitionStorage>()
-    private val outgoingTransitions = mutableMapOf<State, ObservableSet<Transition>>()
-    private val incomingTransitions = mutableMapOf<State, MutableSet<Transition>>()
+    private val transitionStorages = mutableMapOf<AutomatonVertex, TransitionStorage>()
+
+    private val outgoingTransitions = mutableMapOf<AutomatonVertex, ObservableSet<Transition>>()
+    private val incomingTransitions = mutableMapOf<AutomatonVertex, MutableSet<Transition>>()
 
     override val undoRedoManager = UndoRedoManager()
 
@@ -55,32 +59,44 @@ abstract class AbstractAutomaton(
     }
 
     override val transitions = observableSetOf<Transition>()
-    override val states = observableSetOf<State>()
+    final override val vertices = observableSetOf<AutomatonVertex>()
 
-    private val nextStateSuffix: Int
-        get() {
-            val takenSuffixes = states
-                .mapNotNull { GENERATED_STATE_NAME_REGEX.matchEntire(it.name) }
-                .mapNotNull { it.groupValues[1].toIntOrNull() }
-                .toSet()
-            return generateSequence(0) { it + 1 }.first { it !in takenSuffixes }
-        }
+    @Suppress("UNCHECKED_CAST")
+    override val states = vertices.filteredSet { (it is State).toProperty() } as ObservableSet<State>
+
+    @Suppress("UNCHECKED_CAST")
+    override val buildingBlocks =
+        vertices.filteredSet { (it is BuildingBlock).toProperty() } as ObservableSet<BuildingBlock>
+
+    private fun nextStateSuffix(): Int = nextVertexSuffix(GENERATED_STATE_NAME_REGEX)
+    private fun nextBuildingBlockSuffix(): Int = nextVertexSuffix(GENERATED_BUILDING_BLOCK_NAME_REGEX)
+
+    private fun nextVertexSuffix(vertexNameRegex: Regex): Int {
+        val takenSuffixes = vertices
+            .mapNotNull { vertexNameRegex.matchEntire(it.name) }
+            .mapNotNull { it.groupValues[1].toIntOrNull() }
+            .toSet()
+        return generateSequence(0) { it + 1 }.first { it !in takenSuffixes }
+    }
 
 
-    override fun getPossibleTransitions(state: State, memory: List<MemoryUnit>): Set<Transition> =
-        transitionStorages[state]?.getPossibleTransitions(memory.flatMap {
-            if (it.status.noMoreDataAvailable) (it.descriptor.transitionFilters + it.descriptor.stateFilters).map { EPSILON_VALUE }
-            else it.getCurrentFilterValues()
-        }) ?: emptySet()
+    override fun getPossibleTransitions(vertex: AutomatonVertex, memory: List<MemoryUnit>): Set<Transition> =
+        transitionStorages[vertex]?.getPossibleTransitions(
+            memory.flatMap {
+                if (it.status.noMoreDataAvailable) (it.descriptor.transitionFilters).map { EPSILON_VALUE }
+                else it.getCurrentFilterValues()
+            }
+        ) ?: emptySet()
 
-    override fun getPureTransitions(state: State): Set<Transition> =
-        transitionStorages[state]?.getPureTransitions() ?: emptySet()
+    override fun getPureTransitions(vertex: AutomatonVertex): Set<Transition> =
+        transitionStorages[vertex]?.getPureTransitions() ?: emptySet()
 
-    override fun getOutgoingTransitions(state: State): ObservableSet<Transition> = outgoingTransitions.getValue(state)
+    override fun getOutgoingTransitions(vertex: AutomatonVertex): ObservableSet<Transition> =
+        outgoingTransitions.getValue(vertex)
 
-    override fun getIncomingTransitions(state: State): Set<Transition> = incomingTransitions.getValue(state)
+    override fun getIncomingTransitions(vertex: AutomatonVertex): Set<Transition> = incomingTransitions.getValue(vertex)
 
-    override fun addTransition(source: State, target: State): Transition {
+    override fun addTransition(source: AutomatonVertex, target: AutomatonVertex): Transition {
         val transition = Transition(source, target, memoryDescriptors)
         undoRedoManager.perform(
             act = { doAddTransition(transition) },
@@ -114,33 +130,46 @@ abstract class AbstractAutomaton(
 
 
     override fun addState(name: String?, position: Point2D): State {
-        val state = State(name ?: (STATE_NAME_PREFIX + nextStateSuffix), position, memoryDescriptors)
-        undoRedoManager.perform({ doAddState(state) }, { doRemoveState(state) })
+        val state = State(memoryDescriptors, name ?: (STATE_NAME_PREFIX + nextStateSuffix()), position)
+        undoRedoManager.perform({ doAddVertex(state) }, { doRemoveVertex(state) })
         return state
     }
 
-    override fun removeState(state: State) {
-        undoRedoManager.perform(act = { doRemoveState(state) }, undo = { doAddState(state) })
+    override fun addBuildingBlock(subAutomaton: Automaton, name: String?, position: Point2D): BuildingBlock {
+        val buildingBlock =
+            BuildingBlock(
+                memoryDescriptors,
+                subAutomaton,
+                name ?: (BUILDING_BLOCK_NAME_PREFIX + nextBuildingBlockSuffix()),
+                position
+            )
+        undoRedoManager.perform({ doAddVertex(buildingBlock) }, { doRemoveVertex(buildingBlock) })
+        return buildingBlock
     }
 
-    private fun doAddState(state: State) {
-        transitionStorages[state] = createTransitionStorageTree(memoryDescriptors)
-        outgoingTransitions[state] = observableSetOf()
-        incomingTransitions[state] = mutableSetOf()
-        state.undoRedoProperties.forEach(undoRedoManager::registerProperty)
-        states.add(state)
+    override fun removeVertex(vertex: AutomatonVertex) {
+        undoRedoManager.perform(act = { doRemoveVertex(vertex) }, undo = { doAddVertex(vertex) })
     }
 
-    private fun doRemoveState(state: State) {
-        outgoingTransitions.getValue(state).toList().forEach(::removeTransition)
-        incomingTransitions.getValue(state).toList().forEach(::removeTransition)
-        transitionStorages.remove(state)
-        outgoingTransitions.remove(state)
-        incomingTransitions.remove(state)
-        state.undoRedoProperties.forEach(undoRedoManager::unregisterProperty)
-        states.remove(state)
+    private fun doAddVertex(vertex: AutomatonVertex) {
+        transitionStorages[vertex] = createTransitionStorageTree(memoryDescriptors)
+        outgoingTransitions[vertex] = observableSetOf()
+        incomingTransitions[vertex] = mutableSetOf()
+        vertex.undoRedoProperties.forEach(undoRedoManager::registerProperty)
+        if (vertex is BuildingBlock) undoRedoManager.registerSubManager(vertex.subAutomaton.undoRedoManager)
+        vertices.add(vertex)
     }
 
+    private fun doRemoveVertex(vertex: AutomatonVertex) {
+        outgoingTransitions.getValue(vertex).toList().forEach(::removeTransition)
+        incomingTransitions.getValue(vertex).toList().forEach(::removeTransition)
+        transitionStorages.remove(vertex)
+        outgoingTransitions.remove(vertex)
+        incomingTransitions.remove(vertex)
+        vertex.undoRedoProperties.forEach(undoRedoManager::unregisterProperty)
+        if (vertex is BuildingBlock) undoRedoManager.unregisterSubManager(vertex.subAutomaton.undoRedoManager)
+        vertices.remove(vertex)
+    }
 
     override val transitionActions: List<AutomatonElementAction<Transition>> = listOf(
         createRemoveTransitionAction(automaton = this)
@@ -150,6 +179,14 @@ abstract class AbstractAutomaton(
         createRemoveStateAction(automaton = this)
     )
 
+    override val buildingBlockActions: List<AutomatonElementAction<BuildingBlock>> = listOf(
+        createRemoveBuildingBlockAction(automaton = this)
+    )
+
+    override fun clearExecutionStates() = vertices.forEach {
+        it.executionStates.clear()
+        if (it is BuildingBlock) it.subAutomaton.clearExecutionStates()
+    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : AutomatonModule> getModule(moduleFactory: (Automaton) -> T): T =
@@ -160,6 +197,8 @@ abstract class AbstractAutomaton(
 
     companion object {
         private const val STATE_NAME_PREFIX = "S"
+        private const val BUILDING_BLOCK_NAME_PREFIX = "M"
         private val GENERATED_STATE_NAME_REGEX = Regex("$STATE_NAME_PREFIX(\\d+)")
+        private val GENERATED_BUILDING_BLOCK_NAME_REGEX = Regex("$BUILDING_BLOCK_NAME_PREFIX(\\d+)")
     }
 }

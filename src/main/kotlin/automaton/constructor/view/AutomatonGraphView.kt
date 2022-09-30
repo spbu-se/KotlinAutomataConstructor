@@ -1,29 +1,32 @@
 package automaton.constructor.view
 
 import automaton.constructor.controller.AutomatonGraphController
-import automaton.constructor.model.State
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.AutomatonVertex
+import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
+import automaton.constructor.utils.hoverableTooltip
 import automaton.constructor.utils.subPane
-import automaton.constructor.view.module.executor.installExecutionStateTooltip
+import automaton.constructor.view.module.executor.executionStatesTooltip
 import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
 import tornadofx.*
 
 class AutomatonGraphView(val automaton: Automaton) : Pane() {
     private val edgePane = subPane()
-    val edgeViews = mutableMapOf<Pair<State, State>, EdgeView>()
-    val stateToViewMap = mutableMapOf<State, StateView>()
+    val edgeViews = mutableMapOf<Pair<AutomatonVertex, AutomatonVertex>, EdgeView>()
+    val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonVertexView>()
     val controller: AutomatonGraphController = AutomatonGraphController(automaton)
 
     init {
         minWidth = GRAPH_PANE_INIT_SIZE.x
         minHeight = GRAPH_PANE_INIT_SIZE.y
         controller.registerGraphView(this)
-        automaton.states.forEach { registerState(it) }
-        automaton.states.addListener(SetChangeListener {
-            if (it.wasAdded()) registerState(it.elementAdded)
-            if (it.wasRemoved()) unregisterState(it.elementRemoved)
+        automaton.vertices.forEach { registerVertex(it) }
+        automaton.vertices.addListener(SetChangeListener {
+            if (it.wasAdded()) registerVertex(it.elementAdded)
+            if (it.wasRemoved()) unregisterVertex(it.elementRemoved)
         })
         automaton.transitions.forEach { registerTransition(it) }
         automaton.transitions.addListener(SetChangeListener {
@@ -33,21 +36,40 @@ class AutomatonGraphView(val automaton: Automaton) : Pane() {
         controller.clearSelection()
     }
 
-    private fun registerState(state: State) {
-        val stateView = StateView(state)
-        controller.registerStateView(stateView)
-        stateToViewMap[state] = stateView
-        stateView.installExecutionStateTooltip()
-        add(stateView.group)
+    private fun registerVertex(vertex: AutomatonVertex) {
+        val automatonVertexView = AutomatonVertexView(vertex)
+        controller.registerVertexView(automatonVertexView)
+        vertexToViewMap[vertex] = automatonVertexView
+        when (vertex) {
+            is State -> automatonVertexView.hoverableTooltip { executionStatesTooltip(vertex) }
+            is BuildingBlock -> {
+                // memoization
+                val subAutomatonView by lazy { AutomatonView(vertex.subAutomaton, isMinimalistic = true) }
+                automatonVertexView.hoverableTooltip(stopManagingOnInteraction = true) {
+                    Pane().apply {
+                        minWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                        minHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                        maxWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                        maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                        add(subAutomatonView)
+                        subAutomatonView.fitToParentSize()
+                    }
+                }
+            }
+        }
+        add(automatonVertexView)
     }
 
-    private fun unregisterState(state: State) {
-        children.remove(stateToViewMap.remove(state)!!.group)
+    private fun unregisterVertex(vertex: AutomatonVertex) {
+        children.remove(vertexToViewMap.remove(vertex)!!)
     }
 
     private fun registerTransition(transition: Transition) {
         val edgeView = edgeViews.getOrPut(transition.source to transition.target) {
-            EdgeView(transition.source, transition.target).also { newEdge ->
+            EdgeView(
+                vertexToViewMap.getValue(transition.source),
+                vertexToViewMap.getValue(transition.target)
+            ).also { newEdge ->
                 edgeViews[transition.target to transition.source]?.let { oppositeEdge ->
                     oppositeEdge.oppositeEdge = newEdge
                     newEdge.oppositeEdge = oppositeEdge

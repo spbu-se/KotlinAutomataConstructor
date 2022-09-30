@@ -3,7 +3,7 @@ package automaton.constructor.model.action.element
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.action.createAutomatonElementAction
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination

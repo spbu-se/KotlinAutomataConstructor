@@ -68,4 +68,6 @@ class DynamicPropertyDescriptor<T>(
         stringConverter,
         displayValueFactory
     )
+
+    override fun toString() = "DynamicPropertyDescriptor(\"$displayName\")"
 }

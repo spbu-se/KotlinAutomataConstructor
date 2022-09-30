@@ -1,6 +1,6 @@
 package automaton.constructor.model.transition.storage
 
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.Transition
 import javafx.beans.property.Property
 
 interface TransitionStorage {

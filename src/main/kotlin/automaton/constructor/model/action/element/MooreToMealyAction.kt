@@ -1,10 +1,10 @@
 package automaton.constructor.model.action.element
 
-import automaton.constructor.model.State
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.action.ActionAvailability.DISABLED
 import automaton.constructor.model.action.createAutomatonElementAction
 import automaton.constructor.model.automaton.MealyMooreMachine
+import automaton.constructor.model.element.State
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.utils.I18N
 

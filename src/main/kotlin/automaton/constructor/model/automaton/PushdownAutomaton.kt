@@ -36,6 +36,8 @@ class PushdownAutomaton(
     override fun getTypeData() =
         PushdownAutomatonData(inputTape = inputTape.getData(), stacks = stacks.map { it.getData() })
 
+    override fun createSubAutomaton() = PushdownAutomaton(inputTape, stacks)
+
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("PushdownAutomaton")
     }

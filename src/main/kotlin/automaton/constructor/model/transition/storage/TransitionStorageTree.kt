@@ -7,7 +7,7 @@ import automaton.constructor.model.property.DynamicPropertyDescriptor
  * Creates transition storage tree of height `memory.sumBy { it.filterDescriptors.size + it.sideEffectDescriptors.size }`
  */
 fun createTransitionStorageTree(memoryDescriptors: List<MemoryUnitDescriptor>) = memoryDescriptors
-    .flatMap { it.transitionFilters + it.stateFilters }
+    .flatMap { it.transitionFilters }
     .fold<DynamicPropertyDescriptor<*>, (Int) -> TransitionStorage>({ LeafTransitionStorage() }) { acc, _ ->
         { depth -> BranchTransitionStorage(depth, acc) }
     }.invoke(0)

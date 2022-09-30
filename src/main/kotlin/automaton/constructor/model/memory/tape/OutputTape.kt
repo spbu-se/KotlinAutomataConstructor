@@ -1,6 +1,8 @@
 package automaton.constructor.model.memory.tape
 
 import automaton.constructor.model.data.OutputTapeDescriptorData
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.AcceptanceRequiringPolicy
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
@@ -9,7 +11,6 @@ import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
 import automaton.constructor.model.property.DynamicPropertyDescriptor
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
-import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.scrollToRightWhenUnfocused
@@ -23,7 +24,6 @@ class OutputTapeDescriptor : MemoryUnitDescriptor {
     ).copy(displayValueFactory = { if (it == EPSILON_VALUE) "" else it.toString() })
 
     override val transitionFilters get() = emptyList<DynamicPropertyDescriptor<*>>()
-    override val stateFilters get() = emptyList<DynamicPropertyDescriptor<*>>()
     override val transitionSideEffects = listOf(outputValue)
     override val stateSideEffects = listOf(outputValue)
 
@@ -34,10 +34,6 @@ class OutputTapeDescriptor : MemoryUnitDescriptor {
     override fun createEditor(): Node? = null
 
     override var displayName: String = I18N.messages.getString("OutputTape")
-    fun getOutput(transition: Transition): String = listOfNotNull(
-        transition[outputValue],
-        transition.target[outputValue]
-    ).joinToString(separator = "")
 
     override fun getData() = OutputTapeDescriptorData
 }
@@ -51,8 +47,12 @@ class OutputTape(
     override val observableStatus = REQUIRES_ACCEPTANCE.toProperty()
     override val status: MemoryUnitStatus by observableStatus
 
-    override fun takeTransition(transition: Transition) {
-        value += descriptor.getOutput(transition)
+    override fun onTransition(transition: Transition) {
+        value += transition[descriptor.outputValue]?.takeIf { it != EPSILON_VALUE } ?: ""
+    }
+
+    override fun onStateEntered(state: State) {
+        value += state[descriptor.outputValue]?.takeIf { it != EPSILON_VALUE } ?: ""
     }
 
     override fun copy() = OutputTape(descriptor, value)

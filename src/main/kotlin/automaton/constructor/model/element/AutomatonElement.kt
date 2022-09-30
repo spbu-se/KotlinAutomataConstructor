@@ -1,23 +1,24 @@
-package automaton.constructor.model.property
+package automaton.constructor.model.element
 
+import automaton.constructor.model.property.*
 import javafx.beans.property.Property
 
 /**
- * State or transition
+ * Transition or vertex
  */
-abstract class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDescriptorGroup>) {
+sealed class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDescriptorGroup>) {
     private val properties = mutableMapOf<DynamicPropertyDescriptor<*>, DynamicProperty<*>>()
-    val propertyGroups = propertyDescriptorGroups.map { (memoryDescriptor, filters, sideEffects) ->
+    val propertyGroups = propertyDescriptorGroups.map { (displayName, filters, sideEffects) ->
         DynamicPropertyGroup(
-            memoryDescriptor,
+            displayName,
             filters.map { registerProperty(it) },
             sideEffects.map { registerProperty(it) }
         )
     }
 
     open val filters: List<DynamicProperty<*>> = propertyGroups.flatMap { it.filters }
-    open val sideEffects: List<DynamicProperty<*>> = propertyGroups.flatMap { it.sideEffects }
-    open val allProperties: Collection<DynamicProperty<*>> get() = properties.values
+    val sideEffects: List<DynamicProperty<*>> = propertyGroups.flatMap { it.sideEffects }
+    val allProperties: Collection<DynamicProperty<*>> get() = properties.values
     open val undoRedoProperties: Collection<Property<*>> get() = allProperties
 
     /**
@@ -42,6 +43,8 @@ abstract class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDe
     operator fun <T> set(descriptor: DynamicPropertyDescriptor<T>, value: T) {
         getProperty(descriptor).value = value
     }
+
+    open fun isPure() = allProperties.all { it.value == EPSILON_VALUE }
 
     fun readProperties(): List<String> = properties.values.map { it.toString() }
     fun writeProperties(values: List<String>) = properties.values.zip(values).forEach { (property, value) ->

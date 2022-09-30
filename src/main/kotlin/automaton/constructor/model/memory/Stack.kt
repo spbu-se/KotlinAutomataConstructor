@@ -1,13 +1,13 @@
 package automaton.constructor.model.memory
 
 import automaton.constructor.model.data.StackDescriptorData
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.MemoryUnitStatus.*
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.nonNullObjectBinding
-import automaton.constructor.utils.I18N.messages
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.VBox
 import tornadofx.*
@@ -58,7 +58,7 @@ class Stack(
         }
     override val status: MemoryUnitStatus by observableStatus
 
-    override fun takeTransition(transition: Transition) {
+    override fun onTransition(transition: Transition) {
         var pushedString = transition[descriptor.pushedValue]
         if (pushedString == EPSILON_VALUE) pushedString = ""
         value = pushedString + (if (transition[descriptor.expectedChar] == EPSILON_VALUE) value else value.drop(1))

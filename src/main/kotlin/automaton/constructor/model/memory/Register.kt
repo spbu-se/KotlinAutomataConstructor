@@ -1,12 +1,12 @@
 package automaton.constructor.model.memory
 
 import automaton.constructor.model.data.RegisterDescriptorData
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.EPSILON_VALUE
-import automaton.constructor.model.transition.Transition
-import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.I18N.messages
+import automaton.constructor.utils.MonospaceEditableString
 import tornadofx.*
 
 class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
@@ -36,7 +36,7 @@ class Register(
 
     override fun getCurrentFilterValues() = listOf(value)
 
-    override fun takeTransition(transition: Transition) {
+    override fun onTransition(transition: Transition) {
         val newValue = transition[descriptor.newValue]
         if (newValue != EPSILON_VALUE) value = newValue
     }

@@ -15,14 +15,13 @@ class ExecutionTreeView(executor: Executor) : Pane() {
 
     init {
         visibleWhen(executor.startedBinding)
-        executor.startedBinding.onChange {
+        fun rerender() {
             clear()
             customizedZoomScrollPane {
                 minWidth = GRAPH_PANE_INIT_SIZE.x
                 minHeight = GRAPH_PANE_INIT_SIZE.y
                 pane {
                     translateX = GRAPH_PANE_CENTER.x
-                    translateY = GRAPH_PANE_CENTER.y
                     val treeParent = this
                     val decorNode = pane()
                     hbox(ExecutionNodeView.HORIZONTAL_SPACING) {
@@ -39,7 +38,9 @@ class ExecutionTreeView(executor: Executor) : Pane() {
                         })
                     }
                 }
-            }
+            }.vvalue = 0.0
         }
+        rerender()
+        executor.startedBinding.onChange { rerender() }
     }
 }

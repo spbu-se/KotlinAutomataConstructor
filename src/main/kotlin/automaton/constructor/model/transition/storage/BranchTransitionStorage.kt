@@ -1,8 +1,8 @@
 package automaton.constructor.model.transition.storage
 
-import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.property.DynamicProperty
+import automaton.constructor.model.property.EPSILON_VALUE
 import javafx.beans.value.ChangeListener
 import tornadofx.*
 

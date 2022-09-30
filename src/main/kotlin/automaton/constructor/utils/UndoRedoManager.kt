@@ -1,6 +1,8 @@
 package automaton.constructor.utils
 
 import javafx.beans.property.Property
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.beans.value.WritableValue
 import tornadofx.*
 
@@ -103,6 +105,16 @@ class UndoRedoManager(val maxUndo: Int = 20) {
 
     fun registerProperty(property: Property<*>) = property.addListener(listener)
     fun unregisterProperty(property: Property<*>) = property.removeListener(listener)
+
+    private fun onSubManagerModified(subMangerListenedValue: ObservableValue<*>) {
+        subMangerListenedValue.removeListener(subManagerListener)
+        wasModified = true
+    }
+
+    private val subManagerListener = ChangeListener<Any?> { observable, _, _ -> onSubManagerModified(observable) }
+    fun registerSubManager(subManager: UndoRedoManager) = subManager.wasModifiedProperty.addListener(subManagerListener)
+    fun unregisterSubManager(subManager: UndoRedoManager) =
+        subManager.wasModifiedProperty.removeListener(subManagerListener)
 }
 
 interface UndoableAction {

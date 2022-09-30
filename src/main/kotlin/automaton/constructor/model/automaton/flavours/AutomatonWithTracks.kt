@@ -1,9 +1,9 @@
 package automaton.constructor.model.automaton.flavours
 
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.tape.HeadMoveDirection
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.model.property.DynamicProperty
-import automaton.constructor.model.transition.Transition
 
 interface AutomatonWithTracks {
     val tracks: MultiTrackTapeDescriptor

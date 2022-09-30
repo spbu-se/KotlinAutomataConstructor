@@ -1,6 +1,7 @@
 package automaton.constructor.model.memory.tape
 
 import automaton.constructor.model.data.InputTapeDescriptorData
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.MemoryUnitStatus
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
@@ -9,9 +10,8 @@ import automaton.constructor.model.property.DynamicPropertyDescriptor
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHAR
 import automaton.constructor.model.property.EPSILON_VALUE
-import automaton.constructor.model.transition.Transition
-import automaton.constructor.utils.MonospaceEditableString
 import automaton.constructor.utils.I18N.messages
+import automaton.constructor.utils.MonospaceEditableString
 import javafx.beans.binding.Bindings.`when`
 import javafx.beans.value.ObservableValue
 import tornadofx.*
@@ -42,7 +42,7 @@ class InputTape(
             .otherwise(NOT_READY_TO_ACCEPT)
     override val status: MemoryUnitStatus by observableStatus
 
-    override fun takeTransition(transition: Transition) {
+    override fun onTransition(transition: Transition) {
         if (transition[descriptor.expectedChar] != EPSILON_VALUE)
             track.moveHead(HeadMoveDirection.RIGHT)
     }

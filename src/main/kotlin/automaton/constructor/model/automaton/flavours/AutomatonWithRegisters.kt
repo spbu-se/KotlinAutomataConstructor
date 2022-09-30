@@ -1,8 +1,8 @@
 package automaton.constructor.model.automaton.flavours
 
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.property.DynamicProperty
-import automaton.constructor.model.transition.Transition
 
 interface AutomatonWithRegisters {
     val registers: List<RegisterDescriptor>

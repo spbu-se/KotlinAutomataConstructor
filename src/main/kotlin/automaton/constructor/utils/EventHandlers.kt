@@ -23,13 +23,20 @@ SOFTWARE.
  */
 package automaton.constructor.utils
 
+import javafx.beans.property.Property
 import javafx.concurrent.Task
 import javafx.event.Event
 import javafx.event.EventHandler
 
-operator fun <T : Event> EventHandler<T>?.plus(other: EventHandler<T>) = EventHandler<T> {
-    this?.handle(it)
-    other.handle(it)
+operator fun <T : Event> EventHandler<in T>?.plus(other: EventHandler<T>) = this?.let {
+    EventHandler<T> {
+        handle(it)
+        other.handle(it)
+    }
+} ?: other
+
+operator fun <T : Event> Property<EventHandler<in T>>.plusAssign(other: EventHandler<T>) {
+    value += other
 }
 
 infix fun <T> Task<T>.addOnSuccess(func: (T) -> Unit) = apply { onSucceeded += { func(value) } }

@@ -5,8 +5,8 @@ import automaton.constructor.model.action.element.createMooreToMealyElementActio
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.automaton.flavours.AutomatonWithOutputTape
 import automaton.constructor.model.data.MealyMooreMachineData
-import automaton.constructor.model.memory.tape.OutputTapeDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.memory.tape.OutputTapeDescriptor
 import automaton.constructor.utils.I18N
 
 /**
@@ -29,6 +29,8 @@ class MealyMooreMachine(
         inputTape = inputTape.getData(),
         outputTape = outputTape.getData()
     )
+
+    override fun createSubAutomaton() = MealyMooreMachine(inputTape, outputTape)
 
     override val stateActions = super.stateActions + listOf(
         createMooreToMealyElementAction(mealyMooreMachine = this),

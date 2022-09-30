@@ -28,6 +28,8 @@ class FiniteAutomaton(
         createEliminateEpsilonTransitionAction(automaton = this)
     )
 
+    override fun createSubAutomaton() = FiniteAutomaton(inputTape)
+
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("FiniteAutomaton")
     }

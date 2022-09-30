@@ -18,5 +18,7 @@ class EpsilonDetector(automaton: Automaton) : AutomatonModule {
             if (property.descriptor.canBeDeemedEpsilon) property.booleanBinding { it == EPSILON_VALUE }
             else false.toProperty()
         }.booleanBinding { it!!.toInt() > 0 }
-    })
+    }).or(
+        isNotEmpty(automaton.buildingBlocks.filteredSet { it.subAutomaton.hasEpsilonBinding })
+    )
 }

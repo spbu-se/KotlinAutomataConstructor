@@ -2,12 +2,12 @@ package automaton.constructor.view.module.executor
 
 import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.model.module.executor.ExecutionStatus
+import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.SettingListEditor
 import automaton.constructor.utils.createSettings
 import automaton.constructor.utils.nonNullObjectBinding
-import automaton.constructor.utils.I18N.messages
-import javafx.beans.binding.Bindings.isEmpty
+import javafx.beans.value.ObservableValue
 import javafx.geometry.Insets
 import javafx.scene.control.CheckBox
 import javafx.scene.layout.Background
@@ -26,8 +26,8 @@ val ExecutionStatus.color
         ExecutionStatus.FROZEN -> Color.DEEPSKYBLUE
     }
 
-val ExecutionState.backgroundBinding
-    get() = statusProperty.nonNullObjectBinding {
+val ObservableValue<ExecutionStatus>.backgroundBinding
+    get() = nonNullObjectBinding {
         Background(
             BackgroundFill(
                 it.color ?: Color.TRANSPARENT,
@@ -39,9 +39,10 @@ val ExecutionState.backgroundBinding
 
 fun ExecutionState.createSettings() = memory.createSettings() + Setting(messages.getString("ExecutorViewUtils.Frozen"),
     CheckBox().apply {
-        visibleWhen(isEmpty(children).and(statusProperty.booleanBinding { it == ExecutionStatus.RUNNING || it == ExecutionStatus.FROZEN }))
+        visibleWhen(canHaveMoreChildrenProperty)
         managedWhen(visibleProperty())
         selectedProperty().bindBidirectional(isFrozenProperty)
     })
 
-fun ExecutionState.tooltipContent() = SettingListEditor(createSettings())
+fun ExecutionState.simpleTooltipContent() = SettingListEditor(createSettings())
+

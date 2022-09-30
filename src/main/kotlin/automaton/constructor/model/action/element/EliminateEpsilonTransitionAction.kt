@@ -1,21 +1,30 @@
 package automaton.constructor.model.action.element
 
-import automaton.constructor.model.State
-import automaton.constructor.model.action.ActionAvailability.AVAILABLE
-import automaton.constructor.model.action.ActionAvailability.HIDDEN
+import automaton.constructor.model.action.ActionAvailability.*
 import automaton.constructor.model.action.createAutomatonElementAction
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.copyAndAddTransition
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.AutomatonVertex
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 
 fun createEliminateEpsilonTransitionAction(automaton: Automaton) =
     createAutomatonElementAction<Automaton, Transition>(
         automaton = automaton,
         displayName = I18N.messages.getString("AutomatonElementAction.EliminateEpsilonTransition"),
-        getAvailabilityFor = { transition -> if (transition.isPure()) AVAILABLE else HIDDEN },
+        getAvailabilityFor = { transition ->
+            when {
+                !transition.isPure() -> HIDDEN
+                transition.source is State && transition.target is State -> AVAILABLE
+                else -> DISABLED
+            }
+        },
         performOn = { transition ->
-            fun Iterable<Transition>.copyAndAddTransitions(newSource: State? = null, newTarget: State? = null) =
+            fun Iterable<Transition>.copyAndAddTransitions(
+                newSource: AutomatonVertex? = null,
+                newTarget: AutomatonVertex? = null
+            ) =
                 forEach { transitionToCopy ->
                     copyAndAddTransition(
                         transitionToCopy, newSource, newTarget,
@@ -44,11 +53,11 @@ fun createEliminateEpsilonTransitionAction(automaton: Automaton) =
                 ) {
                     targetOutgoingTransitions.copyAndAddTransitions(newSource = source)
                     if ((source.isInitial || !target.isInitial) && getIncomingTransitions(target).isEmpty())
-                        removeState(target)
+                        removeVertex(target)
                 } else {
                     sourceIncomingTransitions.copyAndAddTransitions(newTarget = target)
                     if ((target.isFinal || !source.isFinal) && getOutgoingTransitions(source).isEmpty())
-                        removeState(source)
+                        removeVertex(source)
                 }
             }
         }

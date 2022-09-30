@@ -1,7 +1,6 @@
 package automaton.constructor.model.transition.storage
 
-import automaton.constructor.model.transition.Transition
-import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.element.Transition
 import tornadofx.*
 
 class LeafTransitionStorage : TransitionStorage {
@@ -23,5 +22,5 @@ class LeafTransitionStorage : TransitionStorage {
     override fun getPossibleTransitions(memoryData: List<*>) = transitions
 
     override fun getPureTransitions(): Set<Transition> =
-        transitions.filterTo(mutableSetOf()) { transition -> transition.sideEffects.all { it.value == EPSILON_VALUE } }
+        transitions.filterTo(mutableSetOf()) { it.isPure() }
 }

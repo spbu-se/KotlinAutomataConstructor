@@ -1,7 +1,7 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.IgnorableByCoverage
 import kotlinx.serialization.Serializable
 
@@ -24,7 +24,7 @@ data class TransitionData(
  * Retrieves all [transition data][TransitionData] from the automaton.
  */
 fun Automaton.getTransitionsData(): List<TransitionData> {
-    val stateToIdMap = states.asSequence().withIndex().associate { (i, v) -> v to i }
+    val stateToIdMap = vertices.asSequence().withIndex().associate { (i, v) -> v to i }
     return transitions.map { transition ->
         TransitionData(
             source = stateToIdMap.getValue(transition.source),

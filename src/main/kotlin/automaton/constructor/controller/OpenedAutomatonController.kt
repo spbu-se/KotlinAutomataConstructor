@@ -23,12 +23,13 @@ class OpenedAutomatonController(val view: View) {
     val openedAutomatonProperty = getAllAutomatonFactories().first().createAutomaton().toProperty()
     var openedAutomaton: Automaton by openedAutomatonProperty
 
-    private val nameBinding: Binding<String> = openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) { file ->
-        file?.toString() ?: listOf(
-            openedAutomaton.untitledAdjective,
-            openedAutomaton.typeDisplayName
-        ).filter { it.isNotEmpty() }.joinToString(" ")
-    }
+    private val nameBinding: Binding<String> =
+        openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) { file ->
+            file?.toString() ?: listOf(
+                openedAutomaton.untitledAdjective,
+                openedAutomaton.typeDisplayName
+            ).filter { it.isNotEmpty() }.joinToString(" ")
+        }
     private val name: String by nameBinding
 
     val openedAutomatonTitleBinding = nameBinding.nonNullObjectBinding(

@@ -7,14 +7,13 @@ import automaton.constructor.utils.I18N
 import automaton.constructor.utils.nonNullObjectBinding
 import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
-import javafx.scene.control.TextInputControl
 import tornadofx.*
 
 class MainView : View() {
     private val openedAutomatonController = OpenedAutomatonController(this)
     private val automatonDocumentationController = AutomatonDocumentationController()
     private val automatonViewBinding = openedAutomatonController.openedAutomatonProperty.nonNullObjectBinding {
-        AutomatonView(it, this)
+        AutomatonView(it)
     }
     private val automatonView: AutomatonView by automatonViewBinding
     private val undoRedoControllerBinding = automatonViewBinding.nonNullObjectBinding { UndoRedoController(it) }
@@ -37,21 +36,13 @@ class MainView : View() {
                 }
             }
             menu(I18N.messages.getString("MainView.Edit")) {
-                shortcutItem(I18N.messages.getString("MainView.Edit.Undo"), "Shortcut+Z") {
-                    val focusOwner = scene.focusOwner
-                    when {
-                        focusOwner is TextInputControl && focusOwner.isUndoable -> focusOwner.undo()
-                        else -> undoRedoController.onUndo()
-                    }
+                item(I18N.messages.getString("MainView.Edit.Undo"), UndoRedoController.UNDO_COMBO) {
+                    action { undoRedoController.onUndo() }
                 }.apply {
                     enableWhen(automatonViewBinding.select { it.automaton.undoRedoManager.isUndoableProperty })
                 }
-                shortcutItem(I18N.messages.getString("MainView.Edit.Redo"), "Shortcut+Shift+Z") {
-                    val focusOwner = scene.focusOwner
-                    when {
-                        focusOwner is TextInputControl && focusOwner.isRedoable -> focusOwner.redo()
-                        else -> undoRedoController.onRedo()
-                    }
+                item(I18N.messages.getString("MainView.Edit.Redo"), UndoRedoController.REDO_COMBO) {
+                    action { undoRedoController.onRedo() }
                 }.apply {
                     enableWhen(automatonViewBinding.select { it.automaton.undoRedoManager.isRedoableProperty })
                 }

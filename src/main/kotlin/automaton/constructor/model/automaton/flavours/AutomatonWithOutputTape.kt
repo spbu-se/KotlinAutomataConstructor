@@ -1,7 +1,7 @@
 package automaton.constructor.model.automaton.flavours
 
+import automaton.constructor.model.element.AutomatonElement
 import automaton.constructor.model.memory.tape.OutputTapeDescriptor
-import automaton.constructor.model.property.AutomatonElement
 import automaton.constructor.model.property.DynamicProperty
 import automaton.constructor.model.property.EPSILON_VALUE
 

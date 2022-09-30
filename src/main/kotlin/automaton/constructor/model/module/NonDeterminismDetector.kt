@@ -1,10 +1,11 @@
 package automaton.constructor.model.module
 
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.filteredSet
-import javafx.beans.binding.Bindings.isEmpty
-import javafx.beans.binding.Bindings.size
+import javafx.beans.binding.Bindings.*
 import javafx.beans.binding.BooleanBinding
 import javafx.collections.SetChangeListener
 import tornadofx.*
@@ -14,9 +15,9 @@ val Automaton.nonDeterminismDetector get() = getModule(nonDeterminismDetectorFac
 val Automaton.isDeterministicBinding get() = nonDeterminismDetector.isDeterministicBinding
 
 class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
-    val nonDeterministicStates = automaton.states.filteredSet { state ->
+    val nonDeterministicStates = automaton.vertices.filteredSet { vertex ->
         val isNonDeterministic = true.toProperty()
-        val transitions = automaton.getOutgoingTransitions(state)
+        val transitions = automaton.getOutgoingTransitions(vertex)
         fun recheckDeterminism() {
             isNonDeterministic.value = transitions.any { transition1 ->
                 transitions.any { transition2 ->
@@ -37,10 +38,13 @@ class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
             if (it.wasRemoved()) unregisterTransition(it.elementRemoved)
             recheckDeterminism()
         })
-        isNonDeterministic
+        when (vertex) {
+            is State -> isNonDeterministic
+            is BuildingBlock -> isNonDeterministic.or(not(vertex.subAutomaton.isDeterministicBinding))
+        }
     }
     val isDeterministicBinding: BooleanBinding =
-        isEmpty(nonDeterministicStates).and(size(automaton.initialStates).booleanBinding {
-            automaton.initialStates.size <= 1
+        isEmpty(nonDeterministicStates).and(size(automaton.initialVertices).booleanBinding {
+            automaton.initialVertices.size <= 1
         })
 }

@@ -1,9 +1,8 @@
-package automaton.constructor.model
+package automaton.constructor.model.element
 
+import automaton.constructor.model.memory.AcceptanceRequiringPolicy
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.executor.ExecutionState
-import automaton.constructor.model.module.executor.ExecutionStatus
-import automaton.constructor.model.property.AutomatonElement
 import automaton.constructor.model.property.DynamicPropertyDescriptorGroup
 import automaton.constructor.utils.filteredSet
 import javafx.beans.binding.Bindings.isNotEmpty
@@ -13,22 +12,12 @@ import javafx.beans.property.Property
 import javafx.geometry.Point2D
 import tornadofx.*
 
-/**
- * A state of the automaton
- */
-class State(
+sealed class AutomatonVertex(
+    private val memoryDescriptors: List<MemoryUnitDescriptor>,
+    propertyDescriptorGroups: List<DynamicPropertyDescriptorGroup>,
     name: String,
-    position: Point2D,
-    memoryDescriptors: List<MemoryUnitDescriptor>
-) : AutomatonElement(
-    propertyDescriptorGroups = memoryDescriptors.map {
-        DynamicPropertyDescriptorGroup(
-            memoryUnitDescriptor = it,
-            filters = it.stateFilters,
-            sideEffects = it.stateSideEffects
-        )
-    }
-) {
+    position: Point2D
+) : AutomatonElement(propertyDescriptorGroups) {
     val nameProperty: Property<String> = name.toProperty()
     var name: String by nameProperty
 
@@ -40,26 +29,26 @@ class State(
 
     val positionProperty: Property<Point2D> = position.toProperty()
     var position: Point2D by positionProperty
-
     val lastReleasePositionProperty: Property<Point2D> = position.toProperty().apply {
-        onChange { this@State.position = it!! }
+        onChange { this@AutomatonVertex.position = it!! }
     }
     var lastReleasePosition: Point2D by lastReleasePositionProperty
 
-    override val undoRedoProperties
-        get() = super.undoRedoProperties +
-                listOf(nameProperty, isInitialProperty, isFinalProperty, lastReleasePositionProperty)
+    val alwaysEffectivelyFinal
+        get() = memoryDescriptors.any { it.acceptanceRequiringPolicy == AcceptanceRequiringPolicy.ALWAYS }
 
     val executionStates = observableSetOf<ExecutionState>()
 
     /**
-     * Contains `true` if there exists running execution state in this state
+     * Contains `true` if there exists [execution state][executionStates]
+     * that [requires processing][ExecutionState.requiresProcessing]
      */
-    val isCurrentBinding: BooleanBinding = isNotEmpty(executionStates.filteredSet {
-        it.statusProperty.isEqualTo(ExecutionStatus.RUNNING)
-    })
+    val isCurrentBinding: BooleanBinding = isNotEmpty(executionStates.filteredSet { it.requiresProcessingBinding })
     val isCurrent by isCurrentBinding
 
+    override val undoRedoProperties
+        get() = super.undoRedoProperties +
+                listOf(nameProperty, lastReleasePositionProperty, isInitialProperty, isFinalProperty)
 
     companion object {
         const val RADIUS = 50.0

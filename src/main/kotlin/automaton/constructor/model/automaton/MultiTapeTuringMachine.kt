@@ -27,6 +27,8 @@ class MultiTapeTuringMachine(
 
     override fun getTypeData() = MultiTapeTuringMachineData(tapes = tapes.map { it.getData() })
 
+    override fun createSubAutomaton() = MultiTapeTuringMachine(tapes)
+
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("MultiTapeTuringMachine")
     }

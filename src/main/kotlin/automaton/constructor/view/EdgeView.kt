@@ -1,9 +1,10 @@
 package automaton.constructor.view
 
-import automaton.constructor.model.State
-import automaton.constructor.model.State.Companion.RADIUS
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.AutomatonVertex.Companion.RADIUS
+import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.*
+import automaton.constructor.view.AutomatonVertexView.ShapeType.CIRCLE
+import automaton.constructor.view.AutomatonVertexView.ShapeType.SQUARE
 import javafx.beans.value.ObservableBooleanValue
 import javafx.beans.value.ObservableDoubleValue
 import javafx.beans.value.ObservableValue
@@ -16,7 +17,9 @@ import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import tornadofx.*
 import java.lang.Math.toDegrees
+import kotlin.math.abs
 import kotlin.math.atan
+import kotlin.math.max
 import kotlin.math.sqrt
 
 enum class TransitionLabelPosition {
@@ -24,46 +27,82 @@ enum class TransitionLabelPosition {
     ABOVE
 }
 
-class LoopEdgeRenderData(val center: ObservableValue<Point2D>) : EdgeRenderData {
-    companion object {
-        private const val ARROW_START_OFFSET_Y = -0.5 * RADIUS
-        private val ARROW_START_OFFSET_X =
-            sqrt(RADIUS * RADIUS - ARROW_START_OFFSET_Y * ARROW_START_OFFSET_Y)
+class LoopEdgeRenderData(
+    vertex: AutomatonVertexView,
+    val center: ObservableValue<Point2D>
+) : EdgeRenderData {
+    private interface Constants {
+        val loopRadius: Double
+        val arrowStartOffsetX: Double
+        val arrowStartOffsetY: Double
+        val leftArrowLineDX: Double
+        val leftArrowLineDY: Double
+        val rightArrowLineDX: Double
+        val rightArrowLineDY: Double
     }
 
+    private object CircleConstants : Constants {
+        override val loopRadius = RADIUS
+        override val arrowStartOffsetY = -0.5 * RADIUS
+        override val arrowStartOffsetX =
+            sqrt(RADIUS * RADIUS - arrowStartOffsetY * arrowStartOffsetY)
+        override val leftArrowLineDX = -RADIUS * 0.1
+        override val leftArrowLineDY = -RADIUS * 0.7
+        override val rightArrowLineDX = RADIUS * 0.5
+        override val rightArrowLineDY = -RADIUS * 0.5
+    }
+
+    companion object SquareConstants : Constants {
+        override val loopRadius = RADIUS * 0.8
+        override val arrowStartOffsetY = -RADIUS
+        override val arrowStartOffsetX = loopRadius
+        override val leftArrowLineDX = -RADIUS * 0.4
+        override val leftArrowLineDY = -RADIUS * 0.4
+        override val rightArrowLineDX = RADIUS * 0.3
+        override val rightArrowLineDY = -RADIUS * 0.5
+    }
+
+    private val constants = when (vertex.shapeType) {
+        CIRCLE -> CircleConstants
+        SQUARE -> SquareConstants
+    }
     override val normXProperty = 0.0.toProperty()
     override val normX by normXProperty
     override val midPointXProperty = center.x
     override val midPointX by midPointXProperty
     override val normYProperty = (-1.0).toProperty()
     override val normY by normYProperty
-    override val midPointYProperty = center.y - (2.0 * RADIUS)
+    override val midPointYProperty = center.y - RADIUS - constants.loopRadius
     override val midPointY by midPointYProperty
     override val textAngleInDegreesProperty = 0.0.toProperty()
-    override val children = listOf(
-        Circle().apply {
-            radius = RADIUS
-            centerXProperty().bind(center.x)
-            centerYProperty().bind(center.y - RADIUS)
-            fill = Color.TRANSPARENT
-            stroke = Color.BLACK
-        },
-        Line().apply {
-            startXProperty().bind(center.x + ARROW_START_OFFSET_X)
-            startYProperty().bind(center.y + ARROW_START_OFFSET_Y)
-            endXProperty().bind(center.x + (ARROW_START_OFFSET_X + 25.0))
-            endYProperty().bind(center.y + (ARROW_START_OFFSET_Y - 25.0))
-        },
-        Line().apply {
-            startXProperty().bind(center.x + ARROW_START_OFFSET_X)
-            startYProperty().bind(center.y + ARROW_START_OFFSET_Y)
-            endXProperty().bind(center.x + (ARROW_START_OFFSET_X - 5.0))
-            endYProperty().bind(center.y + (ARROW_START_OFFSET_Y - 35.0))
-        }
-    )
+    override val children = with(constants) {
+        listOf(
+            Circle().apply {
+                radius = loopRadius
+                centerXProperty().bind(center.x)
+                centerYProperty().bind(center.y - RADIUS)
+                fill = Color.TRANSPARENT
+                stroke = Color.BLACK
+            },
+            Line().apply {
+                startXProperty().bind(center.x + arrowStartOffsetX)
+                startYProperty().bind(center.y + arrowStartOffsetY)
+                endXProperty().bind(center.x + (arrowStartOffsetX + leftArrowLineDX))
+                endYProperty().bind(center.y + (arrowStartOffsetY + leftArrowLineDY))
+            },
+            Line().apply {
+                startXProperty().bind(center.x + arrowStartOffsetX)
+                startYProperty().bind(center.y + arrowStartOffsetY)
+                endXProperty().bind(center.x + (arrowStartOffsetX + rightArrowLineDX))
+                endYProperty().bind(center.y + (arrowStartOffsetY + rightArrowLineDY))
+            }
+        )
+    }
 }
 
 class NonLoopEdgeRenderData(
+    source: AutomatonVertexView,
+    target: AutomatonVertexView,
     val sourceCenter: ObservableValue<Point2D>,
     val targetCenter: ObservableValue<Point2D>,
     val hasOppositeProperty: ObservableBooleanValue,
@@ -111,10 +150,15 @@ class NonLoopEdgeRenderData(
             line.startXProperty().bind(midPointXProperty)
             line.startYProperty().bind(midPointYProperty)
             val endProperty = targetCenter.nonNullObjectBinding(midPointXProperty, midPointYProperty) {
-                targetCenter.value - RADIUS * Vector2D(
+                val v = Vector2D(
                     targetCenter.value.x - midPointX,
                     targetCenter.value.y - midPointY
-                ).normalize()
+                )
+                if (v == Vector2D.ZERO) targetCenter.value
+                else targetCenter.value - RADIUS * when (target.shapeType) {
+                    CIRCLE -> v.normalize()
+                    SQUARE -> v / max(abs(v.x), abs(v.y))
+                }
             }
             line.endXProperty().bind(endProperty.x)
             line.endYProperty().bind(endProperty.y)
@@ -136,18 +180,23 @@ interface EdgeRenderData {
 }
 
 class EdgeView(
-    sourceCenter: ObservableValue<Point2D>,
-    targetCenter: ObservableValue<Point2D>,
+    source: AutomatonVertexView,
+    target: AutomatonVertexView,
+    sourceCenter: ObservableValue<Point2D> = source.positionProperty,
+    targetCenter: ObservableValue<Point2D> = target.positionProperty,
     labelPosition: TransitionLabelPosition = TransitionLabelPosition.COUNTER_CLOCKWISE
 ) : Group() {
-    constructor(source: State, target: State) : this(source.positionProperty, target.positionProperty)
-
     val transitionViews: ObservableList<TransitionView> = observableListOf()
     val oppositeEdgeProperty = objectProperty<EdgeView?>(null)
     var oppositeEdge by oppositeEdgeProperty
     private val edgeRenderData =
-        if (sourceCenter === targetCenter) LoopEdgeRenderData(sourceCenter)
-        else NonLoopEdgeRenderData(sourceCenter, targetCenter, oppositeEdgeProperty.isNotNull, labelPosition)
+        if (sourceCenter === targetCenter) LoopEdgeRenderData(source, sourceCenter)
+        else NonLoopEdgeRenderData(
+            source, target,
+            sourceCenter, targetCenter,
+            oppositeEdgeProperty.isNotNull,
+            labelPosition
+        )
 
     init {
         edgeRenderData.children.forEach { add(it) }
@@ -156,24 +205,23 @@ class EdgeView(
     val transitionsGroup = group()
 
     fun addTransition(transition: Transition) = TransitionView(transition, transitionViews.size).apply {
-        text.rotateProperty().bind(edgeRenderData.textAngleInDegreesProperty)
-        text.translateToCenter()
-        text.xProperty()
+        rotateProperty().bind(edgeRenderData.textAngleInDegreesProperty)
+        xProperty
             .bind(edgeRenderData.midPointXProperty.doubleBinding(edgeRenderData.normXProperty, indexProperty) {
                 edgeRenderData.midPointX + 60 * (index + 0.5) * edgeRenderData.normX
             })
-        text.yProperty()
+        yProperty
             .bind(edgeRenderData.midPointYProperty.doubleBinding(edgeRenderData.normYProperty, indexProperty) {
                 edgeRenderData.midPointY + 60 * (index + 0.5) * edgeRenderData.normY
             })
-        transitionsGroup.add(text)
+        transitionsGroup.add(this)
         transitionViews.add(this)
     }
 
     fun removeTransition(transition: Transition) {
         transitionViews.removeIf { transitionView ->
             val matches = transitionView.transition === transition
-            if (matches) transitionsGroup.children.remove(transitionView.text)
+            if (matches) transitionsGroup.children.remove(transitionView)
             matches
         }
         transitionViews.forEachIndexed { i, transitionView -> transitionView.index = i }

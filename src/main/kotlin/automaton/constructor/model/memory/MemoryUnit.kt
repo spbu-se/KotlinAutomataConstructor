@@ -1,8 +1,9 @@
 package automaton.constructor.model.memory
 
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.property.DynamicPropertyGroup
 import automaton.constructor.model.property.EPSILON_VALUE
-import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.Editable
 import javafx.beans.value.ObservableValue
 
@@ -32,7 +33,12 @@ interface MemoryUnit : Editable {
     /**
      * Modifies this memory unit data according to properties of the given [transition]
      */
-    fun takeTransition(transition: Transition)
+    fun onTransition(transition: Transition)
+
+    /**
+     * Modifies this memory unit data according to properties of the given [state]
+     */
+    fun onStateEntered(state: State) = Unit
 
     /**
      * Creates a copy of this memory unit that has the same [descriptor] and a copy of this memory unit data

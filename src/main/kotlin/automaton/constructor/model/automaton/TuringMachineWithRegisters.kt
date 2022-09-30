@@ -33,6 +33,8 @@ class TuringMachineWithRegisters(
     override fun getTypeData() =
         TuringMachineWithRegistersData(tape = tape.getData(), registers = registers.map { it.getData() })
 
+    override fun createSubAutomaton() = TuringMachineWithRegisters(tape, registers)
+
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("TuringMachineWithRegisters")
     }

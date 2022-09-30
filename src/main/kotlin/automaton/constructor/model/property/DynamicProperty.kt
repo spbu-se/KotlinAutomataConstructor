@@ -1,6 +1,6 @@
 package automaton.constructor.model.property
 
-import automaton.constructor.model.transition.Transition
+import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.Editable
 import javafx.beans.property.SimpleObjectProperty
 

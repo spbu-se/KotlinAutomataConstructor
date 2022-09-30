@@ -4,27 +4,28 @@ import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.SteppingStrategy
 import automaton.constructor.model.module.problems
-import automaton.constructor.view.module.executor.executionLeafView
 import automaton.constructor.utils.I18N
+import automaton.constructor.view.module.executor.executionLeafView
 import tornadofx.*
 
-class ExecutorController(val executor: Executor, val view: View) : Controller() {
+class ExecutorController(val executor: Executor) : Controller() {
     val automaton = executor.automaton
 
     fun toggleRun() {
         if (executor.started) {
             executor.stop()
         } else {
-            if (!tryStart()) return
-            executor.runFor(1_000)
+            val executor = Executor(automaton) // using new executor so UI ignores its updates
+            if (!tryStart(executor)) return
+            executor.runFor(3_000)
             val executionResult = when (executor.status) {
                 ACCEPTED -> I18N.messages.getString("ExecutorController.Executor.Status.Accepted")
                 REJECTED -> I18N.messages.getString("ExecutorController.Executor.Status.Rejected")
                 FROZEN -> I18N.messages.getString("ExecutorController.Executor.Status.Frozen")
                 RUNNING -> I18N.messages.getString("ExecutorController.Executor.Status.Running")
             }
-            val graphic = executor.acceptedStates.firstOrNull()?.let { executionLeafView(it) }
-            executor.stop()
+            val graphic = executor.acceptedExeStates.firstOrNull()?.let { executionLeafView(it) }
+            automaton.clearExecutionStates() // faster analog of executor.stop()
             information(
                 I18N.messages.getString("ExecutorController.ExecutionResult"),
                 executionResult,
@@ -34,12 +35,12 @@ class ExecutorController(val executor: Executor, val view: View) : Controller() 
         }
     }
 
-    fun step(steppingStrategy: SteppingStrategy) {
-        if (executor.started) executor.step(steppingStrategy)
+    fun step(strategy: SteppingStrategy) {
+        if (executor.started) executor.step(strategy)
         else tryStart()
     }
 
-    private fun tryStart(): Boolean {
+    private fun tryStart(executor: Executor = this.executor): Boolean {
         if (automaton.problems.isNotEmpty()) {
             error(
                 I18N.messages.getString("ExecutorController.Error.ExecutionFailed"),

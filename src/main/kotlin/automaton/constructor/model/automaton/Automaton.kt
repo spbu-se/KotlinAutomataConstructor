@@ -1,22 +1,22 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.State
 import automaton.constructor.model.action.AutomatonElementAction
 import automaton.constructor.model.data.AutomatonTypeData
+import automaton.constructor.model.element.AutomatonVertex
+import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
-import automaton.constructor.model.transition.Transition
 import automaton.constructor.utils.UndoRedoManager
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
 
 /**
- * Automaton
- *
- * It has:
+ * An automaton that has:
  *  - the [type name][typeDisplayName]
- *  - modifiable graph with vertices of type [State] and edges of type [Transition]
+ *  - modifiable multigraph with vertices of type [AutomatonVertex] and edges of type [Transition]
  *  - fixed list of [MemoryUnitDescriptor]-s
  *  - dynamically extendable set of [AutomatonModule]-s
  */
@@ -27,7 +27,9 @@ interface Automaton {
     val undoRedoManager: UndoRedoManager
 
     val transitions: ObservableSet<Transition>
+    val vertices: ObservableSet<AutomatonVertex>
     val states: ObservableSet<State>
+    val buildingBlocks: ObservableSet<BuildingBlock>
 
     val deterministicAdjective: String
     val nondeterministicAdjective: String
@@ -40,41 +42,48 @@ interface Automaton {
 
 
     /**
-     * Returns all possible transitions from a given [state] given [memory] data
+     * Returns all possible transitions from a given [vertex] given [memory] data
      */
-    fun getPossibleTransitions(state: State, memory: List<MemoryUnit>): Set<Transition>
+    fun getPossibleTransitions(vertex: AutomatonVertex, memory: List<MemoryUnit>): Set<Transition>
 
     /**
-     * Returns all pure transitions from a given [state]
+     * Returns all pure transitions from a given [vertex]
      * @see Transition.isPure
      */
-    fun getPureTransitions(state: State): Set<Transition>
+    fun getPureTransitions(vertex: AutomatonVertex): Set<Transition>
 
     /**
-     * Returns set containing all transition to a given [state]
+     * Returns set containing all transition to a given [vertex]
      */
-    fun getIncomingTransitions(state: State): Set<Transition>
+    fun getIncomingTransitions(vertex: AutomatonVertex): Set<Transition>
 
     /**
-     * Returns observable set containing all transition from a given [state]
+     * Returns observable set containing all transition from a given [vertex]
      *
-     * Returned set is modified whenever the set of transitions from [state] changes
+     * Returned set is modified whenever the set of transitions from [vertex] changes
      */
-    fun getOutgoingTransitions(state: State): ObservableSet<Transition>
+    fun getOutgoingTransitions(vertex: AutomatonVertex): ObservableSet<Transition>
 
     /**
      * Adds transition from [source] to [target]
      * @return added transition
      */
-    fun addTransition(source: State, target: State): Transition
+    fun addTransition(source: AutomatonVertex, target: AutomatonVertex): Transition
 
     fun removeTransition(transition: Transition)
 
 
     fun addState(name: String? = null, position: Point2D = Point2D.ZERO): State
 
-    fun removeState(state: State)
+    fun addBuildingBlock(
+        subAutomaton: Automaton = createSubAutomaton(),
+        name: String? = null,
+        position: Point2D = Point2D.ZERO
+    ): BuildingBlock
 
+    fun createSubAutomaton(): Automaton
+
+    fun removeVertex(vertex: AutomatonVertex)
 
     /**
      * The list of actions that can be possibly performed on a transition of the automaton.
@@ -86,6 +95,15 @@ interface Automaton {
      */
     val stateActions: List<AutomatonElementAction<State>>
 
+    /**
+     * The list of actions that can be possibly performed on a building block of the automaton.
+     */
+    val buildingBlockActions: List<AutomatonElementAction<BuildingBlock>>
+
+    /**
+     * Clears execution states for every vertex of this automaton and its sub-automatons
+     */
+    fun clearExecutionStates()
 
     /**
      * Returns [AutomatonModule] created by given [moduleFactory]
@@ -96,38 +114,42 @@ interface Automaton {
     fun <T : AutomatonModule> getModule(moduleFactory: (Automaton) -> T): T
 }
 
+// Get automaton characteristics
+
+val Automaton.allowsBuildingBlocks get() = memoryDescriptors.all { it.isAlwaysReadyToTerminate }
+val Automaton.allowsStepByClosure get() = memoryDescriptors.all { it.allowsStepByClosure }
 
 // Get specific transitions
 
 /**
- * Returns set containing all loops of a given [state]
+ * Returns set containing all loops of a given [vertex]
  */
-fun Automaton.getLoops(state: State): Set<Transition> =
-    getIncomingTransitions(state).filterTo(mutableSetOf(), Transition::isLoop)
+fun Automaton.getLoops(vertex: AutomatonVertex): Set<Transition> =
+    getIncomingTransitions(vertex).filterTo(mutableSetOf(), Transition::isLoop)
 
 /**
- * Returns set containing all transition of a given [state]
+ * Returns set containing all transition of a given [vertex]
  */
-fun Automaton.getTransitions(state: State): Set<Transition> =
-    getIncomingTransitions(state) + getOutgoingTransitions(state)
+fun Automaton.getTransitions(vertex: AutomatonVertex): Set<Transition> =
+    getIncomingTransitions(vertex) + getOutgoingTransitions(vertex)
 
 /**
- * Returns set containing all non-loop transition of a given [state]
+ * Returns set containing all non-loop transition of a given [vertex]
  */
-fun Automaton.getTransitionsWithoutLoops(state: State): Set<Transition> =
-    getTransitions(state).filterNotTo(mutableSetOf(), Transition::isLoop)
+fun Automaton.getTransitionsWithoutLoops(vertex: AutomatonVertex): Set<Transition> =
+    getTransitions(vertex).filterNotTo(mutableSetOf(), Transition::isLoop)
 
 /**
- * Returns set containing all transition to a given [state] without loops
+ * Returns set containing all transition to a given [vertex] without loops
  */
-fun Automaton.getIncomingTransitionsWithoutLoops(state: State): Set<Transition> =
-    getIncomingTransitions(state).filterNotTo(mutableSetOf(), Transition::isLoop)
+fun Automaton.getIncomingTransitionsWithoutLoops(vertex: AutomatonVertex): Set<Transition> =
+    getIncomingTransitions(vertex).filterNotTo(mutableSetOf(), Transition::isLoop)
 
 /**
- * Returns set containing all transition from a given [state] without loops
+ * Returns set containing all transition from a given [vertex] without loops
  */
-fun Automaton.getOutgoingTransitionsWithoutLoops(state: State): Set<Transition> =
-    getOutgoingTransitions(state).filterNotTo(mutableSetOf(), Transition::isLoop)
+fun Automaton.getOutgoingTransitionsWithoutLoops(vertex: AutomatonVertex): Set<Transition> =
+    getOutgoingTransitions(vertex).filterNotTo(mutableSetOf(), Transition::isLoop)
 
 
 // Copy and add automaton elements
@@ -150,7 +172,7 @@ fun Automaton.copyAndAddState(
 
 fun Automaton.copyAndAddTransition(
     transition: Transition,
-    newSource: State? = null, newTarget: State? = null,
+    newSource: AutomatonVertex? = null, newTarget: AutomatonVertex? = null,
     ignoreIfTransitionIsPureLoop: Boolean = false,
     ignoreIfCopyIsPureLoop: Boolean = false,
     ignoreIfCopyAlreadyExists: Boolean = false
