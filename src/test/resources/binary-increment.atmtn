@@ -5,8 +5,9 @@
       "trackCount": 1
     }
   },
-  "states": [
+  "vertices": [
     {
+      "type": "state",
       "id": 0,
       "name": "S0",
       "isInitial": true,
@@ -14,18 +15,21 @@
       "y": 499957.5
     },
     {
+      "type": "state",
       "id": 1,
       "name": "S2",
       "x": 500299.9880546928,
       "y": 499959.9880546928
     },
     {
+      "type": "state",
       "id": 2,
       "name": "S1",
       "x": 499929.9880546928,
       "y": 499959.9880546928
     },
     {
+      "type": "state",
       "id": 3,
       "name": "S3",
       "isFinal": true,

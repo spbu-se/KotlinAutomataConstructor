@@ -5,8 +5,9 @@
       "trackCount": 1
     }
   },
-  "states": [
+  "vertices": [
     {
+      "type": "state",
       "id": 0,
       "name": "S0",
       "isInitial": true,

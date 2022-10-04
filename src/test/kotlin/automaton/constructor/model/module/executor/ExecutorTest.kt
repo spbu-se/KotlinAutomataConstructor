@@ -3,10 +3,10 @@ package automaton.constructor.model.module.executor
 import automaton.constructor.model.TestAutomatons
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.memory.RegisterDescriptor
-import automaton.constructor.model.memory.tape.OutputTape
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTape
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
+import automaton.constructor.model.memory.tape.OutputTape
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -66,7 +66,7 @@ class ExecutorTest {
             tapeDescriptor.valueProperties[0].value = input
             automaton.executor.start()
             automaton.executor.runFor(MAX_RUN_MILLIS)
-            val track = (automaton.executor.acceptedStates.first().memory[0] as MultiTrackTape).tracks[0]
+            val track = (automaton.executor.acceptedExeStates.first().memory[0] as MultiTrackTape).tracks[0]
             return track.processed + track.current + track.unprocessed
         }
     }
@@ -85,12 +85,12 @@ class ExecutorTest {
         @ParameterizedTest
         @CsvSource(",ACCEPTED", "0,RUNNING")
         fun `test step by state`(input: String?, output: ExecutionStatus) =
-            assertEquals(output, getResult(input ?: "", STEP_BY_STATE_STRATEGY))
+            assertEquals(output, getResult(input ?: "", StepByStateStrategy))
 
         @ParameterizedTest
         @CsvSource(",ACCEPTED", "0,REJECTED")
         fun `test step by closure`(input: String?, output: ExecutionStatus) =
-            assertEquals(output, getResult(input ?: "", STEP_BY_CLOSURE_STRATEGY))
+            assertEquals(output, getResult(input ?: "", StepByClosureStrategy))
 
         private fun getResult(input: String, steppingStrategy: SteppingStrategy): ExecutionStatus {
             tapeDescriptor.value = input
@@ -122,7 +122,7 @@ class ExecutorTest {
             val root = automaton.executor.roots.first()
             automaton.executor.runFor(MAX_RUN_MILLIS)
             root.collapse()
-            assertEquals(setOf(root), automaton.executor.executionStates)
+            assertEquals(setOf(root), automaton.executor.exeStates)
         }
 
         private fun getResult(input: String): ExecutionStatus {
@@ -170,7 +170,7 @@ class ExecutorTest {
             tapeDescriptor.value = input
             automaton.executor.start()
             automaton.executor.runFor(MAX_RUN_MILLIS)
-            return (automaton.executor.acceptedStates.first().memory[1] as OutputTape).value
+            return (automaton.executor.acceptedExeStates.first().memory[1] as OutputTape).value
         }
     }
 

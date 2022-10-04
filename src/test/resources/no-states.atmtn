@@ -3,6 +3,6 @@
     "type": "finite-automaton",
     "inputTape": {}
   },
-  "states": [],
+  "vertices": [],
   "transitions": []
 }

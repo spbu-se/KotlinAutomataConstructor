@@ -8,8 +8,9 @@
       }
     ]
   },
-  "states": [
+  "vertices": [
     {
+      "type": "state",
       "id": 0,
       "name": "S0",
       "isInitial": true,
@@ -17,6 +18,7 @@
       "y": 499750.01201377803
     },
     {
+      "type": "state",
       "id": 1,
       "name": "S2",
       "isFinal": true,
@@ -24,6 +26,7 @@
       "y": 500127.4899082334
     },
     {
+      "type": "state",
       "id": 2,
       "name": "S1",
       "x": 500087.4678711593,

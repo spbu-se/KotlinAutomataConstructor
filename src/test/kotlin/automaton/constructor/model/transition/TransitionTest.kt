@@ -1,12 +1,12 @@
 package automaton.constructor.model.transition
 
-import automaton.constructor.model.State
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.property.AutomatonElementTest
 import automaton.constructor.model.property.DynamicProperty
 import automaton.constructor.model.property.DynamicPropertyGroup
 import automaton.constructor.model.property.EPSILON_VALUE
 import io.mockk.every
-import io.mockk.mockk
 import javafx.geometry.Point2D
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -16,28 +16,28 @@ import kotlin.test.assertTrue
 
 class TransitionTest : AutomatonElementTest<Transition>() {
     override fun createAutomatonElement() = Transition(
-        mockk(relaxed = false), // source shouldn't affect transition properties
-        State("", Point2D.ZERO, memoryDescriptors),
+        State(emptyList(), "", Point2D.ZERO), // source properties shouldn't affect transition properties
+        State(memoryDescriptors, "", Point2D.ZERO),
         memoryDescriptors
     )
 
     override val expectedPropertyGroups
         get() = listOf(
             DynamicPropertyGroup(
-                firstMemoryUnitDescriptor,
+                firstMemoryUnitDescriptor.displayName,
                 firstUnitTransitionFilters,
                 firstUnitTransitionSideEffects
             ),
             DynamicPropertyGroup(
-                secondMemoryUnitDescriptor,
+                secondMemoryUnitDescriptor.displayName,
                 secondUnitTransitionFilters,
                 secondUnitTransitionSideEffects
             )
         )
 
-    override val expectedFilters get() = firstUnitTransitionFilters + secondUnitTransitionFilters + firstUnitStateFilters + secondUnitStateFilters
-    override val expectedSideEffects get() = firstUnitTransitionSideEffects + secondUnitTransitionSideEffects + firstUnitStateSideEffects + secondUnitStateSideEffects
-    override val expectedAllProperties get() = allTransitionProperties + allStateProperties
+    override val expectedFilters get() = firstUnitTransitionFilters + secondUnitTransitionFilters
+    override val expectedSideEffects get() = firstUnitTransitionSideEffects + secondUnitTransitionSideEffects
+    override val expectedAllProperties get() = allTransitionProperties
     override val allPropertyAndDescriptorPairs get() = allTransitionPropertyAndDescriptorPairs
 
     @Test

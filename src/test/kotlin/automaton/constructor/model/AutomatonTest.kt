@@ -3,12 +3,13 @@ package automaton.constructor.model
 import automaton.constructor.model.automaton.AbstractAutomaton
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.data.AutomatonTypeData
+import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.MemoryUnitStatus.READY_TO_ACCEPT
 import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_TERMINATION
 import automaton.constructor.model.module.AutomatonModule
-import automaton.constructor.model.transition.Transition
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import automaton.constructor.utils.I18N
@@ -50,12 +51,13 @@ class AutomatonTest {
             I18N.messages.getString("CustomAutomaton.Deterministic"),
             I18N.messages.getString("CustomAutomaton.Nondeterministic"),
             I18N.messages.getString("CustomAutomaton.Untitled")
-            ) {
-            override fun getTypeData(): AutomatonTypeData = error("")
+        ) {
+            override fun getTypeData(): AutomatonTypeData = error("Unexpected `getTypeData()` call")
+            override fun createSubAutomaton() = error("Unexpected `createSubAutomaton()` call")
         }
         transitions = automaton.transitions
         states = automaton.states
-        notAddedState = State("", Point2D.ZERO, memoryUnitDescriptorMockks)
+        notAddedState = State(memoryUnitDescriptorMockks, "", Point2D.ZERO)
     }
 
     @Test
@@ -256,8 +258,8 @@ class AutomatonTest {
                 inner class AfterState1IsRemovedAndThenState2IsRemoved : AfterAutomatonIsCleared() {
                     @BeforeEach
                     fun init() {
-                        automaton.removeState(state1)
-                        automaton.removeState(state2)
+                        automaton.removeVertex(state1)
+                        automaton.removeVertex(state2)
                     }
                 }
 
@@ -265,8 +267,8 @@ class AutomatonTest {
                 inner class AfterState2IsRemovedAndThenState1IsRemoved : AfterAutomatonIsCleared() {
                     @BeforeEach
                     fun init() {
-                        automaton.removeState(state2)
-                        automaton.removeState(state1)
+                        automaton.removeVertex(state2)
+                        automaton.removeVertex(state1)
                     }
                 }
 
@@ -277,8 +279,8 @@ class AutomatonTest {
                     fun init() {
                         automaton.removeTransition(state1Loop)
                         automaton.removeTransition(state2ToState1Transition)
-                        automaton.removeState(state1)
-                        automaton.removeState(state2)
+                        automaton.removeVertex(state1)
+                        automaton.removeVertex(state2)
                     }
                 }
 

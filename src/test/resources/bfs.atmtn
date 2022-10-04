@@ -3,8 +3,9 @@
     "type": "custom-automaton",
     "memoryUnitDescriptors": []
   },
-  "states": [
+  "vertices": [
     {
+      "type": "state",
       "id": 0,
       "name": "S0",
       "isInitial": true,
@@ -12,24 +13,28 @@
       "y": 499569.9660176187
     },
     {
+      "type": "state",
       "id": 1,
       "name": "S3",
       "x": 500284.9660176187,
       "y": 499694.9660176187
     },
     {
+      "type": "state",
       "id": 2,
       "name": "S5",
       "x": 499879.9660176187,
       "y": 500147.4660176187
     },
     {
+      "type": "state",
       "id": 3,
       "name": "S4",
       "x": 500252.4660176187,
       "y": 499939.9660176187
     },
     {
+      "type": "state",
       "id": 4,
       "name": "S1",
       "isInitial": true,
@@ -37,12 +42,14 @@
       "y": 499559.9660176187
     },
     {
+      "type": "state",
       "id": 5,
       "name": "S2",
       "x": 499884.9660176187,
       "y": 499902.4660176187
     },
     {
+      "type": "state",
       "id": 6,
       "name": "S6",
       "isFinal": true,

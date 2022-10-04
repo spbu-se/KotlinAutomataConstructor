@@ -1,6 +1,8 @@
 package automaton.constructor.model
 
+import automaton.constructor.model.element.State
 import automaton.constructor.model.property.AutomatonElementTest
+import automaton.constructor.model.property.DynamicProperty
 import automaton.constructor.model.property.DynamicPropertyGroup
 import javafx.geometry.Point2D
 import org.junit.jupiter.api.Test
@@ -12,23 +14,23 @@ class StateTest : AutomatonElementTest<State>() {
         private val NEW_POSITION = Point2D(2.0, 3.0)
     }
 
-    override fun createAutomatonElement() = State("", INIT_POSITION, memoryDescriptors)
+    override fun createAutomatonElement() = State(memoryDescriptors, "", INIT_POSITION)
 
     override val expectedPropertyGroups
         get() = listOf(
             DynamicPropertyGroup(
-                firstMemoryUnitDescriptor,
-                firstUnitStateFilters,
+                firstMemoryUnitDescriptor.displayName,
+                filters = emptyList(),
                 firstUnitStateSideEffects
             ),
             DynamicPropertyGroup(
-                secondMemoryUnitDescriptor,
-                secondUnitStateFilters,
+                secondMemoryUnitDescriptor.displayName,
+                filters = emptyList(),
                 secondUnitStateSideEffects
             )
         )
 
-    override val expectedFilters get() = firstUnitStateFilters + secondUnitStateFilters
+    override val expectedFilters get() = emptyList<DynamicProperty<*>>()
     override val expectedSideEffects get() = firstUnitStateSideEffects + secondUnitStateSideEffects
     override val expectedAllProperties get() = allStateProperties
     override val allPropertyAndDescriptorPairs get() = allStatePropertyAndDescriptorPairs

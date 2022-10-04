@@ -1,5 +1,6 @@
 package automaton.constructor.model.property
 
+import automaton.constructor.model.element.AutomatonElement
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import io.mockk.every
 import io.mockk.mockk
@@ -22,9 +23,6 @@ abstract class AutomatonElementTest<T : AutomatonElement> {
     protected val firstUnitTransitionSideEffectDescriptors =
         listOf<DynamicPropertyDescriptor<*>>(mockk("ts11"), mockk("ts12"))
 
-    protected val firstUnitStateFilters = listOf<DynamicProperty<*>>(mockk("sf12"))
-    protected val firstUnitStateFilterDescriptors = listOf<DynamicPropertyDescriptor<*>>(mockk("sf12"))
-
     protected val firstUnitStateSideEffects = listOf<DynamicProperty<*>>(mockk("ss11"), mockk("ss12"))
     protected val firstUnitStateSideEffectDescriptors =
         listOf<DynamicPropertyDescriptor<*>>(mockk("ss11"), mockk("ss12"))
@@ -36,23 +34,20 @@ abstract class AutomatonElementTest<T : AutomatonElement> {
     protected val secondUnitTransitionSideEffects = listOf<DynamicProperty<*>>(mockk("ts21"))
     protected val secondUnitTransitionSideEffectDescriptors = listOf<DynamicPropertyDescriptor<*>>(mockk("ts21"))
 
-    protected val secondUnitStateFilters = listOf<DynamicProperty<*>>(mockk("sf21"), mockk("sf22"))
-    protected val secondUnitStateFilterDescriptors = listOf<DynamicPropertyDescriptor<*>>(mockk("sf21"), mockk("sf22"))
-
     protected val secondUnitStateSideEffects = emptyList<DynamicProperty<*>>()
     protected val secondUnitStateSideEffectDescriptors = emptyList<DynamicPropertyDescriptor<*>>()
 
     protected val firstMemoryUnitDescriptor = mockk<MemoryUnitDescriptor> {
+        every { displayName } returns "firstMemoryUnitDescriptor"
         every { transitionFilters } returns firstUnitTransitionFilterDescriptors
         every { transitionSideEffects } returns firstUnitTransitionSideEffectDescriptors
-        every { stateFilters } returns firstUnitStateFilterDescriptors
         every { stateSideEffects } returns firstUnitStateSideEffectDescriptors
     }
 
     protected val secondMemoryUnitDescriptor = mockk<MemoryUnitDescriptor> {
+        every { displayName } returns "secondMemoryUnitDescriptor"
         every { transitionFilters } returns secondUnitTransitionFilterDescriptors
         every { transitionSideEffects } returns secondUnitTransitionSideEffectDescriptors
-        every { stateFilters } returns secondUnitStateFilterDescriptors
         every { stateSideEffects } returns secondUnitStateSideEffectDescriptors
     }
 
@@ -61,8 +56,8 @@ abstract class AutomatonElementTest<T : AutomatonElement> {
     protected val allTransitionPropertyAndDescriptorPairs
         get() = allTransitionProperties.zip(allTransitionPropertyDescriptors)
 
-    protected val allStateProperties get() = firstUnitStateFilters + secondUnitStateFilters + firstUnitStateSideEffects + secondUnitStateSideEffects
-    protected val allStatePropertyDescriptors get() = firstUnitStateFilterDescriptors + secondUnitStateFilterDescriptors + firstUnitStateSideEffectDescriptors + secondUnitStateSideEffectDescriptors
+    protected val allStateProperties get() = firstUnitStateSideEffects + secondUnitStateSideEffects
+    protected val allStatePropertyDescriptors get() = firstUnitStateSideEffectDescriptors + secondUnitStateSideEffectDescriptors
     protected val allStatePropertyAndDescriptorPairs
         get() = allStateProperties.zip(allStatePropertyDescriptors)
 
@@ -91,7 +86,8 @@ abstract class AutomatonElementTest<T : AutomatonElement> {
     protected abstract val expectedSideEffects: List<DynamicProperty<*>>
 
     @Test
-    fun `sideEffects should have expected value`() = assertEquals(expectedSideEffects, automatonElement.sideEffects)
+    fun `sideEffects should have expected value`() =
+        assertEquals(expectedSideEffects, automatonElement.sideEffects)
 
     protected abstract val expectedAllProperties: List<DynamicProperty<*>>
 

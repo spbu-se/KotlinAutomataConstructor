@@ -4,8 +4,9 @@
     "inputTape": {},
     "outputTape": {}
   },
-  "states": [
+  "vertices": [
     {
+      "type": "state",
       "id": 0,
       "name": "S0",
       "isInitial": true,
