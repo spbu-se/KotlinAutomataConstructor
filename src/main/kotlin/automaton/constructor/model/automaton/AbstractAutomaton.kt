@@ -1,9 +1,9 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.action.AutomatonElementAction
-import automaton.constructor.model.action.element.createRemoveBuildingBlockAction
-import automaton.constructor.model.action.element.createRemoveStateAction
-import automaton.constructor.model.action.element.createRemoveTransitionAction
+import automaton.constructor.model.action.buildingblock.createRemoveBuildingBlockAction
+import automaton.constructor.model.action.state.createRemoveStateAction
+import automaton.constructor.model.action.transition.createRemoveTransitionAction
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.State

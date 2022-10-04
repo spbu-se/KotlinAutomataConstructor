@@ -1,7 +1,7 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.action.element.createMealyToMooreElementAction
-import automaton.constructor.model.action.element.createMooreToMealyElementAction
+import automaton.constructor.model.action.state.createMealyToMooreElementAction
+import automaton.constructor.model.action.state.createMooreToMealyElementAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.automaton.flavours.AutomatonWithOutputTape
 import automaton.constructor.model.data.MealyMooreMachineData

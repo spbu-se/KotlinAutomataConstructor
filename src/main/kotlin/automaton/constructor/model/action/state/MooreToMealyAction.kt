@@ -1,4 +1,4 @@
-package automaton.constructor.model.action.element
+package automaton.constructor.model.action.state
 
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.action.ActionAvailability.DISABLED

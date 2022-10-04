@@ -1,4 +1,4 @@
-package automaton.constructor.model.action.element
+package automaton.constructor.model.action.transition
 
 import automaton.constructor.model.action.ActionAvailability.*
 import automaton.constructor.model.action.createAutomatonElementAction
