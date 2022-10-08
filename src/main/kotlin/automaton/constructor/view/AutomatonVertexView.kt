@@ -82,15 +82,11 @@ class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(ve
             textAlignment = TextAlignment.CENTER
             textOrigin = VPos.CENTER
             wrappingWidth = RADIUS * 2
-            fontProperty().bind(
-                vertex.nameProperty.objectBinding {
-                    font(if (it!!.length < 4) 48.0 else 32.0)
-                }
-            )
             textProperty().bind(stringBinding(vertex.nameProperty, settingsTextBinding) {
                 listOf(vertex.nameProperty.value, settingsTextBinding.value).filter { it.isNotEmpty() }
                     .joinToString(separator = "/")
             })
+            fontProperty().bind(textProperty().objectBinding { font(if (it!!.length < 4) 48.0 else 32.0) })
             translateXProperty().bind(layoutBoundsProperty().doubleBinding { -it!!.width / 2 })
             translateYProperty().bind(baselineOffsetProperty().doubleBinding { -it!!.toDouble() / 10 })
             xProperty().bind(positionProperty.x)
