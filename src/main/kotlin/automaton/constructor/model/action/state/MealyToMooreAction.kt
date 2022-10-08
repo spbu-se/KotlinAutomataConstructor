@@ -30,19 +30,24 @@ fun createMealyToMooreElementAction(mealyMooreMachine: MealyMooreMachine) =
             val (incomingTransitionsWithoutLoops, loops) = getIncomingTransitions(state).partitionToSets { !it.isLoop() }
             val outgoingTransitionsWithoutLoops = getOutgoingTransitionsWithoutLoops(state)
 
-            val stateOutputString = state.notNullOutputValue
+            val stateOutput = state.outputValue
 
-            val incomingTransitionsGroups = incomingTransitions.groupBy { it.notNullOutputValue }
+            val incomingTransitionsGroups = incomingTransitions.groupByTo(mutableMapOf()) { it.outputValue }
 
-            val mooreOutputStringsToMooreStates = incomingTransitionsGroups.keys.mapIndexed { i, incomingOutputString ->
+            if (state.isInitial && EPSILON_VALUE !in incomingTransitionsGroups)
+                incomingTransitionsGroups[EPSILON_VALUE] = mutableListOf()
+
+            var i = if (EPSILON_VALUE in incomingTransitionsGroups) 1 else 0
+            val mooreOutputStringsToMooreStates = incomingTransitionsGroups.keys.map { transitionOutput ->
                 val mooreState = copyAndAddState(
                     state,
-                    newPosition = state.position + i * 4 * RADIUS,
-                    newIsInitial = state.isInitial && i == 0
+                    newPosition = state.position + (if (transitionOutput == EPSILON_VALUE) 0 else i++) * 4 * RADIUS,
+                    newIsInitial = state.isInitial && transitionOutput == EPSILON_VALUE
                 ).apply {
-                    outputValue = "$incomingOutputString$stateOutputString"
+                    outputValue = ((transitionOutput?.takeIf { it != EPSILON_VALUE } ?: "") +
+                            (stateOutput?.takeIf { it != EPSILON_VALUE } ?: "")).ifEmpty { EPSILON_VALUE }
                 }
-                incomingOutputString to mooreState
+                transitionOutput to mooreState
             }
             val mooreStates = mooreOutputStringsToMooreStates.map { it.second }
             val incomingTransitionsToTargets =
