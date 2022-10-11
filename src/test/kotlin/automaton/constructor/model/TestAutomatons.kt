@@ -10,7 +10,9 @@ import kotlin.io.path.div
 
 object TestAutomatons {
     val BFS get() = getAutomatonFromJson("/bfs.atmtn")
+    val BINARY_ADDITION get() = getAutomatonFromJson("/binary-addition.atmtn")
     val BINARY_INCREMENT get() = getAutomatonFromJson("/binary-increment.atmtn")
+    val ELEVEN_RECOGNISER_TO_GENERATOR get() = getAutomatonFromJson("/eleven-recogniser-to-generator.atmtn")
     val EMPTY_INPUT_DETECTOR_WITH_EPSILON_LOOP get() = getAutomatonFromJson("/empty-input-detector-with-epsilon-loop.atmtn")
     val EVEN_PALINDROMES get() = getAutomatonFromJson("/even-palindromes.atmtn")
     val MEALY_REMOVE_ZEROES get() = getAutomatonFromJson("/mealy-remove-zeros.atmtn")

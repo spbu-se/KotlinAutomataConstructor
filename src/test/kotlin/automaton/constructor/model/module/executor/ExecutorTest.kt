@@ -2,6 +2,7 @@ package automaton.constructor.model.module.executor
 
 import automaton.constructor.model.TestAutomatons
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.TuringMachine
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTape
@@ -209,4 +210,66 @@ class ExecutorTest {
             return automaton.executor.status
         }
     }
+
+    abstract class BinaryAddition(val steppingStrategy: SteppingStrategy) {
+        private lateinit var turingMachine: TuringMachine
+
+        @BeforeEach
+        fun init() {
+            turingMachine = TestAutomatons.BINARY_ADDITION as TuringMachine
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "11001+1011,100100",
+            "0+11,11",
+            "10+0,10",
+            "0+0,0"
+        )
+        fun test(input: String, output: String) =
+            assertEquals(output, getResult(input))
+
+        private fun getResult(input: String): String {
+            turingMachine.tape.valueProperties[0].value = input
+            turingMachine.executor.start()
+            turingMachine.executor.runFor(strategy = steppingStrategy)
+            val track = (turingMachine.executor.acceptedExeStates.first().memory[0] as MultiTrackTape).tracks[0]
+            return track.processed + track.current + track.unprocessed
+        }
+    }
+
+    @Nested
+    inner class BinaryAdditionStepByClosure : BinaryAddition(StepByClosureStrategy)
+
+    @Nested
+    inner class BinaryAdditionStepInto : BinaryAddition(StepIntoStrategy)
+
+    @Nested
+    inner class BinaryAdditionStepOver : BinaryAddition(StepOverStrategy)
+
+    abstract class ElevenRecogniserToGenerator(val steppingStrategy: SteppingStrategy) {
+        private lateinit var turingMachine: TuringMachine
+
+        @BeforeEach
+        fun init() {
+            turingMachine = TestAutomatons.ELEVEN_RECOGNISER_TO_GENERATOR as TuringMachine
+        }
+
+        @Test
+        fun test() =
+            assertEquals("11", getResult())
+
+        private fun getResult(): String {
+            turingMachine.executor.start()
+            turingMachine.executor.runFor(strategy = steppingStrategy)
+            val track = (turingMachine.executor.acceptedExeStates.first().memory[0] as MultiTrackTape).tracks[0]
+            return track.processed + track.current + track.unprocessed
+        }
+    }
+
+    @Nested
+    inner class ElevenRecogniserToGeneratorStepByClosure : ElevenRecogniserToGenerator(StepByClosureStrategy)
+
+    @Nested
+    inner class ElevenRecogniserToGeneratorStepInto : ElevenRecogniserToGenerator(StepIntoStrategy)
 }
