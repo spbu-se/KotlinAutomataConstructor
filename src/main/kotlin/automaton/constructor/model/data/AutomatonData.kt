@@ -35,7 +35,7 @@ fun AutomatonData.createAutomaton(): Automaton = base.createEmptyAutomaton().als
     automaton.addContent(vertices, transitions)
 }
 
-private fun Automaton.addContent(verticesData: List<AutomatonVertexData>, transitionsData: List<TransitionData>) {
+fun Automaton.addContent(verticesData: List<AutomatonVertexData>, transitionsData: List<TransitionData>) {
     val idToStateMap = verticesData.associate {
         it.id to when (it) {
             is StateData -> addState(it.name, Point2D(it.x, it.y)).apply { writeProperties(it.properties) }

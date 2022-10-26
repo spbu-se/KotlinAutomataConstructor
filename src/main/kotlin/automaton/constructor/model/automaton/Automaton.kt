@@ -10,17 +10,22 @@ import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.utils.UndoRedoManager
+import javafx.beans.property.Property
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
 
 /**
  * An automaton that has:
+ *  - the [name]
  *  - the [type name][typeDisplayName]
  *  - modifiable multigraph with vertices of type [AutomatonVertex] and edges of type [Transition]
  *  - fixed list of [MemoryUnitDescriptor]-s
  *  - dynamically extendable set of [AutomatonModule]-s
  */
 interface Automaton {
+    val nameProperty: Property<String>
+    var name: String
+
     val typeDisplayName: String
     val memoryDescriptors: List<MemoryUnitDescriptor>
 
@@ -197,3 +202,8 @@ fun Automaton.copyAndAddTransition(
     val target = newTarget ?: transition.target
     return addTransition(source, target).apply { writeProperties(transition.readProperties()) }
 }
+
+// other utitlites
+
+val Automaton.untitledName: String
+    get() = listOf(untitledAdjective, typeDisplayName).joinToString(" ")

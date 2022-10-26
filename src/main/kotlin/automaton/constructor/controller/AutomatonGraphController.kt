@@ -4,10 +4,9 @@ import automaton.constructor.model.action.ActionAvailability
 import automaton.constructor.model.action.AutomatonElementAction
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
+import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.*
-import automaton.constructor.utils.I18N
-import automaton.constructor.utils.x
-import automaton.constructor.utils.y
+import automaton.constructor.utils.*
 import automaton.constructor.view.*
 import javafx.geometry.Point2D
 import javafx.scene.control.ContextMenu
@@ -16,7 +15,8 @@ import javafx.scene.input.MouseButton
 import javafx.scene.shape.Line
 import tornadofx.*
 
-class AutomatonGraphController(val automaton: Automaton) : Controller() {
+class AutomatonGraphController(val automaton: Automaton, val automatonViewContext: AutomatonViewContext) :
+    Controller() {
     private val newTransitionLine = Line().apply { isVisible = false }
     private var newTransitionSourceProperty = objectProperty<AutomatonVertexView?>(null).apply {
         onChange {
@@ -47,12 +47,31 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
                             automaton.addState(position = Point2D(it.x, it.y))
                         }
                     }
-                    if (automaton.allowsBuildingBlocks)
-                        item(I18N.messages.getString("AutomatonGraphController.AddBuildingBlock")) {
+                    if (automaton.allowsBuildingBlocks) {
+                        item(I18N.messages.getString("AutomatonGraphController.AddEmptyBuildingBlock")) {
                             action {
                                 automaton.addBuildingBlock(position = Point2D(it.x, it.y))
                             }
                         }
+                        item(I18N.messages.getString("AutomatonGraphController.CopyBuildingBlockFromFile")) {
+                            action {
+                                val file = automatonViewContext.fileController.chooseFile(
+                                    I18N.messages.getString("MainView.File.Open"),
+                                    FileChooserMode.Single
+                                ) ?: return@action
+                                automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions) ->
+                                    if (type != automaton.getTypeData()) error(
+                                        I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
+                                        I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType")
+                                    )
+                                    else automaton.addBuildingBlock(position = Point2D(it.x, it.y)).apply {
+                                        subAutomaton.addContent(vertices, transitions)
+                                        name = file.nameWithoutExtension
+                                    }
+                                }
+                            }
+                        }
+                    }
                     show(graphView.scene.window, it.screenX, it.screenY)
                 }
             }
@@ -85,6 +104,12 @@ class AutomatonGraphController(val automaton: Automaton) : Controller() {
 
     fun registerVertexView(automatonVertexView: AutomatonVertexView) {
         registerAutomatonElementView(automatonVertexView)
+        if (automatonVertexView.vertex is BuildingBlock) automatonVertexView.onMouseClicked += {
+            if (it.clickCount == 2) {
+                it.consume()
+                automatonViewContext.onBuildingBlockDoubleClicked(automatonVertexView.vertex)
+            }
+        }
         automatonVertexView.setOnMouseDragged {
             it.consume()
             if (it.button == MouseButton.PRIMARY && automatonVertexView.selected) {

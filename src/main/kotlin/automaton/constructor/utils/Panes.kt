@@ -104,7 +104,10 @@ class ZoomScrollPane(
 fun Region.customizedZoomScrollPane(op: Pane.() -> Unit): ZoomScrollPane {
     val innerPane = Pane()
     return zoomScrollPane(innerPane, 0.4) {
-        style { focusColor = Color.TRANSPARENT }
+        style {
+            focusColor = Color.TRANSPARENT
+            backgroundColor += Color.TRANSPARENT
+        }
         hvalue = 0.5
         vvalue = 0.5
         fitToWidth(this@customizedZoomScrollPane)

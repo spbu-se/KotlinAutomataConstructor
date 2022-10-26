@@ -13,11 +13,11 @@ import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
 import tornadofx.*
 
-class AutomatonGraphView(val automaton: Automaton) : Pane() {
+class AutomatonGraphView(val automaton: Automaton, val automatonViewContext: AutomatonViewContext) : Pane() {
     private val edgePane = subPane()
     val edgeViews = mutableMapOf<Pair<AutomatonVertex, AutomatonVertex>, EdgeView>()
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonVertexView>()
-    val controller: AutomatonGraphController = AutomatonGraphController(automaton)
+    val controller: AutomatonGraphController = AutomatonGraphController(automaton, automatonViewContext)
 
     init {
         minWidth = GRAPH_PANE_INIT_SIZE.x
@@ -43,14 +43,13 @@ class AutomatonGraphView(val automaton: Automaton) : Pane() {
         when (vertex) {
             is State -> automatonVertexView.hoverableTooltip { executionStatesTooltip(vertex) }
             is BuildingBlock -> {
-                // memoization
-                val subAutomatonView by lazy { AutomatonView(vertex.subAutomaton, isMinimalistic = true) }
                 automatonVertexView.hoverableTooltip(stopManagingOnInteraction = true) {
                     Pane().apply {
                         minWidth = this@AutomatonGraphView.scene.window.width / 1.5
                         minHeight = this@AutomatonGraphView.scene.window.height / 1.5
                         maxWidth = this@AutomatonGraphView.scene.window.width / 1.5
                         maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                        val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
                         add(subAutomatonView)
                         subAutomatonView.fitToParentSize()
                     }

@@ -6,6 +6,7 @@ import tornadofx.*
 
 class AutomatonConstructorApp : App(MainView::class) {
     override fun start(stage: Stage) {
+        FX.stylesheets.add("style.css")
         with(stage) {
             width = 1000.0
             height = 600.0

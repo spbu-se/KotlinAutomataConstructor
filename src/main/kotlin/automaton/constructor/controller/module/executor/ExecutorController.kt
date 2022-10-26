@@ -1,5 +1,6 @@
 package automaton.constructor.controller.module.executor
 
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.module.executor.ExecutionStatus.*
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.SteppingStrategy
@@ -8,15 +9,18 @@ import automaton.constructor.utils.I18N
 import automaton.constructor.view.module.executor.executionLeafView
 import tornadofx.*
 
-class ExecutorController(val executor: Executor) : Controller() {
-    val automaton = executor.automaton
+class ExecutorController(viewedAutomaton: Automaton) : Controller() {
+    val selectedAutomatonProperty = viewedAutomaton.toProperty()
+    val selectedAutomaton: Automaton by selectedAutomatonProperty
+    val debuggingExecutorProperty = null.toProperty<Executor>()
+    var debuggingExecutor: Executor? by debuggingExecutorProperty
 
     fun toggleRun() {
-        if (executor.started) {
-            executor.stop()
-        } else {
-            val executor = Executor(automaton) // using new executor so UI ignores its updates
-            if (!tryStart(executor)) return
+        debuggingExecutor?.let {
+            it.automaton.clearExecutionStates() // faster analog of executor.stop()
+            debuggingExecutor = null
+        } ?: run {
+            val executor = startNewExecutorOrNull() ?: return@toggleRun
             executor.runFor(3_000)
             val executionResult = when (executor.status) {
                 ACCEPTED -> I18N.messages.getString("ExecutorController.Executor.Status.Accepted")
@@ -25,7 +29,7 @@ class ExecutorController(val executor: Executor) : Controller() {
                 RUNNING -> I18N.messages.getString("ExecutorController.Executor.Status.Running")
             }
             val graphic = executor.acceptedExeStates.firstOrNull()?.let { executionLeafView(it) }
-            automaton.clearExecutionStates() // faster analog of executor.stop()
+            executor.automaton.clearExecutionStates() // faster analog of executor.stop()
             information(
                 I18N.messages.getString("ExecutorController.ExecutionResult"),
                 executionResult,
@@ -35,21 +39,19 @@ class ExecutorController(val executor: Executor) : Controller() {
         }
     }
 
-    fun step(strategy: SteppingStrategy) {
-        if (executor.started) executor.step(strategy)
-        else tryStart()
+    fun step(strategy: SteppingStrategy) = debuggingExecutor?.step(strategy) ?: run {
+        debuggingExecutor = startNewExecutorOrNull()
     }
 
-    private fun tryStart(executor: Executor = this.executor): Boolean {
-        if (automaton.problems.isNotEmpty()) {
+    private fun startNewExecutorOrNull(): Executor? {
+        if (selectedAutomaton.problems.isNotEmpty()) {
             error(
                 I18N.messages.getString("ExecutorController.Error.ExecutionFailed"),
-                automaton.problems.joinToString("\n") { it.message },
+                selectedAutomaton.problems.joinToString("\n") { it.message },
                 title = I18N.messages.getString("Dialog.error")
             )
-            return false
+            return null
         }
-        executor.start()
-        return true
+        return Executor(selectedAutomaton).apply { start() }
     }
 }

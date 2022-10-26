@@ -1,6 +1,8 @@
 package automaton.constructor.controller
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.untitledName
+import automaton.constructor.model.data.AutomatonData
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
 import automaton.constructor.model.factory.getAllAutomatonFactories
@@ -16,19 +18,23 @@ import tornadofx.*
 import java.io.File
 import java.text.MessageFormat
 
-class OpenedAutomatonController(val view: View) {
+class FileController(val view: View) {
     private val openedFileProperty = objectProperty<File?>(null)
     private var openedFile: File? by openedFileProperty
 
-    val openedAutomatonProperty = getAllAutomatonFactories().first().createAutomaton().toProperty()
+    val openedAutomatonProperty = getAllAutomatonFactories().first().createAutomaton().toProperty().apply {
+        addListener(ChangeListener { _, oldAutomaton, newAutomaton ->
+            oldAutomaton.nameProperty.unbind()
+            newAutomaton.nameProperty.bind(openedFileProperty.nonNullObjectBinding { file ->
+                file?.nameWithoutExtension ?: openedAutomaton.untitledName
+            })
+        })
+    }
     var openedAutomaton: Automaton by openedAutomatonProperty
 
     private val nameBinding: Binding<String> =
         openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) { file ->
-            file?.toString() ?: listOf(
-                openedAutomaton.untitledAdjective,
-                openedAutomaton.typeDisplayName
-            ).filter { it.isNotEmpty() }.joinToString(" ")
+            file?.toString() ?: openedAutomaton.untitledName
         }
     private val name: String by nameBinding
 
@@ -86,7 +92,10 @@ class OpenedAutomatonController(val view: View) {
     fun onOpen() {
         if (!suggestSavingChanges()) return
         val file = chooseFile(I18N.messages.getString("MainView.File.Open"), FileChooserMode.Single) ?: return
-        findFileAutomatonSerializer(file).loadAsync(file)
+        loadAsync(file) addOnSuccess {
+            openedAutomaton = it.createAutomaton()
+            openedFile = file
+        }
     }
 
     /**
@@ -109,10 +118,10 @@ class OpenedAutomatonController(val view: View) {
     }
 
     private fun saveAs(file: File) {
-        findFileAutomatonSerializer(file).saveAsync(file)
+        saveAsync(file)
     }
 
-    private fun chooseFile(title: String, mode: FileChooserMode): File? =
+    fun chooseFile(title: String, mode: FileChooserMode): File? =
         chooseFile(
             title = title,
             filters = automatonSerializers().map { it.extensionFilter }.toTypedArray(),
@@ -136,14 +145,14 @@ class OpenedAutomatonController(val view: View) {
             )
         )
 
-    private fun AutomatonSerializer.saveAsync(file: File): Task<Unit> {
+    private fun saveAsync(file: File, serializer: AutomatonSerializer = findFileAutomatonSerializer(file)): Task<Unit> {
         val automatonData = openedAutomaton.getData()
         openedAutomaton.undoRedoManager.wasModified = false
         return view.runAsyncWithDialog(
             MessageFormat.format(I18N.messages.getString("OpenedAutomatonController.SavingAutomaton"), file),
             daemon = false
         ) {
-            serialize(file, automatonData)
+            serializer.serialize(file, automatonData)
         } addOnSuccess {
             openedFile = file
         } addOnFail {
@@ -159,15 +168,15 @@ class OpenedAutomatonController(val view: View) {
         }
     }
 
-    private fun AutomatonSerializer.loadAsync(file: File): Task<Automaton> =
+    fun loadAsync(
+        file: File,
+        serializer: AutomatonSerializer = findFileAutomatonSerializer(file)
+    ): Task<AutomatonData> =
         view.runAsyncWithDialog(
             MessageFormat.format(I18N.messages.getString("OpenedAutomatonController.LoadingAutomaton"), file),
             daemon = true
         ) {
-            deserialize(file).createAutomaton()
-        } addOnSuccess {
-            openedAutomaton = it
-            openedFile = file
+            serializer.deserialize(file)
         } addOnFail {
             throw RuntimeException(
                 MessageFormat.format(

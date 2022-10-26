@@ -16,6 +16,7 @@ import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import automaton.constructor.utils.UndoRedoManager
 import automaton.constructor.utils.filteredSet
+import javafx.beans.binding.Bindings.concat
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
 import tornadofx.*
@@ -38,6 +39,9 @@ abstract class AbstractAutomaton(
     final override val nondeterministicAdjective: String,
     final override val untitledAdjective: String
 ) : Automaton {
+    final override val nameProperty = untitledName.toProperty()
+    final override var name: String by nameProperty
+
     private val transitionStorages = mutableMapOf<AutomatonVertex, TransitionStorage>()
 
     private val outgoingTransitions = mutableMapOf<AutomatonVertex, ObservableSet<Transition>>()
@@ -143,6 +147,7 @@ abstract class AbstractAutomaton(
                 name ?: (BUILDING_BLOCK_NAME_PREFIX + nextBuildingBlockSuffix()),
                 position
             )
+        subAutomaton.nameProperty.bind(concat(nameProperty, " > ", buildingBlock.nameProperty))
         undoRedoManager.perform({ doAddVertex(buildingBlock) }, { doRemoveVertex(buildingBlock) })
         return buildingBlock
     }

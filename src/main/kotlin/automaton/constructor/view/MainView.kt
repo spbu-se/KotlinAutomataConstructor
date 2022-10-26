@@ -1,50 +1,53 @@
 package automaton.constructor.view
 
 import automaton.constructor.controller.AutomatonDocumentationController
-import automaton.constructor.controller.OpenedAutomatonController
+import automaton.constructor.controller.FileController
 import automaton.constructor.controller.UndoRedoController
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.nonNullObjectBinding
+import javafx.beans.property.Property
 import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import tornadofx.*
 
 class MainView : View() {
-    private val openedAutomatonController = OpenedAutomatonController(this)
+    private val fileController = FileController(this)
     private val automatonDocumentationController = AutomatonDocumentationController()
-    private val automatonViewBinding = openedAutomatonController.openedAutomatonProperty.nonNullObjectBinding {
-        AutomatonView(it)
+    private val mainAutomatonViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
+        MainAutomatonView(it, fileController)
     }
-    private val automatonView: AutomatonView by automatonViewBinding
-    private val undoRedoControllerBinding = automatonViewBinding.nonNullObjectBinding { UndoRedoController(it) }
-    private val undoRedoController: UndoRedoController by undoRedoControllerBinding
+    private val mainAutomatonView: MainAutomatonView by mainAutomatonViewBinding
+    private val undoRedoControllerProperty: Property<UndoRedoController> = mainAutomatonViewBinding.select {
+        it.selectedUndoRedoControllerBinding
+    }
+    private val undoRedoController: UndoRedoController by undoRedoControllerProperty
 
     override val root = borderpane {
         top = menubar {
             menu(I18N.messages.getString("MainView.File")) {
                 shortcutItem(I18N.messages.getString("MainView.File.New"), "Shortcut+N") {
-                    openedAutomatonController.onNew()
+                    fileController.onNew()
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.Open"), "Shortcut+O") {
-                    openedAutomatonController.onOpen()
+                    fileController.onOpen()
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.Save"), "Shortcut+S") {
-                    openedAutomatonController.onSave()
+                    fileController.onSave()
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.SaveAs"), "Shortcut+Shift+S") {
-                    openedAutomatonController.onSaveAs()
+                    fileController.onSaveAs()
                 }
             }
             menu(I18N.messages.getString("MainView.Edit")) {
                 item(I18N.messages.getString("MainView.Edit.Undo"), UndoRedoController.UNDO_COMBO) {
                     action { undoRedoController.onUndo() }
                 }.apply {
-                    enableWhen(automatonViewBinding.select { it.automaton.undoRedoManager.isUndoableProperty })
+                    enableWhen(undoRedoControllerProperty.select { it.isUndoableProperty })
                 }
                 item(I18N.messages.getString("MainView.Edit.Redo"), UndoRedoController.REDO_COMBO) {
                     action { undoRedoController.onRedo() }
                 }.apply {
-                    enableWhen(automatonViewBinding.select { it.automaton.undoRedoManager.isRedoableProperty })
+                    enableWhen(undoRedoControllerProperty.select { it.isRedoableProperty })
                 }
             }
             menu(I18N.messages.getString("MainView.Help")) {
@@ -56,7 +59,7 @@ class MainView : View() {
                 }
             }
         }
-        centerProperty().bind(automatonViewBinding)
+        centerProperty().bind(mainAutomatonViewBinding)
     }
 
     private fun Menu.shortcutItem(name: String, combo: String, action: () -> Unit): MenuItem {
@@ -65,6 +68,6 @@ class MainView : View() {
     }
 
     init {
-        titleProperty.bind(openedAutomatonController.openedAutomatonTitleBinding)
+        titleProperty.bind(fileController.openedAutomatonTitleBinding)
     }
 }
