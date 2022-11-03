@@ -14,7 +14,7 @@ class UndoRedoController(val automatonTabView: AutomatonTabView) {
     val isRedoableProperty get() = automatonTabView.automaton.undoRedoManager.isRedoableProperty
 
     fun onUndo() {
-        val focusOwner = automatonTabView.scene.focusOwner
+        val focusOwner = automatonTabView.scene?.focusOwner
         when {
             focusOwner is TextInputControl && focusOwner.isUndoable -> focusOwner.undo()
             else -> {
@@ -25,7 +25,7 @@ class UndoRedoController(val automatonTabView: AutomatonTabView) {
     }
 
     fun onRedo() {
-        val focusOwner = automatonTabView.scene.focusOwner
+        val focusOwner = automatonTabView.scene?.focusOwner
         when {
             focusOwner is TextInputControl && focusOwner.isRedoable -> focusOwner.redo()
             else -> {
