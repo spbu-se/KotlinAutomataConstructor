@@ -1,9 +1,9 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.action.AutomatonElementAction
-import automaton.constructor.model.action.buildingblock.createRemoveBuildingBlockAction
-import automaton.constructor.model.action.state.createRemoveStateAction
-import automaton.constructor.model.action.transition.createRemoveTransitionAction
+import automaton.constructor.model.action.buildingblock.RemoveBuildingBlockAction
+import automaton.constructor.model.action.state.RemoveStateAction
+import automaton.constructor.model.action.transition.RemoveTransitionAction
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.State
@@ -177,15 +177,15 @@ abstract class AbstractAutomaton(
     }
 
     override val transitionActions: List<AutomatonElementAction<Transition>> = listOf(
-        createRemoveTransitionAction(automaton = this)
+        RemoveTransitionAction(automaton = this)
     )
 
     override val stateActions: List<AutomatonElementAction<State>> = listOf(
-        createRemoveStateAction(automaton = this)
+        RemoveStateAction(automaton = this)
     )
 
     override val buildingBlockActions: List<AutomatonElementAction<BuildingBlock>> = listOf(
-        createRemoveBuildingBlockAction(automaton = this)
+        RemoveBuildingBlockAction(automaton = this)
     )
 
     override fun clearExecutionStates() = vertices.forEach {

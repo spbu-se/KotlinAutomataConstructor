@@ -1,6 +1,6 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.action.transition.createEliminateEpsilonTransitionAction
+import automaton.constructor.model.action.transition.EliminateEpsilonTransitionAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.automaton.flavours.AutomatonWithStacks
 import automaton.constructor.model.data.PushdownAutomatonData
@@ -30,7 +30,7 @@ class PushdownAutomaton(
     }
 
     override val transitionActions = super.transitionActions + listOf(
-        createEliminateEpsilonTransitionAction(automaton = this)
+        EliminateEpsilonTransitionAction(automaton = this)
     )
 
     override fun getTypeData() =

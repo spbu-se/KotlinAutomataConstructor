@@ -1,6 +1,7 @@
 package automaton.constructor.controller
 
 import automaton.constructor.model.action.ActionAvailability
+import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.action.AutomatonElementAction
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
@@ -199,7 +200,17 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                         ContextMenu().apply {
                             for ((action, availability) in actionsWithAvailability) {
                                 item(action.displayName, action.keyCombination) {
-                                    action { action.performOn(element) }
+                                    action {
+                                        try {
+                                            action.performOn(element)
+                                        } catch (exc: ActionFailedException) {
+                                            error(
+                                                I18N.messages.getString("AutomatonGraphController.ActionFailed"),
+                                                exc.message
+                                            )
+                                        }
+
+                                    }
                                     isVisible = availability != ActionAvailability.HIDDEN
                                     isDisable = availability == ActionAvailability.DISABLED
                                 }

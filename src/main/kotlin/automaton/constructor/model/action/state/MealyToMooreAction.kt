@@ -1,8 +1,8 @@
 package automaton.constructor.model.action.state
 
+import automaton.constructor.model.action.AbstractAutomatonElementAction
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.action.ActionAvailability.DISABLED
-import automaton.constructor.model.action.createAutomatonElementAction
 import automaton.constructor.model.automaton.MealyMooreMachine
 import automaton.constructor.model.automaton.copyAndAddState
 import automaton.constructor.model.automaton.copyAndAddTransition
@@ -14,67 +14,69 @@ import automaton.constructor.utils.I18N
 import automaton.constructor.utils.partitionToSets
 import tornadofx.*
 
-fun createMealyToMooreElementAction(mealyMooreMachine: MealyMooreMachine) =
-    createAutomatonElementAction<MealyMooreMachine, State>(
+class MealyToMooreAction(mealyMooreMachine: MealyMooreMachine) :
+    AbstractAutomatonElementAction<MealyMooreMachine, State>(
         automaton = mealyMooreMachine,
-        displayName = I18N.messages.getString("AutomatonElementAction.MealyToMoore"),
-        getAvailabilityFor = { state ->
-            if (getIncomingTransitions(state).any { it.outputValue != EPSILON_VALUE }) {
-                AVAILABLE
-            } else {
-                DISABLED
+        displayName = I18N.messages.getString("AutomatonElementAction.MealyToMoore")
+    ) {
+    override fun MealyMooreMachine.doGetAvailabilityFor(actionSubject: State) =
+        if (getIncomingTransitions(actionSubject).any { it.outputValue != EPSILON_VALUE }) {
+            AVAILABLE
+        } else {
+            DISABLED
+        }
+
+    override fun MealyMooreMachine.doPerformOn(actionSubject: State) {
+        val incomingTransitions = getIncomingTransitions(actionSubject)
+        val (incomingTransitionsWithoutLoops, loops) = getIncomingTransitions(actionSubject).partitionToSets { !it.isLoop() }
+        val outgoingTransitionsWithoutLoops = getOutgoingTransitionsWithoutLoops(actionSubject)
+
+        val stateOutput = actionSubject.outputValue
+
+        val incomingTransitionsGroups = incomingTransitions.groupByTo(mutableMapOf()) { it.outputValue }
+
+        if (actionSubject.isInitial && EPSILON_VALUE !in incomingTransitionsGroups)
+            incomingTransitionsGroups[EPSILON_VALUE] = mutableListOf()
+
+        var i = if (EPSILON_VALUE in incomingTransitionsGroups) 1 else 0
+        val mooreOutputStringsToMooreStates = incomingTransitionsGroups.keys.map { transitionOutput ->
+            val mooreState = copyAndAddState(
+                actionSubject,
+                newPosition = actionSubject.position + (if (transitionOutput == EPSILON_VALUE) 0 else i++) * 4 * RADIUS,
+                newIsInitial = actionSubject.isInitial && transitionOutput == EPSILON_VALUE
+            ).apply {
+                outputValue = ((transitionOutput?.takeIf { it != EPSILON_VALUE } ?: "") +
+                        (stateOutput?.takeIf { it != EPSILON_VALUE } ?: "")).ifEmpty { EPSILON_VALUE }
             }
-        },
-        performOn = { state ->
-            val incomingTransitions = getIncomingTransitions(state)
-            val (incomingTransitionsWithoutLoops, loops) = getIncomingTransitions(state).partitionToSets { !it.isLoop() }
-            val outgoingTransitionsWithoutLoops = getOutgoingTransitionsWithoutLoops(state)
+            transitionOutput to mooreState
+        }
+        val mooreStates = mooreOutputStringsToMooreStates.map { it.second }
+        val incomingTransitionsToTargets =
+            mooreOutputStringsToMooreStates.flatMap { (mooreOutputString, mooreState) ->
+                incomingTransitionsGroups.getValue(mooreOutputString).map { it to mooreState }
+            }.toMap()
 
-            val stateOutput = state.outputValue
-
-            val incomingTransitionsGroups = incomingTransitions.groupByTo(mutableMapOf()) { it.outputValue }
-
-            if (state.isInitial && EPSILON_VALUE !in incomingTransitionsGroups)
-                incomingTransitionsGroups[EPSILON_VALUE] = mutableListOf()
-
-            var i = if (EPSILON_VALUE in incomingTransitionsGroups) 1 else 0
-            val mooreOutputStringsToMooreStates = incomingTransitionsGroups.keys.map { transitionOutput ->
-                val mooreState = copyAndAddState(
-                    state,
-                    newPosition = state.position + (if (transitionOutput == EPSILON_VALUE) 0 else i++) * 4 * RADIUS,
-                    newIsInitial = state.isInitial && transitionOutput == EPSILON_VALUE
+        for (t in incomingTransitionsWithoutLoops) {
+            copyAndAddTransition(t, newTarget = incomingTransitionsToTargets.getValue(t)).apply {
+                outputValue = EPSILON_VALUE
+            }
+        }
+        for (mooreState in mooreStates) {
+            for (t in loops) {
+                copyAndAddTransition(
+                    t,
+                    newSource = mooreState,
+                    newTarget = incomingTransitionsToTargets.getValue(t)
                 ).apply {
-                    outputValue = ((transitionOutput?.takeIf { it != EPSILON_VALUE } ?: "") +
-                            (stateOutput?.takeIf { it != EPSILON_VALUE } ?: "")).ifEmpty { EPSILON_VALUE }
-                }
-                transitionOutput to mooreState
-            }
-            val mooreStates = mooreOutputStringsToMooreStates.map { it.second }
-            val incomingTransitionsToTargets =
-                mooreOutputStringsToMooreStates.flatMap { (mooreOutputString, mooreState) ->
-                    incomingTransitionsGroups.getValue(mooreOutputString).map { it to mooreState }
-                }.toMap()
-
-            for (t in incomingTransitionsWithoutLoops) {
-                copyAndAddTransition(t, newTarget = incomingTransitionsToTargets.getValue(t)).apply {
                     outputValue = EPSILON_VALUE
                 }
             }
-            for (mooreState in mooreStates) {
-                for (t in loops) {
-                    copyAndAddTransition(
-                        t,
-                        newSource = mooreState,
-                        newTarget = incomingTransitionsToTargets.getValue(t)
-                    ).apply {
-                        outputValue = EPSILON_VALUE
-                    }
-                }
-                for (t in outgoingTransitionsWithoutLoops) {
-                    copyAndAddTransition(t, newSource = mooreState)
-                }
+            for (t in outgoingTransitionsWithoutLoops) {
+                copyAndAddTransition(t, newSource = mooreState)
             }
-
-            removeVertex(state)
         }
-    )
+
+        removeVertex(actionSubject)
+    }
+
+}

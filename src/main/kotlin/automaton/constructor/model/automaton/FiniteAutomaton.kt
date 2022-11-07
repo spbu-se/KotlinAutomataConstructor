@@ -1,6 +1,6 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.action.transition.createEliminateEpsilonTransitionAction
+import automaton.constructor.model.action.transition.EliminateEpsilonTransitionAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.data.FiniteAutomatonData
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
@@ -25,7 +25,7 @@ class FiniteAutomaton(
     )
 
     override val transitionActions = super.transitionActions + listOf(
-        createEliminateEpsilonTransitionAction(automaton = this)
+        EliminateEpsilonTransitionAction(automaton = this)
     )
 
     override fun createSubAutomaton() = FiniteAutomaton(inputTape)
