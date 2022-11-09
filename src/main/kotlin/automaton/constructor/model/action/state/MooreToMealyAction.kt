@@ -1,6 +1,6 @@
 package automaton.constructor.model.action.state
 
-import automaton.constructor.model.action.AbstractAutomatonElementAction
+import automaton.constructor.model.action.AbstractAction
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.action.ActionAvailability.DISABLED
 import automaton.constructor.model.automaton.MealyMooreMachine
@@ -12,9 +12,9 @@ import javafx.geometry.Point2D
 import tornadofx.*
 
 class MooreToMealyAction(mealyMooreMachine: MealyMooreMachine) :
-    AbstractAutomatonElementAction<MealyMooreMachine, State>(
+    AbstractAction<MealyMooreMachine, State>(
         automaton = mealyMooreMachine,
-        displayName = I18N.messages.getString("AutomatonElementAction.MooreToMealy")
+        displayName = I18N.messages.getString("Action.MooreToMealy")
     ) {
     override fun MealyMooreMachine.doGetAvailabilityFor(actionSubject: State) =
         if (actionSubject.outputValue != EPSILON_VALUE) AVAILABLE else DISABLED

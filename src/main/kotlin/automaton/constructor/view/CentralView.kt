@@ -13,21 +13,25 @@ import javafx.scene.control.TabPane
 import tornadofx.*
 import java.util.*
 
-class MainAutomatonView(val automaton: Automaton, override val fileController: FileController) : SplitPane(),
+/**
+ * Ancestor for all UI elements other than menu bar at the top
+ */
+class CentralView(val automaton: Automaton, override val fileController: FileController) : SplitPane(),
     AutomatonViewContext {
+    val mainTabView = AutomatonTabView(automaton, this)
     val automatonToTabViewMap: MutableMap<Automaton, AutomatonTabView> =
         WeakHashMap<Automaton, AutomatonTabView>().apply { put(automaton, mainTabView) }
     private lateinit var tabPane: TabPane
     val selectedAutomatonProperty = automaton.toProperty()
     var selectedAutomaton: Automaton by selectedAutomatonProperty
-    val selectedAutomatonViewBinding = selectedAutomatonProperty.nonNullObjectBinding { getAutomatonView(it) }
-    val selectedAutomatonView: AutomatonTabView by selectedAutomatonViewBinding
-    val selectedUndoRedoControllerBinding = selectedAutomatonViewBinding.nonNullObjectBinding { it.undoRedoController }
+    val selectedAutomatonTabViewBinding = selectedAutomatonProperty.nonNullObjectBinding { getAutomatonTabView(it) }
+    val selectedAutomatonTabView: AutomatonTabView by selectedAutomatonTabViewBinding
+    val selectedUndoRedoControllerBinding =
+        selectedAutomatonTabViewBinding.nonNullObjectBinding { it.undoRedoController }
     val selectedUndoRedoController: UndoRedoController by selectedUndoRedoControllerBinding
     val executorController = ExecutorController(automaton).also {
         it.selectedAutomatonProperty.bind(selectedAutomatonProperty)
     }
-    val mainTabView = AutomatonTabView(automaton, this)
 
     init {
         pane {
@@ -39,12 +43,7 @@ class MainAutomatonView(val automaton: Automaton, override val fileController: F
                     isClosable = false
                     textProperty().bind(automaton.nameProperty)
                 }
-                selectionModel.selectedItemProperty().onChange { tab ->
-                    if (tab != null) {
-                        tab.content = null // first set to null to force property update
-                        tab.content = selectedAutomatonView
-                    }
-                }
+                selectionModel.selectedItemProperty().onChange { selectedAutomatonTabView.ensureAutomatonViewIsShown() }
             }
             selectedAutomatonProperty.bind(
                 tabPane.selectionModel.selectedItemProperty().nonNullObjectBinding { it.tag as Automaton }
@@ -65,9 +64,11 @@ class MainAutomatonView(val automaton: Automaton, override val fileController: F
         }
     }
 
-    override fun getAutomatonView(automaton: Automaton) = automatonToTabViewMap.getOrPut(automaton) {
+    private fun getAutomatonTabView(automaton: Automaton) = automatonToTabViewMap.getOrPut(automaton) {
         AutomatonTabView(automaton, this)
     }
+
+    override fun getAutomatonView(automaton: Automaton): AutomatonView = getAutomatonTabView(automaton).automatonView
 
     override fun onBuildingBlockDoubleClicked(buildingBlock: BuildingBlock) {
         val tab = tabPane.tabs.firstOrNull { it.tag == buildingBlock.subAutomaton } ?: run {

@@ -18,11 +18,11 @@ import tornadofx.*
 import java.io.File
 import java.text.MessageFormat
 
-class FileController(val view: View) {
+class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
     private val openedFileProperty = objectProperty<File?>(null)
     private var openedFile: File? by openedFileProperty
 
-    val openedAutomatonProperty = getAllAutomatonFactories().first().createAutomaton().toProperty().apply {
+    val openedAutomatonProperty = openedAutomaton.toProperty().apply {
         addListener(ChangeListener { _, oldAutomaton, newAutomaton ->
             oldAutomaton.nameProperty.unbind()
             newAutomaton.nameProperty.bind(openedFileProperty.nonNullObjectBinding { file ->
@@ -45,15 +45,9 @@ class FileController(val view: View) {
     }
     val openedAutomatonTitle: String by openedAutomatonTitleBinding
 
-    init {
-        view.primaryStage.setOnCloseRequest {
-            if (!suggestSavingChanges()) it.consume()
-        }
-    }
-
     fun onNew() {
         if (!suggestSavingChanges()) return
-        view.dialog(I18N.messages.getString("OpenedAutomatonController.NewAutomaton")) {
+        uiComponent.dialog(I18N.messages.getString("OpenedAutomatonController.NewAutomaton")) {
             clear()
             stage.x = 100.0
             stage.y = 100.0
@@ -127,7 +121,7 @@ class FileController(val view: View) {
             filters = automatonSerializers().map { it.extensionFilter }.toTypedArray(),
             initialDirectory = openedFile?.parentFile ?: defaultDirectory(),
             mode = mode,
-            owner = view.currentWindow,
+            owner = uiComponent.currentWindow,
             initialFileName = openedFile?.name ?: name
         ).firstOrNull()
 
@@ -148,7 +142,7 @@ class FileController(val view: View) {
     private fun saveAsync(file: File, serializer: AutomatonSerializer = findFileAutomatonSerializer(file)): Task<Unit> {
         val automatonData = openedAutomaton.getData()
         openedAutomaton.undoRedoManager.wasModified = false
-        return view.runAsyncWithDialog(
+        return uiComponent.runAsyncWithDialog(
             MessageFormat.format(I18N.messages.getString("OpenedAutomatonController.SavingAutomaton"), file),
             daemon = false
         ) {
@@ -172,7 +166,7 @@ class FileController(val view: View) {
         file: File,
         serializer: AutomatonSerializer = findFileAutomatonSerializer(file)
     ): Task<AutomatonData> =
-        view.runAsyncWithDialog(
+        uiComponent.runAsyncWithDialog(
             MessageFormat.format(I18N.messages.getString("OpenedAutomatonController.LoadingAutomaton"), file),
             daemon = true
         ) {
@@ -189,7 +183,7 @@ class FileController(val view: View) {
     /**
      * @return false if CANCEL is pressed
      */
-    private fun suggestSavingChanges(): Boolean {
+    fun suggestSavingChanges(): Boolean {
         if (!openedAutomaton.undoRedoManager.wasModified) return true
         val result = alert(
             Alert.AlertType.CONFIRMATION,
@@ -198,7 +192,7 @@ class FileController(val view: View) {
             ButtonType(I18N.messages.getString("Dialog.yes.button"), ButtonType.YES.buttonData),
             ButtonType(I18N.messages.getString("Dialog.no.button"), ButtonType.NO.buttonData),
             ButtonType(I18N.messages.getString("Dialog.cancel.button"), ButtonType.CANCEL.buttonData),
-            owner = view.currentWindow,
+            owner = uiComponent.currentWindow,
             title = I18N.messages.getString("Dialog.confirmation")
         ).result
         return if (result.buttonData == ButtonType.YES.buttonData) onSave()

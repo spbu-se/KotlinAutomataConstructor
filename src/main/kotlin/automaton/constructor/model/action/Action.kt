@@ -2,11 +2,10 @@ package automaton.constructor.model.action
 
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.element.AutomatonElement
 import automaton.constructor.utils.I18N
 import javafx.scene.input.KeyCombination
 
-interface AutomatonElementAction<in T : AutomatonElement> {
+interface Action<in T> {
     val displayName: String
 
     val keyCombination: KeyCombination?
@@ -16,18 +15,20 @@ interface AutomatonElementAction<in T : AutomatonElement> {
     fun performOn(actionSubject: T)
 }
 
-abstract class AbstractAutomatonElementAction<A : Automaton, in T : AutomatonElement>(
+fun Action<Unit>.perform() = performOn(Unit)
+
+abstract class AbstractAction<A : Automaton, in T>(
     val automaton: A,
     override val displayName: String,
     override val keyCombination: KeyCombination? = null,
-) : AutomatonElementAction<T> {
+) : Action<T> {
     protected abstract fun A.doGetAvailabilityFor(actionSubject: T): ActionAvailability
     protected abstract fun A.doPerformOn(actionSubject: T)
 
     override fun getAvailabilityFor(actionSubject: T) = automaton.doGetAvailabilityFor(actionSubject)
     override fun performOn(actionSubject: T) {
         if (getAvailabilityFor(actionSubject) != AVAILABLE)
-            throw ActionFailedException(I18N.messages.getString("AutomatonElementAction.ActionNoLongerAvailable"))
+            throw ActionFailedException(I18N.messages.getString("Action.ActionNoLongerAvailable"))
         automaton.undoRedoManager.group {
             automaton.doPerformOn(actionSubject)
         }

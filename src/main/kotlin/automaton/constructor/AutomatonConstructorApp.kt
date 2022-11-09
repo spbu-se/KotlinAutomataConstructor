@@ -1,18 +1,14 @@
 package automaton.constructor
 
-import automaton.constructor.view.MainView
+import automaton.constructor.view.MainWindow
 import javafx.stage.Stage
 import tornadofx.*
 
-class AutomatonConstructorApp : App(MainView::class) {
+class AutomatonConstructorApp : App() {
     override fun start(stage: Stage) {
         FX.stylesheets.add("style.css")
-        with(stage) {
-            width = 1000.0
-            height = 600.0
-            isMaximized = true
-        }
         super.start(stage)
+        MainWindow().show()
     }
 }
 

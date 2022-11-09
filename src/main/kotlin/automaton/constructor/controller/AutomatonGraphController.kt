@@ -1,8 +1,8 @@
 package automaton.constructor.controller
 
+import automaton.constructor.model.action.Action
 import automaton.constructor.model.action.ActionAvailability
 import automaton.constructor.model.action.ActionFailedException
-import automaton.constructor.model.action.AutomatonElementAction
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent
@@ -41,21 +41,24 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
             it.consume()
             graphView.requestFocus()
             if (it.button == MouseButton.PRIMARY && it.isStillSincePress) clearSelection()
-            else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
+            else if (it.button == MouseButton.SECONDARY && it.isStillSincePress && automaton.allowsModificationsByUser) {
                 ContextMenu().apply {
                     item(I18N.messages.getString("AutomatonGraphController.AddState")) {
                         action {
-                            automaton.addState(position = Point2D(it.x, it.y))
+                            if (automaton.allowsModificationsByUser)
+                                automaton.addState(position = Point2D(it.x, it.y))
                         }
                     }
                     if (automaton.allowsBuildingBlocks) {
                         item(I18N.messages.getString("AutomatonGraphController.AddEmptyBuildingBlock")) {
                             action {
-                                automaton.addBuildingBlock(position = Point2D(it.x, it.y))
+                                if (automaton.allowsModificationsByUser)
+                                    automaton.addBuildingBlock(position = Point2D(it.x, it.y))
                             }
                         }
                         item(I18N.messages.getString("AutomatonGraphController.CopyBuildingBlockFromFile")) {
                             action {
+                                if (!automaton.allowsModificationsByUser) return@action
                                 val file = automatonViewContext.fileController.chooseFile(
                                     I18N.messages.getString("MainView.File.Open"),
                                     FileChooserMode.Single
@@ -84,7 +87,7 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
         graphView.focusedProperty().onChange { if (!it) newTransitionSource = null }
         graphView.setOnKeyPressed { event ->
             event.consume()
-            if (event.code == KeyCode.DELETE) {
+            if (event.code == KeyCode.DELETE && automaton.allowsModificationsByUser) {
                 automaton.undoRedoManager.group {
                     selectedElementsViews.forEach {
                         when (it.automatonElement) {
@@ -119,7 +122,7 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                     if (elementView is AutomatonVertexView)
                         elementView.vertex.position += change
                 }
-            } else if (it.button == MouseButton.SECONDARY) {
+            } else if (it.button == MouseButton.SECONDARY && automaton.allowsModificationsByUser) {
                 newTransitionLine.endX = it.x
                 newTransitionLine.endY = it.y
             }
@@ -149,7 +152,8 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
             it.consume()
             val source = newTransitionSourceProperty.value ?: return@setOnMouseDragReleased
             newTransitionSourceProperty.value = null
-            automaton.addTransition(source.vertex, automatonVertexView.vertex)
+            if (automaton.allowsModificationsByUser)
+                automaton.addTransition(source.vertex, automatonVertexView.vertex)
         }
     }
 
@@ -172,6 +176,11 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
             it.consume()
             automatonElementView.requestFocus()
             if (it.button == MouseButton.PRIMARY) {
+                if (it.isStillSincePress)
+                    automaton.isOutputOfTransformation?.let { transformation ->
+                        transformation.step(automatonElementView.automatonElement)
+                        return@setOnMouseClicked
+                    }
                 lastSelectedElement = when {
                     !it.isControlDown -> {
                         clearSelection()
@@ -190,8 +199,8 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                         automatonElementView
                     }
                 }
-            } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress) {
-                fun <T : AutomatonElement> showActionsMenu(element: T, actions: List<AutomatonElementAction<T>>) {
+            } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress && automaton.allowsBuildingBlocks) {
+                fun <T : AutomatonElement> showActionsMenu(element: T, actions: List<Action<T>>) {
                     val actionsWithAvailability = actions.map { action ->
                         action to action.getAvailabilityFor(element)
                     }
@@ -202,12 +211,10 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                                 item(action.displayName, action.keyCombination) {
                                     action {
                                         try {
-                                            action.performOn(element)
+                                            if (automaton.allowsModificationsByUser)
+                                                action.performOn(element)
                                         } catch (exc: ActionFailedException) {
-                                            error(
-                                                I18N.messages.getString("AutomatonGraphController.ActionFailed"),
-                                                exc.message
-                                            )
+                                            error(exc.message)
                                         }
 
                                     }

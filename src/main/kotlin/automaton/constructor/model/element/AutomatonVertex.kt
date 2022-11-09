@@ -46,6 +46,9 @@ sealed class AutomatonVertex(
     val isCurrentBinding: BooleanBinding = isNotEmpty(executionStates.filteredSet { it.requiresProcessingBinding })
     val isCurrent by isCurrentBinding
 
+    val isHighlightedProperty = false.toProperty()
+    var isHighlighted by isHighlightedProperty
+
     override val undoRedoProperties
         get() = super.undoRedoProperties +
                 listOf(nameProperty, lastReleasePositionProperty, isInitialProperty, isFinalProperty)

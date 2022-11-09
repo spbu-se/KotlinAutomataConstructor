@@ -25,14 +25,16 @@ import tornadofx.*
 class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(vertex) {
     val positionProperty: Property<Point2D> = vertex.position.toProperty().apply { bind(vertex.positionProperty) }
     val colorProperty: Property<Color> = DEFAULT_COLOR.toProperty().apply {
-        val colorBinding = selectedProperty.nonNullObjectBinding(vertex.isCurrentBinding) {
-            when {
-                selected && vertex.isCurrent -> Color.PURPLE
-                !selected && vertex.isCurrent -> Color.SADDLEBROWN
-                selected && !vertex.isCurrent -> Color.AQUA
-                else -> DEFAULT_COLOR
+        val colorBinding =
+            selectedProperty.nonNullObjectBinding(vertex.isCurrentBinding, vertex.isHighlightedProperty) {
+                when {
+                    vertex.isHighlighted -> Color.DARKORANGE
+                    selected && vertex.isCurrent -> Color.PURPLE
+                    !selected && vertex.isCurrent -> Color.SADDLEBROWN
+                    selected && !vertex.isCurrent -> Color.AQUA
+                    else -> DEFAULT_COLOR
+                }
             }
-        }
         bind(when (vertex) {
             is State -> colorBinding
             is BuildingBlock -> colorBinding.nonNullObjectBinding(vertex.subAutomaton.hasProblemsBinding) {
@@ -86,7 +88,15 @@ class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(ve
                 listOf(vertex.nameProperty.value, settingsTextBinding.value).filter { it.isNotEmpty() }
                     .joinToString(separator = "/")
             })
-            fontProperty().bind(textProperty().objectBinding { font(if (it!!.length < 4) 48.0 else 32.0) })
+            fontProperty().bind(textProperty().objectBinding {
+                font(
+                    when {
+                        it!!.length < 4 -> 48.0
+                        it.length < 6 -> 32.0
+                        else -> 24.0
+                    }
+                )
+            })
             translateXProperty().bind(layoutBoundsProperty().doubleBinding { -it!!.width / 2 })
             translateYProperty().bind(baselineOffsetProperty().doubleBinding { -it!!.toDouble() / 10 })
             xProperty().bind(positionProperty.x)

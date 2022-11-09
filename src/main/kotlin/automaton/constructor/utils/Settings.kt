@@ -22,6 +22,8 @@ fun List<Editable>.createSettings() = mapNotNull { it.createSettingOrNull() }
 class SettingsEditor : VBox() {
     val settingsProperty = objectProperty<List<SettingGroup>?>(null)
     var settings by settingsProperty
+    val editingDisabledProperty = false.toProperty().apply { onChange { updateEditingDisabledForChildren() } }
+    var editingDisabled by editingDisabledProperty
 
     init {
         settingsProperty.onChange {
@@ -35,12 +37,22 @@ class SettingsEditor : VBox() {
             }.onChange { width ->
                 groupEditors.forEach { it.gridpane.setNameColumnMinWidth(width) }
             }
+            updateEditingDisabledForChildren()
         }
+    }
+
+    private fun updateEditingDisabledForChildren() {
+        children.forEach { (it as SettingGroupEditor).editingDisabled = editingDisabled }
     }
 }
 
-open class SettingGroupEditor(val group: SettingGroup) : TitledPane() {
-    val gridpane = SettingListEditor(group.settings).also { add(it) }
+open class SettingGroupEditor(group: SettingGroup) : TitledPane() {
+    val editingDisabledProperty = false.toProperty()
+    var editingDisabled by editingDisabledProperty
+    val gridpane = SettingListEditor(group.settings).also {
+        add(it)
+        it.editingDisabledProperty.bind(editingDisabledProperty)
+    }
 
     init {
         textProperty().bind(group.observableName)
@@ -48,6 +60,9 @@ open class SettingGroupEditor(val group: SettingGroup) : TitledPane() {
 }
 
 class SettingListEditor(val settings: List<Setting>) : GridPane() {
+    val editingDisabledProperty = false.toProperty()
+    var editingDisabled by editingDisabledProperty
+
     val nameColumnWidthBinding: DoubleBinding
     val nameColumnWidth: Double get() = nameColumnWidthBinding.value
 
@@ -62,6 +77,7 @@ class SettingListEditor(val settings: List<Setting>) : GridPane() {
                 label.visibleWhen(control.visibleProperty())
                 label.managedWhen(control.managedProperty())
                 labels.add(label)
+                control.disableWhen(editingDisabledProperty)
                 add(label)
                 add(control)
             }

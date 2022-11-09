@@ -1,62 +1,40 @@
 package automaton.constructor.view
 
-import automaton.constructor.controller.UndoRedoController
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.module.descriptionBinding
-import automaton.constructor.model.module.problems
-import automaton.constructor.utils.I18N
-import automaton.constructor.utils.SettingsEditor
-import automaton.constructor.utils.customizedZoomScrollPane
-import automaton.constructor.utils.nonNullObjectBinding
-import javafx.scene.input.KeyEvent
-import javafx.scene.layout.Pane
-import javafx.scene.paint.Color
-import javafx.scene.text.Font
-import javafx.scene.text.TextAlignment
+import javafx.scene.control.SplitPane
 import tornadofx.*
 
-// TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
-class AutomatonTabView(val automaton: Automaton, val automatonViewContext: AutomatonViewContext) : Pane() {
-    val automatonGraphView = AutomatonGraphView(automaton, automatonViewContext)
-    val undoRedoController = UndoRedoController(this)
+class AutomatonTabView(
+    val automaton: Automaton,
+    automatonViewContext: AutomatonViewContext
+) : SplitPane() {
+    val automatonView: AutomatonView = AutomatonView(automaton, automatonViewContext).also { add(it) }
+    val undoRedoController get() = automatonView.undoRedoController
 
-    init {
-        addEventFilter(KeyEvent.KEY_PRESSED) { event ->
-            when {
-                UndoRedoController.UNDO_COMBO.match(event) -> undoRedoController.onUndo()
-                UndoRedoController.REDO_COMBO.match(event) -> undoRedoController.onRedo()
-                else -> return@addEventFilter
+    private val automatonTransformationViewBinding =
+        automaton.isInputForTransformationProperty.objectBinding { nullableTransformation ->
+            nullableTransformation?.let { transformation ->
+                AutomatonTransformationView(
+                    transformation,
+                    automatonViewContext
+                )
             }
-            event.consume()
-        }
-        customizedZoomScrollPane { add(automatonGraphView) }
-        val settingsEditor = SettingsEditor().apply {
-            settingsProperty.bind(automatonGraphView.controller.lastSelectedElementProperty.nonNullObjectBinding {
-                it?.getSettings()
-            })
-        }
-        add(settingsEditor)
-        label {
-            isWrapText = true
-            layoutXProperty().bind(this@AutomatonTabView.widthProperty() - widthProperty() - 10.0)
-            maxWidthProperty().bind(this@AutomatonTabView.widthProperty() - settingsEditor.widthProperty() - 20.0)
-            font = Font.font(16.0)
-            textProperty().bind(automaton.descriptionBinding)
-        }
-        label {
-            layoutXProperty().bind(this@AutomatonTabView.widthProperty() - widthProperty() - 10.0)
-            layoutYProperty().bind(this@AutomatonTabView.heightProperty() - heightProperty())
-            font = Font.font(16.0)
-            textFill = Color.DARKRED
-            textAlignment = TextAlignment.RIGHT
-            fun updateText() {
-                text = if (automaton.problems.isEmpty()) ""
-                else automaton.problems.joinToString(
-                    prefix = I18N.messages.getString("AutomatonView.Problems"), separator = "\n"
-                ) { it.message }
+        }.apply {
+            onChange { transformationView ->
+                // make transformationView a second item of the SplitPane
+                if (transformationView == null) {
+                    if (items.size > 1) items.removeLast()
+                } else {
+                    if (items.size > 1) items[1] = transformationView
+                    else items.add(transformationView)
+                }
             }
-            updateText()
-            automaton.problems.onChange { updateText() }
         }
+    private val automatonTransformationView: AutomatonTransformationView? by automatonTransformationViewBinding
+
+    fun ensureAutomatonViewIsShown() {
+        items.removeFirst()
+        automatonView.removeFromParent()
+        items.add(0, automatonView)
     }
 }

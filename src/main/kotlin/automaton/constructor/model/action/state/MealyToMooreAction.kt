@@ -1,6 +1,6 @@
 package automaton.constructor.model.action.state
 
-import automaton.constructor.model.action.AbstractAutomatonElementAction
+import automaton.constructor.model.action.AbstractAction
 import automaton.constructor.model.action.ActionAvailability.AVAILABLE
 import automaton.constructor.model.action.ActionAvailability.DISABLED
 import automaton.constructor.model.automaton.MealyMooreMachine
@@ -15,9 +15,9 @@ import automaton.constructor.utils.partitionToSets
 import tornadofx.*
 
 class MealyToMooreAction(mealyMooreMachine: MealyMooreMachine) :
-    AbstractAutomatonElementAction<MealyMooreMachine, State>(
+    AbstractAction<MealyMooreMachine, State>(
         automaton = mealyMooreMachine,
-        displayName = I18N.messages.getString("AutomatonElementAction.MealyToMoore")
+        displayName = I18N.messages.getString("Action.MealyToMoore")
     ) {
     override fun MealyMooreMachine.doGetAvailabilityFor(actionSubject: State) =
         if (getIncomingTransitions(actionSubject).any { it.outputValue != EPSILON_VALUE }) {

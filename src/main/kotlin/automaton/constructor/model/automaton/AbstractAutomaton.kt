@@ -1,6 +1,6 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.action.AutomatonElementAction
+import automaton.constructor.model.action.Action
 import automaton.constructor.model.action.buildingblock.RemoveBuildingBlockAction
 import automaton.constructor.model.action.state.RemoveStateAction
 import automaton.constructor.model.action.transition.RemoveTransitionAction
@@ -12,6 +12,7 @@ import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.transformation.AutomatonTransformation
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import automaton.constructor.utils.UndoRedoManager
@@ -176,17 +177,30 @@ abstract class AbstractAutomaton(
         vertices.remove(vertex)
     }
 
-    override val transitionActions: List<AutomatonElementAction<Transition>> = listOf(
+    override val transitionActions: List<Action<Transition>> = listOf(
         RemoveTransitionAction(automaton = this)
     )
 
-    override val stateActions: List<AutomatonElementAction<State>> = listOf(
+    override val stateActions: List<Action<State>> = listOf(
         RemoveStateAction(automaton = this)
     )
 
-    override val buildingBlockActions: List<AutomatonElementAction<BuildingBlock>> = listOf(
+    override val buildingBlockActions: List<Action<BuildingBlock>> = listOf(
         RemoveBuildingBlockAction(automaton = this)
     )
+
+    override val transformationActions: List<Action<Unit>> = emptyList()
+
+    final override val isInputForTransformationProperty = null.toProperty<AutomatonTransformation>()
+    final override var isInputForTransformation: AutomatonTransformation? by isInputForTransformationProperty
+
+    final override val isOutputOfTransformationProperty = null.toProperty<AutomatonTransformation>()
+    final override var isOutputOfTransformation: AutomatonTransformation? by isOutputOfTransformationProperty
+
+    final override val allowsModificationsByUserProperty = true.toProperty().apply {
+        bind(isInputForTransformationProperty.isNull.and(isOutputOfTransformationProperty.isNull))
+    }
+    final override val allowsModificationsByUser by allowsModificationsByUserProperty
 
     override fun clearExecutionStates() = vertices.forEach {
         it.executionStates.clear()

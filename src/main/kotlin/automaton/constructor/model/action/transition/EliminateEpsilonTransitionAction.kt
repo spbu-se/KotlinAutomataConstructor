@@ -1,6 +1,6 @@
 package automaton.constructor.model.action.transition
 
-import automaton.constructor.model.action.AbstractAutomatonElementAction
+import automaton.constructor.model.action.AbstractAction
 import automaton.constructor.model.action.ActionAvailability.*
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.copyAndAddTransition
@@ -10,9 +10,9 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 
 class EliminateEpsilonTransitionAction(automaton: Automaton) :
-    AbstractAutomatonElementAction<Automaton, Transition>(
+    AbstractAction<Automaton, Transition>(
         automaton = automaton,
-        displayName = I18N.messages.getString("AutomatonElementAction.EliminateEpsilonTransition")
+        displayName = I18N.messages.getString("Action.EliminateEpsilonTransition")
     ) {
     override fun Automaton.doGetAvailabilityFor(actionSubject: Transition) = when {
         !actionSubject.isPure() -> HIDDEN

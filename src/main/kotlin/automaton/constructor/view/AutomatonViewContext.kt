@@ -6,6 +6,6 @@ import automaton.constructor.model.element.BuildingBlock
 
 interface AutomatonViewContext {
     val fileController: FileController
-    fun getAutomatonView(automaton: Automaton): AutomatonTabView
+    fun getAutomatonView(automaton: Automaton): AutomatonView
     fun onBuildingBlockDoubleClicked(buildingBlock: BuildingBlock)
 }

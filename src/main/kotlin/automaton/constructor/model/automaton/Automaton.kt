@@ -1,6 +1,6 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.action.AutomatonElementAction
+import automaton.constructor.model.action.Action
 import automaton.constructor.model.data.AutomatonTypeData
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
@@ -9,7 +9,10 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
+import automaton.constructor.model.transformation.AutomatonTransformation
 import automaton.constructor.utils.UndoRedoManager
+import automaton.constructor.view.GRAPH_PANE_CENTER
+import javafx.beans.property.BooleanProperty
 import javafx.beans.property.Property
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
@@ -78,7 +81,7 @@ interface Automaton {
     fun removeTransition(transition: Transition)
 
 
-    fun addState(name: String? = null, position: Point2D = Point2D.ZERO): State
+    fun addState(name: String? = null, position: Point2D = GRAPH_PANE_CENTER): State
 
     fun addBuildingBlock(
         subAutomaton: Automaton = createSubAutomaton(),
@@ -93,17 +96,38 @@ interface Automaton {
     /**
      * The list of actions that can be possibly performed on a transition of the automaton.
      */
-    val transitionActions: List<AutomatonElementAction<Transition>>
+    val transitionActions: List<Action<Transition>>
 
     /**
      * The list of actions that can be possibly performed on a state of the automaton.
      */
-    val stateActions: List<AutomatonElementAction<State>>
+    val stateActions: List<Action<State>>
 
     /**
      * The list of actions that can be possibly performed on a building block of the automaton.
      */
-    val buildingBlockActions: List<AutomatonElementAction<BuildingBlock>>
+    val buildingBlockActions: List<Action<BuildingBlock>>
+
+    /**
+     * The list of actions that can be possibly performed on the entire automaton
+     * resulting in [isInputForTransformationProperty] being set to non-null value
+     */
+    val transformationActions: List<Action<Unit>>
+
+    /**
+     * [AutomatonTransformation] for which this [Automaton] is an input
+     */
+    val isInputForTransformationProperty: Property<AutomatonTransformation?>
+    var isInputForTransformation: AutomatonTransformation?
+
+    /**
+     * [AutomatonTransformation] for which this [Automaton] is an output
+     */
+    val isOutputOfTransformationProperty: Property<AutomatonTransformation?>
+    var isOutputOfTransformation: AutomatonTransformation?
+
+    val allowsModificationsByUserProperty: BooleanProperty
+    val allowsModificationsByUser: Boolean
 
     /**
      * Clears execution states for every vertex of this automaton and its sub-automatons
@@ -203,7 +227,9 @@ fun Automaton.copyAndAddTransition(
     return addTransition(source, target).apply { writeProperties(transition.readProperties()) }
 }
 
-// other utitlites
+// other utilities
 
 val Automaton.untitledName: String
     get() = listOf(untitledAdjective, typeDisplayName).joinToString(" ")
+
+fun Automaton.resetHighlights() = vertices.forEach { it.isHighlighted = false }
