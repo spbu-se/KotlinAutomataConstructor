@@ -129,6 +129,7 @@ class SuperExecutionState(
 
     override fun collapse() {
         subExecutor.stop()
+        children.forEach { it.collapse() }
         children.clear()
     }
 }
