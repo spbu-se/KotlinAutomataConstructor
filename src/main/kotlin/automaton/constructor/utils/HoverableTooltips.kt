@@ -22,6 +22,7 @@ fun Node.hoverableTooltip(
 object HoverableTooltips {
     private const val POPUP_OFFSET = 15.0
     private const val STYLE_CLASS = "context-menu"
+    private val MIN_SHOW_DURATION = 250.millis
     private var managedTool: Node? = null
 
     fun install(
@@ -37,6 +38,7 @@ object HoverableTooltips {
 
         val scope = object : HoverableTooltipScope {
             override var onHiding: (WindowEvent) -> Unit = { _ -> }
+            private var justShown = false
 
             override fun hide() {
                 tooltip?.hide()
@@ -44,8 +46,8 @@ object HoverableTooltips {
                 showTask = null
             }
 
-            fun onMouseExited() {
-                if (managedTool === tool && !tool.isHover && tooltip?.content?.any { it.isHover } != true)
+            fun hideIfNotHovered() {
+                if (!justShown && managedTool === tool && !tool.isHover && tooltip?.content?.any { it.isHover } != true)
                     hide()
             }
 
@@ -57,7 +59,7 @@ object HoverableTooltips {
                     val scene = tool.scene ?: return@runLater
                     val tooltipNode = tooltipNodeFactory()?.apply {
                         styleClass.setAll(STYLE_CLASS)
-                        addEventHandler(MouseEvent.MOUSE_EXITED) { onMouseExited() }
+                        addEventHandler(MouseEvent.MOUSE_EXITED) { hideIfNotHovered() }
                         if (stopManagingOnInteraction)
                             addEventFilter(MouseEvent.MOUSE_CLICKED) {
                                 if (managedTool === tool)
@@ -68,6 +70,7 @@ object HoverableTooltips {
                         content.add(tooltipNode)
                         isAutoHide = true
                         consumeAutoHidingEvents = false
+                        justShown = true
                         show(scene.window, lastScreenX - POPUP_OFFSET, lastScreenY)
                         content.first().requestFocus()
                         setOnHiding { onHiding(it) }
@@ -75,13 +78,17 @@ object HoverableTooltips {
                             content.clear() // in case `tooltipNode` will be reused later
                             tooltip = null
                         }
+                        runLater(MIN_SHOW_DURATION) {
+                            justShown = false
+                            hideIfNotHovered()
+                        }
                     }
                     showTask = null
                 }
             }
         }
 
-        tool.addEventHandler(MouseEvent.MOUSE_EXITED) { scope.onMouseExited() }
+        tool.addEventHandler(MouseEvent.MOUSE_EXITED) { scope.hideIfNotHovered() }
         tool.addEventHandler(MouseEvent.MOUSE_MOVED) {
             lastScreenX = it.screenX
             lastScreenY = it.screenY
