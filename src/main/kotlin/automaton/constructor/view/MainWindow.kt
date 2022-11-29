@@ -1,7 +1,7 @@
 package automaton.constructor.view
 
-import automaton.constructor.controller.AutomatonDocumentationController
 import automaton.constructor.controller.FileController
+import automaton.constructor.controller.HelpController
 import automaton.constructor.controller.UndoRedoController
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.action.perform
@@ -16,7 +16,7 @@ import tornadofx.*
 
 class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first().createAutomaton()) : Fragment() {
     private val fileController = FileController(openedAutomaton, this)
-    private val automatonDocumentationController = AutomatonDocumentationController()
+    private val helpController = HelpController()
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
         CentralView(it, fileController)
     }
@@ -73,11 +73,13 @@ class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first()
                 centralViewBinding.select { it.selectedAutomatonProperty }.onChange { fillItems() }
             }
             menu(I18N.messages.getString("MainView.Help")) {
-                shortcutItem(I18N.messages.getString("MainView.Help.UserDocumentation"), "Shortcut+D") {
-                    automatonDocumentationController.onUserDocumentation()
+                shortcutItem(I18N.messages.getString("MainView.Help.UserDocumentation"), "F1") {
+                    helpController.onUserDocumentation()
                 }
-                shortcutItem(I18N.messages.getString("MainView.Help.README"), "Shortcut+R") {
-                    automatonDocumentationController.onREADME()
+                item(I18N.messages.getString("MainView.Help.README")) {
+                    action {
+                        helpController.onREADME()
+                    }
                 }
             }
         }
