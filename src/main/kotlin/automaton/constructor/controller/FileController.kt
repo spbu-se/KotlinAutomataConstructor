@@ -123,7 +123,11 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
             mode = mode,
             owner = uiComponent.currentWindow,
             initialFileName = openedFile?.name ?: name
-        ).firstOrNull()
+        ).firstOrNull()?.let { file ->
+            if (mode == FileChooserMode.Save && file.extension.isEmpty())
+                File(file.path + automatonSerializers().first().extensionFilter.extensions.first().drop(1))
+            else file
+        }
 
     private fun defaultDirectory() = runCatching {
         File("${System.getProperty("user.home")}/Documents/automaton-constructor").takeIf { it.isDirectory || it.mkdirs() }
