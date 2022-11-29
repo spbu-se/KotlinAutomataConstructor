@@ -74,7 +74,7 @@ class CentralView(val automaton: Automaton, override val fileController: FileCon
         val tab = tabPane.tabs.firstOrNull { it.tag == buildingBlock.subAutomaton } ?: run {
             tabPane.tab(tag = buildingBlock.subAutomaton) {
                 textProperty().bind(buildingBlock.subAutomaton.nameProperty)
-                content = getAutomatonView(buildingBlock.subAutomaton)
+                content = getAutomatonTabView(buildingBlock.subAutomaton)
             }
         }
         tabPane.selectionModel.select(tab)
