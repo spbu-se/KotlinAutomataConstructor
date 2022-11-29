@@ -50,6 +50,7 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
         label {
             layoutXProperty().bind(this@AutomatonView.widthProperty() - widthProperty() - 10.0)
             layoutYProperty().bind(this@AutomatonView.heightProperty() - heightProperty())
+            maxWidthProperty().bind((this@AutomatonView.widthProperty() - 20.0) / 2.0)
             font = Font.font(16.0)
             textFill = Color.DARKRED
             textAlignment = TextAlignment.RIGHT
@@ -61,6 +62,14 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             }
             updateText()
             automaton.problems.onChange { updateText() }
+            visibleWhen(automaton.isOutputOfTransformationProperty.booleanBinding { it == null })
+        }
+        label {
+            layoutX = 10.0
+            layoutYProperty().bind(this@AutomatonView.heightProperty() - heightProperty())
+            maxWidthProperty().bind((this@AutomatonView.widthProperty() - 20.0) / 2.0)
+            font = Font.font(16.0)
+            text = I18N.messages.getString("AutomatonView.UseRightClickToAddElements")
             visibleWhen(automaton.isOutputOfTransformationProperty.booleanBinding { it == null })
         }
     }
