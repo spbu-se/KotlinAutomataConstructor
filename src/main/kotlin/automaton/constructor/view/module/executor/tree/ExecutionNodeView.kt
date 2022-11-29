@@ -79,10 +79,11 @@ class ExecutionNodeView(
                 val executionTreeView by lazy { ExecutionTreeView(executionState.subExecutor) } // memoization
                 automatonVertexView.hoverableTooltip {
                     if (executionState.subExecutor.started) Pane().apply {
-                        minWidth = FX.primaryStage.width / 4.0
-                        minHeight = FX.primaryStage.height / 1.5
-                        maxWidth = FX.primaryStage.width / 4.0
-                        maxHeight = FX.primaryStage.height / 1.5
+                        val isAlreadyNested = executionState.superState != null
+                        minWidth = this@ExecutionNodeView.scene.width / if (isAlreadyNested) 1.0 else 4.0
+                        minHeight = this@ExecutionNodeView.scene.height / if (isAlreadyNested) 1.0 else 1.5
+                        maxWidth = this@ExecutionNodeView.scene.width / if (isAlreadyNested) 1.0 else 4.0
+                        maxHeight = this@ExecutionNodeView.scene.height / if (isAlreadyNested) 1.0 else 1.5
                         add(executionTreeView)
                         executionTreeView.fitToParentSize()
                     } else executionState.simpleTooltipContent()
