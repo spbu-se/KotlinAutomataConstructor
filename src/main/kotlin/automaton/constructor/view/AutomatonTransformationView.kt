@@ -20,7 +20,8 @@ class AutomatonTransformationView(
             if (transformation.isCompleted) {
                 if (!completeWasCalled) information(
                     transformation.displayName,
-                    I18N.messages.getString("AutomatonTransformation.HasBeenCompleted")
+                    I18N.messages.getString("AutomatonTransformation.HasBeenCompleted"),
+                    title = I18N.messages.getString("Dialog.information")
                 )
                 MainWindow(
                     // make sure it's a completely fresh Automaton instance independent of this window

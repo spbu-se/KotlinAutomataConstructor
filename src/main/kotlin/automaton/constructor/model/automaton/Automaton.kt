@@ -233,3 +233,16 @@ val Automaton.untitledName: String
     get() = listOf(untitledAdjective, typeDisplayName).joinToString(" ")
 
 fun Automaton.resetHighlights() = vertices.forEach { it.isHighlighted = false }
+
+fun Automaton.getClosure(state: State): Collection<AutomatonVertex> {
+    val closure: MutableSet<AutomatonVertex> = mutableSetOf(state)
+    val unhandledStates = mutableListOf(state)
+    while (unhandledStates.isNotEmpty()) {
+        val curState = unhandledStates.removeLast()
+        getPureTransitions(curState).forEach { pureTransition ->
+            if (closure.add(pureTransition.target) && pureTransition.target is State)
+                unhandledStates.add(pureTransition.target)
+        }
+    }
+    return closure
+}
