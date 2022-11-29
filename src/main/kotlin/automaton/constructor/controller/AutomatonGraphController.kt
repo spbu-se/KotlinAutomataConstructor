@@ -199,7 +199,7 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                         automatonElementView
                     }
                 }
-            } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress && automaton.allowsBuildingBlocks) {
+            } else if (it.button == MouseButton.SECONDARY && it.isStillSincePress && automaton.allowsModificationsByUser) {
                 fun <T : AutomatonElement> showActionsMenu(element: T, actions: List<Action<T>>) {
                     val actionsWithAvailability = actions.map { action ->
                         action to action.getAvailabilityFor(element)
