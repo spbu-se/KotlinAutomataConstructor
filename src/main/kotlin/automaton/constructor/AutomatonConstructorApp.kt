@@ -11,6 +11,7 @@ class AutomatonConstructorApp : App() {
     override fun start(stage: Stage) {
         FX.stylesheets.add("style.css")
         super.start(stage)
+        find<LocaleController>()
         MainWindow().show()
         if (config.boolean("showStartUpHint", true))
             Alert(Alert.AlertType.INFORMATION).apply {

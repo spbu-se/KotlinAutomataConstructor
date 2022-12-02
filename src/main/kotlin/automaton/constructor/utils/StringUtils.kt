@@ -2,4 +2,5 @@ package automaton.constructor.utils
 
 import java.util.*
 
-fun String.capitalize() = replaceFirstChar { it.titlecase(Locale.getDefault()) }
+fun String.capitalize(locale: Locale = I18N.locale): String =
+    replaceFirstChar { it.titlecase(locale) }

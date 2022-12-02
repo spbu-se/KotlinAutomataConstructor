@@ -2,12 +2,14 @@ package automaton.constructor.view
 
 import automaton.constructor.controller.FileController
 import automaton.constructor.controller.HelpController
+import automaton.constructor.controller.LocaleController
 import automaton.constructor.controller.UndoRedoController
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.action.perform
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.factory.getAllAutomatonFactories
 import automaton.constructor.utils.I18N
+import automaton.constructor.utils.capitalize
 import automaton.constructor.utils.nonNullObjectBinding
 import javafx.beans.property.Property
 import javafx.scene.control.Menu
@@ -17,6 +19,7 @@ import tornadofx.*
 class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first().createAutomaton()) : Fragment() {
     private val fileController = FileController(openedAutomaton, this)
     private val helpController = HelpController()
+    private val localeController = find<LocaleController>()
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
         CentralView(it, fileController)
     }
@@ -71,6 +74,13 @@ class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first()
                 }
                 fillItems()
                 centralViewBinding.select { it.selectedAutomatonProperty }.onChange { fillItems() }
+            }
+            menu(I18N.messages.getString("MainView.Language")) {
+                localeController.availableLocales.forEach { locale ->
+                    item(locale.getDisplayName(locale).capitalize(locale)).action {
+                        localeController.setLocale(locale)
+                    }
+                }
             }
             menu(I18N.messages.getString("MainView.Help")) {
                 shortcutItem(I18N.messages.getString("MainView.Help.UserDocumentation"), "F1") {
