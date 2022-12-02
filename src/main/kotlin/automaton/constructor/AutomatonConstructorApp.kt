@@ -7,6 +7,8 @@ import javafx.scene.control.*
 import javafx.stage.Stage
 import tornadofx.*
 import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class AutomatonConstructorApp : App() {
     override fun start(stage: Stage) {
@@ -35,6 +37,9 @@ class AutomatonConstructorApp : App() {
                 dialogPane.isExpanded = true
             }.show()
     }
+
+    override val configBasePath: Path
+        get() = Paths.get(System.getProperty("user.home"), "automaton-constructor-conf")
 }
 
 fun main(args: Array<String>) = launch<AutomatonConstructorApp>(args)
