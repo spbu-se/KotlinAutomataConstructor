@@ -6,13 +6,22 @@ import automaton.constructor.view.MainWindow
 import javafx.scene.control.*
 import javafx.stage.Stage
 import tornadofx.*
+import java.io.File
 
 class AutomatonConstructorApp : App() {
     override fun start(stage: Stage) {
         FX.stylesheets.add("style.css")
         super.start(stage)
         find<LocaleController>()
-        MainWindow().show()
+        val unnamedParams = parameters.unnamed
+        MainWindow().apply {
+            show()
+            if (unnamedParams.isNotEmpty()) {
+                val file = File(unnamedParams[0])
+                if (file.exists()) fileController.open(file)
+            }
+        }
+
         if (config.boolean("showStartUpHint", true))
             Alert(Alert.AlertType.INFORMATION).apply {
                 title = I18N.messages.getString("Dialog.information")

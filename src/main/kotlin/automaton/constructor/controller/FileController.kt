@@ -86,6 +86,10 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
     fun onOpen() {
         if (!suggestSavingChanges()) return
         val file = chooseFile(I18N.messages.getString("MainView.File.Open"), FileChooserMode.Single) ?: return
+        open(file)
+    }
+
+    fun open(file: File) {
         loadAsync(file) addOnSuccess {
             openedAutomaton = it.createAutomaton()
             openedFile = file

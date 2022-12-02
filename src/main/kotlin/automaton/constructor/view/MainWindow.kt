@@ -17,7 +17,7 @@ import javafx.scene.control.MenuItem
 import tornadofx.*
 
 class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first().createAutomaton()) : Fragment() {
-    private val fileController = FileController(openedAutomaton, this)
+    val fileController = FileController(openedAutomaton, this)
     private val helpController = HelpController()
     private val localeController = find<LocaleController>()
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
