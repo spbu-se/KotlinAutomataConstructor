@@ -151,30 +151,6 @@ val Automaton.allowsStepByClosure get() = memoryDescriptors.all { it.allowsStepB
 // Get specific transitions
 
 /**
- * Returns set containing all loops of a given [vertex]
- */
-fun Automaton.getLoops(vertex: AutomatonVertex): Set<Transition> =
-    getIncomingTransitions(vertex).filterTo(mutableSetOf(), Transition::isLoop)
-
-/**
- * Returns set containing all transition of a given [vertex]
- */
-fun Automaton.getTransitions(vertex: AutomatonVertex): Set<Transition> =
-    getIncomingTransitions(vertex) + getOutgoingTransitions(vertex)
-
-/**
- * Returns set containing all non-loop transition of a given [vertex]
- */
-fun Automaton.getTransitionsWithoutLoops(vertex: AutomatonVertex): Set<Transition> =
-    getTransitions(vertex).filterNotTo(mutableSetOf(), Transition::isLoop)
-
-/**
- * Returns set containing all transition to a given [vertex] without loops
- */
-fun Automaton.getIncomingTransitionsWithoutLoops(vertex: AutomatonVertex): Set<Transition> =
-    getIncomingTransitions(vertex).filterNotTo(mutableSetOf(), Transition::isLoop)
-
-/**
  * Returns set containing all transition from a given [vertex] without loops
  */
 fun Automaton.getOutgoingTransitionsWithoutLoops(vertex: AutomatonVertex): Set<Transition> =
@@ -199,7 +175,7 @@ fun Automaton.copyAndAddState(
     }
 }
 
-fun Automaton.copyAndAddTransition(
+fun Automaton.copyAndAddTransitionConditionally(
     transition: Transition,
     newSource: AutomatonVertex? = null, newTarget: AutomatonVertex? = null,
     ignoreIfTransitionIsPureLoop: Boolean = false,
@@ -220,7 +196,7 @@ fun Automaton.copyAndAddTransition(
 
 fun Automaton.copyAndAddTransition(
     transition: Transition,
-    newSource: State? = null, newTarget: State? = null
+    newSource: AutomatonVertex? = null, newTarget: AutomatonVertex? = null
 ): Transition {
     val source = newSource ?: transition.source
     val target = newTarget ?: transition.target

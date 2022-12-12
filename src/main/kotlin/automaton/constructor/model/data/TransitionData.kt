@@ -1,8 +1,9 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.Transition
-import automaton.constructor.utils.IgnorableByCoverage
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.Serializable
 
 /**
@@ -12,7 +13,7 @@ import kotlinx.serialization.Serializable
  * The data can be converted to a transition with the appropriate [source state][Transition.source],
  * [target state][Transition.target], and [dynamic properties][Transition.properties].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 data class TransitionData(
     val source: Int,
@@ -23,13 +24,11 @@ data class TransitionData(
 /**
  * Retrieves all [transition data][TransitionData] from the automaton.
  */
-fun Automaton.getTransitionsData(): List<TransitionData> {
-    val stateToIdMap = vertices.asSequence().withIndex().associate { (i, v) -> v to i }
-    return transitions.map { transition ->
+fun Automaton.getTransitionsData(vertexToIdMap: Map<AutomatonVertex, Int>): Set<TransitionData> =
+    transitions.map { transition ->
         TransitionData(
-            source = stateToIdMap.getValue(transition.source),
-            target = stateToIdMap.getValue(transition.target),
+            source = vertexToIdMap.getValue(transition.source),
+            target = vertexToIdMap.getValue(transition.target),
             properties = transition.readProperties()
         )
-    }
-}
+    }.toSet()

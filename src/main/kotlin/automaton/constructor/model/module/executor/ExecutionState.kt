@@ -58,7 +58,16 @@ sealed class ExecutionState(
         status = REJECTED
     }
 
-    abstract fun collapse()
+    open fun collapse() {
+        superState?.let { superState ->
+            superState.children.forEach { it.collapse() }
+            superState.children.clear()
+            superState.unhandledAcceptedStates.clear()
+            superState.unhandledAcceptedStates.addAll(superState.subExecutor.acceptedExeStates)
+        }
+        children.forEach { it.collapse() }
+        children.clear()
+    }
 
     companion object {
         fun create(
@@ -99,8 +108,6 @@ class SimpleExecutionState(
             )
         )
     }
-
-    override fun collapse() = children.clear()
 }
 
 class SuperExecutionState(
@@ -129,7 +136,6 @@ class SuperExecutionState(
 
     override fun collapse() {
         subExecutor.stop()
-        children.forEach { it.collapse() }
-        children.clear()
+        super.collapse()
     }
 }

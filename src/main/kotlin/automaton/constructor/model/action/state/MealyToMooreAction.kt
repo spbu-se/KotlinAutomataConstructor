@@ -45,8 +45,8 @@ class MealyToMooreAction(mealyMooreMachine: MealyMooreMachine) :
                 newPosition = actionSubject.position + (if (transitionOutput == EPSILON_VALUE) 0 else i++) * 4 * RADIUS,
                 newIsInitial = actionSubject.isInitial && transitionOutput == EPSILON_VALUE
             ).apply {
-                outputValue = ((transitionOutput?.takeIf { it != EPSILON_VALUE } ?: "") +
-                        (stateOutput?.takeIf { it != EPSILON_VALUE } ?: "")).ifEmpty { EPSILON_VALUE }
+                outputValue = ((transitionOutput.takeIf { it != EPSILON_VALUE } ?: "") +
+                        (stateOutput.takeIf { it != EPSILON_VALUE } ?: "")).ifEmpty { EPSILON_VALUE }
             }
             transitionOutput to mooreState
         }

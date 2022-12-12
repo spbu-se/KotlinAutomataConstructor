@@ -3,10 +3,10 @@ package automaton.constructor.model.data
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.RegisterDescriptor
 import automaton.constructor.model.memory.StackDescriptor
-import automaton.constructor.model.memory.tape.OutputTapeDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
-import automaton.constructor.utils.IgnorableByCoverage
+import automaton.constructor.model.memory.tape.OutputTapeDescriptor
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
@@ -31,7 +31,7 @@ interface MemoryUnitDescriptorData {
  */
 @Serializable
 @SerialName("input-tape")
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 object InputTapeDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = InputTapeDescriptor()
 }
@@ -41,7 +41,7 @@ object InputTapeDescriptorData : MemoryUnitDescriptorData {
  */
 @Serializable
 @SerialName("multi-track-tape")
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescriptorData {
     override fun createDescriptor() = MultiTrackTapeDescriptor(trackCount)
 }
@@ -51,7 +51,7 @@ data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescrip
  */
 @Serializable
 @SerialName("stack")
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDescriptorData {
     override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack)
 }
@@ -61,7 +61,7 @@ data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDes
  */
 @Serializable
 @SerialName("register")
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 object RegisterDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = RegisterDescriptor()
 }
@@ -71,7 +71,7 @@ object RegisterDescriptorData : MemoryUnitDescriptorData {
  */
 @Serializable
 @SerialName("output-tape")
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 object OutputTapeDescriptorData : MemoryUnitDescriptorData {
     override fun createDescriptor() = OutputTapeDescriptor()
 }

@@ -3,7 +3,7 @@ package automaton.constructor.model.action.transition
 import automaton.constructor.model.action.AbstractAction
 import automaton.constructor.model.action.ActionAvailability.*
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.automaton.copyAndAddTransition
+import automaton.constructor.model.automaton.copyAndAddTransitionConditionally
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.State
 import automaton.constructor.model.element.Transition
@@ -26,7 +26,7 @@ class EliminateEpsilonTransitionAction(automaton: Automaton) :
             newTarget: AutomatonVertex? = null
         ) =
             forEach { transitionToCopy ->
-                copyAndAddTransition(
+                copyAndAddTransitionConditionally(
                     transitionToCopy, newSource, newTarget,
                     ignoreIfTransitionIsPureLoop = true,
                     ignoreIfCopyIsPureLoop = true,

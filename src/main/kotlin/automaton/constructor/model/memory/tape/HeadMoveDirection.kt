@@ -1,9 +1,9 @@
 package automaton.constructor.model.memory.tape
 
-enum class HeadMoveDirection(val displayName: String, val shift: Int) {
-    RIGHT("→", 1),
-    LEFT("←", -1),
-    STAGNATE("•", 0);
+enum class HeadMoveDirection(val displayName: String) {
+    RIGHT("→"),
+    LEFT("←"),
+    STAGNATE("•");
 
     override fun toString() = displayName
 }

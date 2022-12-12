@@ -1,7 +1,7 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.*
-import automaton.constructor.utils.IgnorableByCoverage
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
@@ -24,7 +24,7 @@ interface AutomatonTypeData {
 /**
  * The data of a [finite automaton][FiniteAutomaton] with an [input tape][inputTape].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("finite-automaton")
 data class FiniteAutomatonData(
@@ -38,7 +38,7 @@ data class FiniteAutomatonData(
 /**
  * The data of a [pushdown automaton][PushdownAutomaton] with an [input tape][inputTape] and several [stacks].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("pushdown-automaton")
 data class PushdownAutomatonData(
@@ -54,7 +54,7 @@ data class PushdownAutomatonData(
 /**
  * The data of a [register automaton][RegisterAutomaton] with an [input tape][inputTape] and several [registers].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("register-automaton")
 data class RegisterAutomatonData(
@@ -70,7 +70,7 @@ data class RegisterAutomatonData(
 /**
  * The data of a [Mealy/Moore machine][MealyMooreMachine] with an [input tape][inputTape] and a [Mealy/Moore output tape][outputTape].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("mealy-moore-machine")
 data class MealyMooreMachineData(
@@ -86,7 +86,7 @@ data class MealyMooreMachineData(
 /**
  * The data of a [Turing machine][TuringMachine] with a [tape].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("turing-machine")
 data class TuringMachineData(
@@ -100,7 +100,7 @@ data class TuringMachineData(
 /**
  * The data of a [multi-track Turing machine][MultiTrackTuringMachine] with several [tracks].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("multi-track-turing-machine")
 data class MultiTrackTuringMachineData(
@@ -114,7 +114,7 @@ data class MultiTrackTuringMachineData(
 /**
  * The data of a [multi-tape Turing machine][MultiTapeTuringMachine] with several [tapes].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("multi-tape-turing-machine")
 data class MultiTapeTuringMachineData(
@@ -128,7 +128,7 @@ data class MultiTapeTuringMachineData(
 /**
  * The data of a [Turing machine with registers][TuringMachineWithRegisters] with a [tape] and several [registers].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("turing-machine-with-registers")
 data class TuringMachineWithRegistersData(
@@ -144,7 +144,7 @@ data class TuringMachineWithRegistersData(
 /**
  * The data of a [custom automaton][CustomAutomaton] with a custom list of [memory descriptors][memoryUnitDescriptors].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("custom-automaton")
 data class CustomAutomatonData(

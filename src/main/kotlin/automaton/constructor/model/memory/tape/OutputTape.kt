@@ -48,11 +48,11 @@ class OutputTape(
     override val status: MemoryUnitStatus by observableStatus
 
     override fun onTransition(transition: Transition) {
-        value += transition[descriptor.outputValue]?.takeIf { it != EPSILON_VALUE } ?: ""
+        value += transition[descriptor.outputValue].takeIf { it != EPSILON_VALUE } ?: ""
     }
 
     override fun onStateEntered(state: State) {
-        value += state[descriptor.outputValue]?.takeIf { it != EPSILON_VALUE } ?: ""
+        value += state[descriptor.outputValue].takeIf { it != EPSILON_VALUE } ?: ""
     }
 
     override fun copy() = OutputTape(descriptor, value)

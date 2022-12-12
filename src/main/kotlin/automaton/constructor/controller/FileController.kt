@@ -26,7 +26,7 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
         addListener(ChangeListener { _, oldAutomaton, newAutomaton ->
             oldAutomaton.nameProperty.unbind()
             newAutomaton.nameProperty.bind(openedFileProperty.nonNullObjectBinding { file ->
-                file?.nameWithoutExtension ?: openedAutomaton.untitledName
+                file?.nameWithoutExtension ?: newAutomaton.untitledName
             })
         })
     }
@@ -34,14 +34,14 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
 
     private val nameBinding: Binding<String> =
         openedFileProperty.nonNullObjectBinding(openedAutomatonProperty) { file ->
-            file?.toString() ?: openedAutomaton.untitledName
+            file?.toString() ?: this.openedAutomaton.untitledName
         }
     private val name: String by nameBinding
 
     val openedAutomatonTitleBinding = nameBinding.nonNullObjectBinding(
         openedAutomatonProperty.select { it.undoRedoManager.wasModifiedProperty }
     ) {
-        (if (openedAutomaton.undoRedoManager.wasModified) "*" else "") + name
+        (if (this.openedAutomaton.undoRedoManager.wasModified) "*" else "") + name
     }
     val openedAutomatonTitle: String by openedAutomatonTitleBinding
 

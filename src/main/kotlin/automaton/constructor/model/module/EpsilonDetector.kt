@@ -11,7 +11,6 @@ import tornadofx.*
 private val epsilonDetectorFactory = { automaton: Automaton -> EpsilonDetector(automaton) }
 val Automaton.epsilonDetector get() = getModule(epsilonDetectorFactory)
 val Automaton.hasEpsilonBinding get() = epsilonDetector.hasEpsilonBinding
-val Automaton.hasEpsilon: Boolean get() = hasEpsilonBinding.value
 
 class EpsilonDetector(automaton: Automaton) : AutomatonModule {
     val hasEpsilonBinding: BooleanBinding = isNotEmpty(automaton.transitions.filteredSet { transition ->

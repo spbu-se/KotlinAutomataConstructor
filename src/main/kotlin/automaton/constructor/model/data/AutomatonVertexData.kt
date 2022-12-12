@@ -1,9 +1,10 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.State
-import automaton.constructor.utils.IgnorableByCoverage
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -25,7 +26,7 @@ sealed class AutomatonVertexData {
  * [isInitial][State.isInitial] and [isFinal][State.isFinal] statuses,
  * [position][State.position], and [dynamic properties][State.properties].
  */
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("state")
 data class StateData(
@@ -38,7 +39,7 @@ data class StateData(
     val properties: List<String> = emptyList()
 ) : AutomatonVertexData()
 
-@IgnorableByCoverage
+@MostlyGeneratedOrInline
 @Serializable
 @SerialName("building-block")
 data class BuildingBlockData(
@@ -48,17 +49,17 @@ data class BuildingBlockData(
     override val y: Double,
     override val isInitial: Boolean = false,
     override val isFinal: Boolean = false,
-    val vertices: List<AutomatonVertexData>,
-    val transitions: List<TransitionData>
+    val vertices: Set<AutomatonVertexData>,
+    val transitions: Set<TransitionData>
 ) : AutomatonVertexData()
 
 /**
  * Retrieves [data][AutomatonVertexData] for all [vertices][Automaton.vertices] os the automaton.
  */
-fun Automaton.getVerticesData(): List<AutomatonVertexData> = vertices.mapIndexed { i, vertex ->
+fun Automaton.getVerticesData(vertexToIdMap: Map<AutomatonVertex, Int>): Set<AutomatonVertexData> = vertices.map { vertex ->
     when (vertex) {
         is State -> StateData(
-            id = i,
+            id = vertexToIdMap.getValue(vertex),
             name = vertex.name,
             x = vertex.position.x,
             y = vertex.position.y,
@@ -69,7 +70,7 @@ fun Automaton.getVerticesData(): List<AutomatonVertexData> = vertices.mapIndexed
         is BuildingBlock -> {
             val automatonData = vertex.subAutomaton.getData()
             BuildingBlockData(
-                id = i,
+                id = vertexToIdMap.getValue(vertex),
                 name = vertex.name,
                 x = vertex.position.x,
                 y = vertex.position.y,
@@ -80,5 +81,4 @@ fun Automaton.getVerticesData(): List<AutomatonVertexData> = vertices.mapIndexed
             )
         }
     }
-
-}
+}.toSet()

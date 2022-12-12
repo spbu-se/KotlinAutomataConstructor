@@ -70,12 +70,12 @@ class AutomatonDeterminization(
             step(unexpandedStates.first())
     }
 
-    private inline fun getOrCreateCombinedState(
+    private fun getOrCreateCombinedState(
         vertices: Set<AutomatonVertex>,
         positionProvider: () -> Point2D = { GRAPH_PANE_CENTER }
     ) = statesToCombinedStateMap.getOrPut(vertices) {
         dfa.addState(
-            name = vertices.joinToString(separator = ",") { it.name },
+            name = vertices.map { it.name }.sorted().joinToString(separator = ","),
             position = positionProvider()
         ).also { combinedState ->
             combinedState.isFinal = vertices.any { it.isFinal }
