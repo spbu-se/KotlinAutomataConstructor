@@ -20,6 +20,13 @@
       "properties": [
         "ε"
       ]
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "properties": [
+        "a"
+      ]
     }
   ]
 }

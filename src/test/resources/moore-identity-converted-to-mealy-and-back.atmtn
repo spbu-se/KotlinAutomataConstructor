@@ -1,0 +1,92 @@
+{
+    "base": {
+        "type": "mealy-moore-machine",
+        "inputTape": {
+        },
+        "outputTape": {
+        }
+    },
+    "vertices": [
+        {
+            "type": "state",
+            "id": 0,
+            "name": "0",
+            "x": 499815.0018535406,
+            "y": 499955.0018535406,
+            "properties": [
+                "0"
+            ]
+        },
+        {
+            "type": "state",
+            "id": 2,
+            "name": "S0",
+            "x": 500062.5340508521,
+            "y": 500370.0340508521,
+            "isInitial": true,
+            "properties": [
+                "ε"
+            ]
+        },
+        {
+            "type": "state",
+            "id": 1,
+            "name": "1",
+            "x": 500329.99636138976,
+            "y": 499952.49636138976,
+            "properties": [
+                "1"
+            ]
+        }
+    ],
+    "transitions": [
+        {
+            "source": 0,
+            "target": 1,
+            "properties": [
+                "1",
+                "ε"
+            ]
+        },
+        {
+            "source": 2,
+            "target": 0,
+            "properties": [
+                "0",
+                "ε"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "1",
+                "ε"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 0,
+            "properties": [
+                "0",
+                "ε"
+            ]
+        },
+        {
+            "source": 0,
+            "target": 0,
+            "properties": [
+                "0",
+                "ε"
+            ]
+        },
+        {
+            "source": 2,
+            "target": 1,
+            "properties": [
+                "1",
+                "ε"
+            ]
+        }
+    ]
+}

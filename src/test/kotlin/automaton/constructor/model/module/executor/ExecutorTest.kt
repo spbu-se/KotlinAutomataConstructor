@@ -211,31 +211,68 @@ class ExecutorTest {
         }
     }
 
-    abstract class BinaryAddition(val steppingStrategy: SteppingStrategy) {
+    abstract class TuringMachineTest(val steppingStrategy: SteppingStrategy) {
         private lateinit var turingMachine: TuringMachine
 
         @BeforeEach
         fun init() {
-            turingMachine = TestAutomatons.BINARY_ADDITION as TuringMachine
+            turingMachine = getTuringMachine()
         }
+
+        abstract fun getTuringMachine(): TuringMachine
+
+        abstract fun getTestData(): List<Array<out Any>>
+
+        open fun checkStateCount() = true
 
         @ParameterizedTest
-        @CsvSource(
-            "11001+1011,100100",
-            "0+11,11",
-            "10+0,10",
-            "0+0,0"
-        )
-        fun test(input: String, output: String) =
-            assertEquals(output, getResult(input))
+        @MethodSource("getTestData")
+        fun test(input: String, output: String, forEveryStateCollapseAndRerun: Boolean) =
+            assertEquals(output, getResult(input, forEveryStateCollapseAndRerun))
 
-        private fun getResult(input: String): String {
+        private fun getResult(input: String, forEveryStateCollapseAndRerun: Boolean): String {
             turingMachine.tape.valueProperties[0].value = input
             turingMachine.executor.start()
-            turingMachine.executor.runFor(strategy = steppingStrategy)
-            val track = (turingMachine.executor.acceptedExeStates.first().memory[0] as MultiTrackTape).tracks[0]
-            return track.processed + track.current + track.unprocessed
+            fun evalResult(): String {
+                turingMachine.executor.runFor(strategy = steppingStrategy)
+                val track = (turingMachine.executor.acceptedExeStates.first().memory[0] as MultiTrackTape).tracks[0]
+                return track.processed + track.current + track.unprocessed
+            }
+
+            val controlResult = evalResult()
+            if (forEveryStateCollapseAndRerun) {
+                fun Executor.allExeStates(): List<ExecutionState> = exeStates.flatMap { exeState ->
+                    when (exeState) {
+                        is SimpleExecutionState -> listOf(exeState)
+                        is SuperExecutionState -> exeState.subExecutor.allExeStates() + exeState
+                    }
+                }
+
+                val finalExeStatesCount = turingMachine.executor.allExeStates().size
+                repeat(finalExeStatesCount) { i ->
+                    val allExeStatesAtTheMoment = turingMachine.executor.allExeStates()
+                    if (checkStateCount()) assertEquals(allExeStatesAtTheMoment.size, finalExeStatesCount)
+                    else if (allExeStatesAtTheMoment.size < i) return@repeat
+                    allExeStatesAtTheMoment[i].collapse()
+                    assertEquals(evalResult(), controlResult, "$i")
+                }
+            }
+            return controlResult
         }
+    }
+
+    abstract class BinaryAddition(steppingStrategy: SteppingStrategy) : TuringMachineTest(steppingStrategy) {
+        override fun getTuringMachine() = TestAutomatons.BINARY_ADDITION
+
+        override fun getTestData() = listOf(
+            arrayOf("11001+1011", "100100", false),
+            arrayOf("0+11", "11", false),
+            arrayOf("10+0", "10", false),
+            arrayOf("0+0", "0", false),
+            arrayOf("0+11", "11", true),
+            arrayOf("10+0", "10", true),
+            arrayOf("0+0", "0", true)
+        )
     }
 
     @Nested
@@ -247,24 +284,15 @@ class ExecutorTest {
     @Nested
     inner class BinaryAdditionStepOver : BinaryAddition(StepOverStrategy)
 
-    abstract class ElevenRecogniserToGenerator(val steppingStrategy: SteppingStrategy) {
-        private lateinit var turingMachine: TuringMachine
+    abstract class ElevenRecogniserToGenerator(steppingStrategy: SteppingStrategy) : TuringMachineTest(steppingStrategy) {
+        override fun getTuringMachine() = TestAutomatons.ELEVEN_RECOGNISER_TO_GENERATOR
 
-        @BeforeEach
-        fun init() {
-            turingMachine = TestAutomatons.ELEVEN_RECOGNISER_TO_GENERATOR as TuringMachine
-        }
+        override fun getTestData() = listOf(
+            arrayOf("", "11", false),
+            arrayOf("", "11", true)
+        )
 
-        @Test
-        fun test() =
-            assertEquals("11", getResult())
-
-        private fun getResult(): String {
-            turingMachine.executor.start()
-            turingMachine.executor.runFor(strategy = steppingStrategy)
-            val track = (turingMachine.executor.acceptedExeStates.first().memory[0] as MultiTrackTape).tracks[0]
-            return track.processed + track.current + track.unprocessed
-        }
+        override fun checkStateCount() = false
     }
 
     @Nested
