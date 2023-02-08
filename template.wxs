@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product >
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramMenuFolder"/>
+    </Directory>
+
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Guid="*" Id="shortcuts_ProgramMenuFolder">
+        <RegistryKey ForceDeleteOnUninstall="yes" Id="shortcuts_reg_ProgramMenuFolder" Key="Software\spbu-se\Automata Constructor" Root="HKCU">
+          <RegistryValue KeyPath="yes" Name="shortcut_ProgramMenuFolder" Type="string" Value=""/>
+        </RegistryKey>
+        <Shortcut Icon="icon.ico" Id="automata_constructor_ProgramMenuFolder.exe" Name="Automata Constructor" Target="[INSTALLDIR]automata_constructor.exe" WorkingDirectory="INSTALLDIR"/>
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id="atmtn_file_extension" Guid="*">
+        <RegistryValue Root="HKLM" Key="SOFTWARE\AutomataConstructor\Capabilities" Name="ApplicationIcon" Value="[INSTALLDIR]automata_constructor.exe,0" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\AutomataConstructor\Capabilities" Name="ApplicationName" Value="Automata Constructor" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\AutomataConstructor\Capabilities\DefaultIcon" Value="[INSTALLDIR]automata_constructor.exe,1" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\AutomataConstructor\Capabilities\FileAssociations" Name=".atmtn" Value="MyApp.Document" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\AutomataConstructor\Capabilities\MIMEAssociations" Name="AutomataConstructor/atmtn" Value="AutomataConstructor.Document" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\AutomataConstructor\Capabilities\shell\Open\command" Value="&quot;[INSTALLDIR]automata_constructor.exe&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="AutomataConstructor" Value="SOFTWARE\AutomataConstructor\Capabilities" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\automata_constructor.exe" Value="[!automata_constructor.exe]" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\automata_constructor.exe" Name="Path" Value="[INSTALLDIR]" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\automata_constructor.exe\SupportedTypes" Name=".atmtn" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\automata_constructor.exe\shell\open" Name="FriendlyAppName" Value="Automata Constructor" Type="string" />
+        <ProgId Id="AutomataConstructor.Document" Advertise="no">
+          <Extension Id="atmtn">
+            <MIME Advertise="no" ContentType="AutomataConstructor/atmtn" Default="yes"/>
+          </Extension>
+        </ProgId>
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\SystemFileAssociations\.atmtn\shell\edit.automata_constructor.exe\command" Value="&quot;[INSTALLDIR]automata_constructor.exe&quot; &quot;%1&quot;" Type="string" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="MainApplication">
+      <ComponentRef Id="shortcuts_ProgramMenuFolder"/>
+      <ComponentRef Id="atmtn_file_extension"/>
+    </Feature>
+  </Product>
+</Wix>

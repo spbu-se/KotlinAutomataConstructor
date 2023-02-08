@@ -1,13 +1,25 @@
+import com.inet.gradle.setup.abstracts.DesktopStarter.Location
+
+import org.openjfx.gradle.JavaFXModule
+import org.openjfx.gradle.JavaFXPlatform
+
 plugins {
     kotlin("jvm") version "1.6.0"
     kotlin("plugin.serialization") version "1.6.0"
     id("jacoco")
     id("org.openjfx.javafxplugin") version "0.0.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("de.inetsoftware.setupbuilder") version "7.2.16"
+    id("edu.sc.seis.launch4j") version "2.5.4"
     application
 }
-version = "1.1.0-SNAPSHOT"
 
+val appMainClass = "automaton.constructor.AutomatonConstructorAppKt"
+val exeFile = "automata_constructor.exe"
+val appName = "Automata Constructor"
+val icoFile = "icon.ico"
+
+val appVersion: String by rootProject
 val kotlinxSerializationJsonVersion: String by rootProject
 val tornadofxVersion: String by rootProject
 val mockkVersion: String by rootProject
@@ -15,13 +27,15 @@ val testfxVersion: String by rootProject
 val monocleVersion: String by rootProject
 val jacocoVersion: String by rootProject
 
+version = appVersion
+
 repositories {
     mavenCentral()
     maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
 }
 
 application {
-    mainClass.set("automaton.constructor.AutomatonConstructorAppKt")
+    mainClass.set(appMainClass)
 }
 
 javafx {
@@ -33,6 +47,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
     implementation("no.tornado:tornadofx:$tornadofxVersion")
+
+    for (module in JavaFXModule.getJavaFXModules(javafx.modules))
+        for (platform in JavaFXPlatform.values())
+            implementation("org.openjfx:${module.artifactName}:17:${platform.classifier}")
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -48,10 +66,10 @@ jacoco {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "17"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "17"
     }
     test {
         finalizedBy("jacocoTestReport")
@@ -78,5 +96,52 @@ tasks {
                 }
             })
         )
+    }
+
+    setupBuilder {
+        vendor = "spbu-se"
+        application = appName
+        appIdentifier = "automaton.constructor"
+        version = "1.1.0.0"
+        licenseFile("LICENSE")
+        icons = icoFile
+        bundleJre = System.getenv("JAVA_HOME")
+    }
+
+    msi {
+        dependsOn(createExe)
+
+        with(setupBuilder) {
+            from ("build/launch4j") {
+                include("**")
+            }
+
+            desktopStarter {
+                location = Location.DesktopDir
+                displayName = appName
+                executable = exeFile
+                documentType {
+                    fileExtension = listOf("*.atmtn")
+                    name = "$appName file"
+                    role = "Editor"
+                }
+            }
+
+            runAfter {
+                executable = exeFile
+            }
+        }
+
+        setBannerBmp("banner.bmp")
+        setDialogBmp("dialog.bmp")
+        setLanguages(listOf("en-US", "ru-RU"))
+        setWxsTemplate("template.wxs")
+    }
+
+    createExe {
+        mainClassName = appMainClass
+        outfile = exeFile
+        icon = "$projectDir\\$icoFile"
+        bundledJrePath = "jre"
     }
 }
