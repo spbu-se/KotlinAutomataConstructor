@@ -106,30 +106,28 @@ tasks {
         licenseFile("LICENSE")
         icons = icoFile
         bundleJre = System.getenv("JAVA_HOME")
+
+        desktopStarter {
+            location = Location.DesktopDir
+            displayName = appName
+            executable = exeFile
+            documentType {
+                fileExtension = listOf("*.atmtn")
+                name = "$appName file"
+                role = "Editor"
+            }
+        }
+
+        runAfter {
+            executable = exeFile
+        }
     }
 
     msi {
         dependsOn(createExe)
 
-        with(setupBuilder) {
-            from ("build/launch4j") {
-                include("**")
-            }
-
-            desktopStarter {
-                location = Location.DesktopDir
-                displayName = appName
-                executable = exeFile
-                documentType {
-                    fileExtension = listOf("*.atmtn")
-                    name = "$appName file"
-                    role = "Editor"
-                }
-            }
-
-            runAfter {
-                executable = exeFile
-            }
+        from ("build/launch4j") {
+            include("**")
         }
 
         setBannerBmp("banner.bmp")
