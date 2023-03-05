@@ -2,6 +2,7 @@ package automaton.constructor.model.element
 
 import automaton.constructor.model.property.*
 import javafx.beans.property.Property
+import tornadofx.*
 
 /**
  * Transition or vertex
@@ -53,4 +54,22 @@ sealed class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDesc
 
     private fun <T> registerProperty(descriptor: DynamicPropertyDescriptor<T>): DynamicProperty<T> =
         descriptor.createProperty().also { properties[descriptor] = it }
+
+    val propertiesTextBinding =
+        stringBinding(
+            this,
+            *propertyGroups.flatMap { it.filters + it.sideEffects }.toTypedArray()
+        ) {
+            propertyGroups.asSequence()
+                .map { (_, filters, sideEffects) ->
+                    listOf(filters, sideEffects)
+                        .map { dynamicProperties -> dynamicProperties.joinToString(separator = ",") { it.displayValue } }
+                        .filter { it.isNotEmpty() }
+                        .joinToString(separator = "/")
+                }
+                .filter { it.isNotEmpty() }
+                .joinToString(separator = ";")
+                .replace("\\n", "\n")
+        }
+    val propetiesText by propertiesTextBinding
 }

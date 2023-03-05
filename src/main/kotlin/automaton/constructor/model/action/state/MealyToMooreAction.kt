@@ -47,6 +47,7 @@ class MealyToMooreAction(mealyMooreMachine: MealyMooreMachine) :
             ).apply {
                 outputValue = ((transitionOutput.takeIf { it != EPSILON_VALUE } ?: "") +
                         (stateOutput.takeIf { it != EPSILON_VALUE } ?: "")).ifEmpty { EPSILON_VALUE }
+                requiresLayout = incomingTransitionsGroups.size > 1
             }
             transitionOutput to mooreState
         }

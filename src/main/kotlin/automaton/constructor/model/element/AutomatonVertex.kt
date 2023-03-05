@@ -49,9 +49,14 @@ sealed class AutomatonVertex(
     val isHighlightedProperty = false.toProperty()
     var isHighlighted by isHighlightedProperty
 
+    val dynamicLayoutProperty = false.toProperty()
+    var requiresLayout by dynamicLayoutProperty
+
+    var forceNoLayout = false
+
     override val undoRedoProperties
         get() = super.undoRedoProperties +
-                listOf(nameProperty, lastReleasePositionProperty, isInitialProperty, isFinalProperty)
+                listOf(nameProperty, lastReleasePositionProperty, isInitialProperty, isFinalProperty, dynamicLayoutProperty)
 
     companion object {
         const val RADIUS = 50.0

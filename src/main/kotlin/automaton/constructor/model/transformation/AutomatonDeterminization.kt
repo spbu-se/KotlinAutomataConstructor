@@ -4,6 +4,7 @@ import automaton.constructor.model.action.AbstractAction
 import automaton.constructor.model.action.ActionAvailability
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.automaton.FiniteAutomaton
+import automaton.constructor.model.automaton.GRAPH_PANE_CENTER
 import automaton.constructor.model.automaton.getClosure
 import automaton.constructor.model.element.AutomatonElement
 import automaton.constructor.model.element.AutomatonVertex
@@ -11,7 +12,6 @@ import automaton.constructor.model.element.State
 import automaton.constructor.model.module.initialVertices
 import automaton.constructor.model.module.isDeterministic
 import automaton.constructor.utils.I18N
-import automaton.constructor.view.GRAPH_PANE_CENTER
 import javafx.beans.binding.Bindings.isEmpty
 import javafx.collections.SetChangeListener
 import javafx.geometry.Point2D
@@ -51,15 +51,15 @@ class AutomatonDeterminization(
                     }
                 }
                 .groupBy(keySelector = { it[nfa.inputTape.expectedChar] }, valueTransform = { it.target })
+                .also { if (it.isNotEmpty()) stepSubject.requiresLayout = true }
                 .forEach { (char, targets) ->
-                    dfa.addTransition(
-                        stepSubject,
-                        getOrCreateCombinedState(targets.toSet()) {
-                            stepSubject.position +
-                                    Rotate(nextTransitionAngleDegrees.also { nextTransitionAngleDegrees += 48.0 })
-                                        .transform(Vector2D(10 * AutomatonVertex.RADIUS, 0.0))
-                        }
-                    )[dfa.inputTape.expectedChar] = char
+                    val combinedTarget = getOrCreateCombinedState(targets.toSet()) {
+                        stepSubject.position +
+                                Rotate(nextTransitionAngleDegrees.also { nextTransitionAngleDegrees += 48.0 })
+                                    .transform(Vector2D(0.5 * AutomatonVertex.RADIUS, 0.0))
+                    }
+                    combinedTarget.requiresLayout = true
+                    dfa.addTransition(stepSubject, combinedTarget)[dfa.inputTape.expectedChar] = char
                 }
             unexpandedStates.remove(stepSubject)
         }

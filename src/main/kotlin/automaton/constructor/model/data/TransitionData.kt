@@ -18,7 +18,8 @@ import kotlinx.serialization.Serializable
 data class TransitionData(
     val source: Int,
     val target: Int,
-    val properties: List<String>
+    val properties: List<String>,
+    val position: PointData? = null
 )
 
 /**
@@ -29,6 +30,7 @@ fun Automaton.getTransitionsData(vertexToIdMap: Map<AutomatonVertex, Int>): Set<
         TransitionData(
             source = vertexToIdMap.getValue(transition.source),
             target = vertexToIdMap.getValue(transition.target),
-            properties = transition.readProperties()
+            properties = transition.readProperties(),
+            position = transition.position?.toData()
         )
     }.toSet()

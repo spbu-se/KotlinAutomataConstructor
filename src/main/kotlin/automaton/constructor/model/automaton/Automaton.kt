@@ -2,20 +2,18 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.action.Action
 import automaton.constructor.model.data.AutomatonTypeData
-import automaton.constructor.model.element.AutomatonVertex
-import automaton.constructor.model.element.BuildingBlock
-import automaton.constructor.model.element.State
-import automaton.constructor.model.element.Transition
+import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.transformation.AutomatonTransformation
 import automaton.constructor.utils.UndoRedoManager
-import automaton.constructor.view.GRAPH_PANE_CENTER
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.Property
+import javafx.collections.ObservableMap
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
+import tornadofx.*
 
 /**
  * An automaton that has:
@@ -36,6 +34,7 @@ interface Automaton {
 
     val transitions: ObservableSet<Transition>
     val vertices: ObservableSet<AutomatonVertex>
+    val edges: ObservableMap<Pair<AutomatonVertex, AutomatonVertex>, AutomatonEdge>
     val states: ObservableSet<State>
     val buildingBlocks: ObservableSet<BuildingBlock>
 
@@ -222,3 +221,8 @@ fun Automaton.getClosure(state: State): Collection<AutomatonVertex> {
     }
     return closure
 }
+
+val Automaton.transformationOutput: Automaton? get() = isInputForTransformation?.resultingAutomaton
+
+val GRAPH_PANE_INIT_SIZE = Point2D(1_000_000.0, 1_000_000.0)
+val GRAPH_PANE_CENTER = GRAPH_PANE_INIT_SIZE / 2.0

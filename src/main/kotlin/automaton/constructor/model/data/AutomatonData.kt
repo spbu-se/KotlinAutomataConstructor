@@ -15,7 +15,8 @@ import kotlinx.serialization.Serializable
 data class AutomatonData(
     val base: AutomatonTypeData,
     val vertices: Set<AutomatonVertexData>,
-    val transitions: Set<TransitionData>
+    val transitions: Set<TransitionData>,
+    val edges: Set<AutomatonEdgeData> = emptySet()
 )
 
 
@@ -32,7 +33,8 @@ fun Automaton.getData(): AutomatonData {
     return AutomatonData(
         base = getTypeData(),
         vertices = getVerticesData(vertexToIdMap),
-        transitions = getTransitionsData(vertexToIdMap)
+        transitions = getTransitionsData(vertexToIdMap),
+        edges = getEdgesData(vertexToIdMap)
     )
 }
 
@@ -40,28 +42,38 @@ fun Automaton.getData(): AutomatonData {
  * Creates an appropriate [automaton][Automaton] using this data.
  */
 fun AutomatonData.createAutomaton(): Automaton = base.createEmptyAutomaton().also { automaton ->
-    automaton.addContent(vertices, transitions)
+    automaton.addContent(vertices, transitions, edges)
 }
 
-fun Automaton.addContent(verticesData: Set<AutomatonVertexData>, transitionsData: Set<TransitionData>) {
-    val idToStateMap = verticesData.associate {
+fun Automaton.addContent(
+    verticesData: Set<AutomatonVertexData>,
+    transitionsData: Set<TransitionData>,
+    edgesData: Set<AutomatonEdgeData>
+) {
+    val idToVertexMap = verticesData.associate {
         it.id to when (it) {
             is StateData -> addState(it.name, Point2D(it.x, it.y)).apply { writeProperties(it.properties) }
             is BuildingBlockData -> addBuildingBlock(
-                createSubAutomaton().apply { addContent(it.vertices, it.transitions) },
+                createSubAutomaton().apply { addContent(it.vertices, it.transitions, it.edges) },
                 it.name,
                 Point2D(it.x, it.y)
             )
         }.apply {
             isInitial = it.isInitial
             isFinal = it.isFinal
+            requiresLayout = it.requiresLayout
         }
     }
-    for ((source, target, properties) in transitionsData) {
+    for ((source, target, properties, position) in transitionsData) {
         addTransition(
-            source = idToStateMap.getValue(source),
-            target = idToStateMap.getValue(target)
-        ).writeProperties(properties)
+            source = idToVertexMap.getValue(source),
+            target = idToVertexMap.getValue(target)
+        ).apply {
+            this.position = position?.toPoint()
+            writeProperties(properties)
+        }
     }
+    for ((source, target, routingData) in edgesData)
+        edges[idToVertexMap.getValue(source) to idToVertexMap.getValue(target)]?.routing = routingData?.toRouting()
     undoRedoManager.reset()
 }

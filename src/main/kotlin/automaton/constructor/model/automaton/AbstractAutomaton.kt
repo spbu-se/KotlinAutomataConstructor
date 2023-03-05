@@ -4,10 +4,7 @@ import automaton.constructor.model.action.Action
 import automaton.constructor.model.action.buildingblock.RemoveBuildingBlockAction
 import automaton.constructor.model.action.state.RemoveStateAction
 import automaton.constructor.model.action.transition.RemoveTransitionAction
-import automaton.constructor.model.element.AutomatonVertex
-import automaton.constructor.model.element.BuildingBlock
-import automaton.constructor.model.element.State
-import automaton.constructor.model.element.Transition
+import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
@@ -27,7 +24,8 @@ import tornadofx.*
  *
  * It has:
  *  - the fixed [type display name][typeDisplayName]
- *  - modifiable graph with vertices of type [AutomatonVertex] and edges of type [Transition]
+ *  - modifiable multi-graph with vertices of type [AutomatonVertex] and edges of type [Transition]
+ *      - parallel [Transition]s are grouped into [AutomatonEdge]s
  *  - fixed list of [MemoryUnitDescriptor]-s
  *  - dynamically extendable set of [AutomatonModule]-s
  *
@@ -65,6 +63,7 @@ abstract class AbstractAutomaton(
 
     override val transitions = observableSetOf<Transition>()
     final override val vertices = observableSetOf<AutomatonVertex>()
+    override val edges = observableMapOf<Pair<AutomatonVertex, AutomatonVertex>, AutomatonEdge>()
 
     @Suppress("UNCHECKED_CAST")
     override val states = vertices.filteredSet { (it is State).toProperty() } as ObservableSet<State>
@@ -121,7 +120,13 @@ abstract class AbstractAutomaton(
         transitionStorages.getValue(transition.source).addTransition(transition)
         outgoingTransitions.getValue(transition.source).add(transition)
         incomingTransitions.getValue(transition.target).add(transition)
-        transition.undoRedoProperties.forEach { undoRedoManager.registerProperty(it) }
+        edges.getOrPut(transition.source to transition.target) {
+            edges[transition.target to transition.source]?.resetRouting() // opposite edge
+            AutomatonEdge(transition.source, transition.target).also { edge ->
+                undoRedoManager.registerProperties(edge.undoRedoProperties)
+            }
+        }.transitions.add(transition)
+        undoRedoManager.registerProperties(transition.undoRedoProperties)
         transitions.add(transition)
     }
 
@@ -129,14 +134,20 @@ abstract class AbstractAutomaton(
         transitionStorages.getValue(transition.source).removeTransition(transition)
         outgoingTransitions.getValue(transition.source).remove(transition)
         incomingTransitions.getValue(transition.target).remove(transition)
-        transition.undoRedoProperties.forEach { undoRedoManager.unregisterProperty(it) }
+        edges.getValue(transition.source to transition.target).transitions.let { edgeTransitions ->
+            edgeTransitions.remove(transition)
+            if (edgeTransitions.isEmpty()) edges.remove(transition.source to transition.target)?.let { edge ->
+                undoRedoManager.unregisterProperties(edge.undoRedoProperties)
+            }
+        }
+        undoRedoManager.unregisterProperties(transition.undoRedoProperties)
         transitions.remove(transition)
     }
 
 
     override fun addState(name: String?, position: Point2D): State {
         val state = State(memoryDescriptors, name ?: (STATE_NAME_PREFIX + nextStateSuffix()), position)
-        undoRedoManager.perform({ doAddVertex(state) }, { doRemoveVertex(state) })
+        addVertex(state)
         return state
     }
 
@@ -149,8 +160,19 @@ abstract class AbstractAutomaton(
                 position
             )
         subAutomaton.nameProperty.bind(concat(nameProperty, " > ", buildingBlock.nameProperty))
-        undoRedoManager.perform({ doAddVertex(buildingBlock) }, { doRemoveVertex(buildingBlock) })
+        addVertex(buildingBlock)
         return buildingBlock
+    }
+
+    private fun addVertex(vertex: AutomatonVertex) {
+        vertex.positionProperty.onChange {
+            undoRedoManager.group {
+                (getIncomingTransitions(vertex) + getOutgoingTransitions(vertex)).forEach {
+                    edges[it.source to it.target]?.resetRouting()
+                }
+            }
+        }
+        undoRedoManager.perform({ doAddVertex(vertex) }, { doRemoveVertex(vertex) })
     }
 
     override fun removeVertex(vertex: AutomatonVertex) {
@@ -161,7 +183,7 @@ abstract class AbstractAutomaton(
         transitionStorages[vertex] = createTransitionStorageTree(memoryDescriptors)
         outgoingTransitions[vertex] = observableSetOf()
         incomingTransitions[vertex] = mutableSetOf()
-        vertex.undoRedoProperties.forEach(undoRedoManager::registerProperty)
+        undoRedoManager.registerProperties(vertex.undoRedoProperties)
         if (vertex is BuildingBlock) undoRedoManager.registerSubManager(vertex.subAutomaton.undoRedoManager)
         vertices.add(vertex)
     }
@@ -172,7 +194,7 @@ abstract class AbstractAutomaton(
         transitionStorages.remove(vertex)
         outgoingTransitions.remove(vertex)
         incomingTransitions.remove(vertex)
-        vertex.undoRedoProperties.forEach(undoRedoManager::unregisterProperty)
+        undoRedoManager.unregisterProperties(vertex.undoRedoProperties)
         if (vertex is BuildingBlock) undoRedoManager.unregisterSubManager(vertex.subAutomaton.undoRedoManager)
         vertices.remove(vertex)
     }

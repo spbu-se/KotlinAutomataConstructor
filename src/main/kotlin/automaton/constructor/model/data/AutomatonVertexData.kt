@@ -16,6 +16,7 @@ sealed class AutomatonVertexData {
     abstract val y: Double
     abstract val isInitial: Boolean
     abstract val isFinal: Boolean
+    abstract val requiresLayout: Boolean
 }
 
 /**
@@ -36,6 +37,7 @@ data class StateData(
     override val y: Double,
     override val isInitial: Boolean = false,
     override val isFinal: Boolean = false,
+    override val requiresLayout: Boolean = false,
     val properties: List<String> = emptyList()
 ) : AutomatonVertexData()
 
@@ -49,8 +51,10 @@ data class BuildingBlockData(
     override val y: Double,
     override val isInitial: Boolean = false,
     override val isFinal: Boolean = false,
+    override val requiresLayout: Boolean = false,
     val vertices: Set<AutomatonVertexData>,
-    val transitions: Set<TransitionData>
+    val transitions: Set<TransitionData>,
+    val edges: Set<AutomatonEdgeData> = emptySet()
 ) : AutomatonVertexData()
 
 /**
@@ -65,6 +69,7 @@ fun Automaton.getVerticesData(vertexToIdMap: Map<AutomatonVertex, Int>): Set<Aut
             y = vertex.position.y,
             isInitial = vertex.isInitial,
             isFinal = vertex.isFinal,
+            requiresLayout = vertex.requiresLayout,
             properties = vertex.readProperties()
         )
         is BuildingBlock -> {
@@ -76,8 +81,10 @@ fun Automaton.getVerticesData(vertexToIdMap: Map<AutomatonVertex, Int>): Set<Aut
                 y = vertex.position.y,
                 isInitial = vertex.isInitial,
                 isFinal = vertex.isFinal,
+                requiresLayout = vertex.requiresLayout,
                 vertices = automatonData.vertices,
-                transitions = automatonData.transitions
+                transitions = automatonData.transitions,
+                edges = automatonData.edges
             )
         }
     }
