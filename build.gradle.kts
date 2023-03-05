@@ -4,8 +4,8 @@ import org.openjfx.gradle.JavaFXModule
 import org.openjfx.gradle.JavaFXPlatform
 
 plugins {
-    kotlin("jvm") version "1.6.0"
-    kotlin("plugin.serialization") version "1.6.0"
+    kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
     id("jacoco")
     id("org.openjfx.javafxplugin") version "0.0.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
