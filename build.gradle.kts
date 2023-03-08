@@ -22,6 +22,8 @@ val icoFile = "icon.ico"
 val appVersion: String by rootProject
 val kotlinxSerializationJsonVersion: String by rootProject
 val tornadofxVersion: String by rootProject
+val elkVersion: String by rootProject
+val eclipseCoreVersion: String by rootProject
 val mockkVersion: String by rootProject
 val testfxVersion: String by rootProject
 val monocleVersion: String by rootProject
@@ -36,6 +38,7 @@ repositories {
 
 application {
     mainClass.set(appMainClass)
+    applicationDefaultJvmArgs += "--add-opens=java.base/java.lang=ALL-UNNAMED"
 }
 
 javafx {
@@ -47,6 +50,13 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
     implementation("no.tornado:tornadofx:$tornadofxVersion")
+    implementation("org.eclipse.elk:org.eclipse.elk.core:$elkVersion")
+    implementation("org.eclipse.elk:org.eclipse.elk.graph:$elkVersion")
+    implementation("org.eclipse.elk:org.eclipse.elk.alg.common:$elkVersion")
+    implementation("org.eclipse.elk:org.eclipse.elk.alg.layered:$elkVersion")
+    implementation("org.eclipse.elk:org.eclipse.elk.graph.text:$elkVersion")
+    implementation("org.eclipse.elk:org.eclipse.elk.alg.graphviz.layouter:$elkVersion")
+    implementation("org.eclipse.core:org.eclipse.core.runtime:$eclipseCoreVersion")
 
     for (module in JavaFXModule.getJavaFXModules(javafx.modules))
         for (platform in JavaFXPlatform.values())
