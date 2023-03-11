@@ -19,19 +19,19 @@ abstract class AutomatonElementTest<T : AutomatonElement> {
     protected val firstUnitTransitionFilters = emptyList<DynamicProperty<*>>()
     protected val firstUnitTransitionFilterDescriptors = emptyList<DynamicPropertyDescriptor<*>>()
 
-    protected val firstUnitTransitionSideEffects = listOf<DynamicProperty<*>>(mockk("ts11"), mockk("ts12"))
+    protected val firstUnitTransitionSideEffects = listOf<DynamicProperty<*>>(mockk("ts11", relaxed = true), mockk("ts12", relaxed = true))
     protected val firstUnitTransitionSideEffectDescriptors =
         listOf<DynamicPropertyDescriptor<*>>(mockk("ts11"), mockk("ts12"))
 
-    protected val firstUnitStateSideEffects = listOf<DynamicProperty<*>>(mockk("ss11"), mockk("ss12"))
+    protected val firstUnitStateSideEffects = listOf<DynamicProperty<*>>(mockk("ss11", relaxed = true), mockk("ss12", relaxed = true))
     protected val firstUnitStateSideEffectDescriptors =
         listOf<DynamicPropertyDescriptor<*>>(mockk("ss11"), mockk("ss12"))
 
-    protected val secondUnitTransitionFilters = listOf<DynamicProperty<*>>(mockk("tf21"), mockk("tf22"), mockk("tf23"))
+    protected val secondUnitTransitionFilters = listOf<DynamicProperty<*>>(mockk("tf21", relaxed = true), mockk("tf22", relaxed = true), mockk("tf23", relaxed = true))
     protected val secondUnitTransitionFilterDescriptors =
         listOf<DynamicPropertyDescriptor<*>>(mockk("tf21"), mockk("tf22"), mockk("tf23"))
 
-    protected val secondUnitTransitionSideEffects = listOf<DynamicProperty<*>>(mockk("ts21"))
+    protected val secondUnitTransitionSideEffects = listOf<DynamicProperty<*>>(mockk("ts21", relaxed = true))
     protected val secondUnitTransitionSideEffectDescriptors = listOf<DynamicPropertyDescriptor<*>>(mockk("ts21"))
 
     protected val secondUnitStateSideEffects = emptyList<DynamicProperty<*>>()

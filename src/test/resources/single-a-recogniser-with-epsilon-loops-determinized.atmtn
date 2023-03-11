@@ -7,25 +7,27 @@
     "vertices": [
         {
             "type": "state",
-            "id": 1,
+            "id": 0,
             "name": "S0",
             "x": 500000.0,
             "y": 500000.0,
-            "isInitial": true
+            "isInitial": true,
+            "requiresLayout": true
         },
         {
             "type": "state",
-            "id": 0,
+            "id": 1,
             "name": "S3",
-            "x": 500353.55339059327,
-            "y": 500353.55339059327,
-            "isFinal": true
+            "x": 500017.6776695297,
+            "y": 500017.6776695297,
+            "isFinal": true,
+            "requiresLayout": true
         }
     ],
     "transitions": [
         {
-            "source": 1,
-            "target": 0,
+            "source": 0,
+            "target": 1,
             "properties": [
                 "a"
             ]

@@ -12,41 +12,53 @@
             "x": 500000.0,
             "y": 500000.0,
             "isInitial": true,
-            "isFinal": true
-        },
-        {
-            "type": "state",
-            "id": 1,
-            "name": "S0,S1,S2,S3",
-            "x": 501414.2135623731,
-            "y": 501414.2135623731,
-            "isFinal": true
+            "isFinal": true,
+            "requiresLayout": true
         },
         {
             "type": "state",
             "id": 4,
             "name": "S1,S3",
-            "x": 500353.55339059327,
-            "y": 500353.55339059327
-        },
-        {
-            "type": "state",
-            "id": 2,
-            "name": "S0,S1,S3",
-            "x": 501060.6601717798,
-            "y": 501060.6601717798,
-            "isFinal": true
+            "x": 500017.6776695297,
+            "y": 500017.6776695297,
+            "requiresLayout": true
         },
         {
             "type": "state",
             "id": 3,
             "name": "S0,S2",
-            "x": 500707.10678118654,
-            "y": 500707.10678118654,
-            "isFinal": true
+            "x": 500035.3553390594,
+            "y": 500035.3553390594,
+            "isFinal": true,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 2,
+            "name": "S0,S1,S3",
+            "x": 500053.03300858906,
+            "y": 500053.03300858906,
+            "isFinal": true,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 1,
+            "name": "S0,S1,S2,S3",
+            "x": 500070.71067811875,
+            "y": 500070.71067811875,
+            "isFinal": true,
+            "requiresLayout": true
         }
     ],
     "transitions": [
+        {
+            "source": 0,
+            "target": 4,
+            "properties": [
+                "1"
+            ]
+        },
         {
             "source": 3,
             "target": 2,
@@ -55,15 +67,8 @@
             ]
         },
         {
-            "source": 1,
+            "source": 2,
             "target": 1,
-            "properties": [
-                "1"
-            ]
-        },
-        {
-            "source": 0,
-            "target": 4,
             "properties": [
                 "1"
             ]
@@ -76,7 +81,7 @@
             ]
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 1,
             "properties": [
                 "1"
