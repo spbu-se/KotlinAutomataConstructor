@@ -1,11 +1,11 @@
 package automaton.constructor.view.module.executor.tree
 
 import automaton.constructor.controller.module.executor.tree.ExecutionTreeController
+import automaton.constructor.model.automaton.GRAPH_PANE_CENTER
+import automaton.constructor.model.automaton.GRAPH_PANE_INIT_SIZE
 import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.utils.customizedZoomScrollPane
-import automaton.constructor.view.GRAPH_PANE_CENTER
-import automaton.constructor.view.GRAPH_PANE_INIT_SIZE
 import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
 import tornadofx.*

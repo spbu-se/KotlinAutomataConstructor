@@ -14,20 +14,4 @@ abstract class AutomatonElementView(val automatonElement: AutomatonElement) : Gr
         automatonElement.propertyGroups.map { (displayName, filters, sideEffects) ->
             SettingGroup(displayName.toProperty(), (filters + sideEffects).createSettings())
         }
-
-    protected var settingsTextBinding =
-        stringBinding(
-            automatonElement,
-            *automatonElement.propertyGroups.flatMap { it.filters + it.sideEffects }.toTypedArray()
-        ) {
-            propertyGroups.asSequence()
-                .map { (_, filters, sideEffects) ->
-                    listOf(filters, sideEffects)
-                        .map { dynamicProperties -> dynamicProperties.joinToString(separator = ",") { it.displayValue } }
-                        .filter { it.isNotEmpty() }
-                        .joinToString(separator = "/")
-                }
-                .filter { it.isNotEmpty() }
-                .joinToString(separator = ";")
-        }
 }

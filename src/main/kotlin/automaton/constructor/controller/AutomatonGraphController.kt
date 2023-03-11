@@ -63,14 +63,16 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                                     I18N.messages.getString("MainView.File.Open"),
                                     FileChooserMode.Single
                                 ) ?: return@action
-                                automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions) ->
+                                automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
                                     if (type != automaton.getTypeData()) error(
                                         I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
                                         I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType")
                                     )
-                                    else automaton.addBuildingBlock(position = Point2D(it.x, it.y)).apply {
-                                        subAutomaton.addContent(vertices, transitions)
-                                        name = file.nameWithoutExtension
+                                    else {
+                                        automaton.addBuildingBlock(position = Point2D(it.x, it.y)).apply {
+                                            subAutomaton.addContent(vertices, transitions, edges)
+                                            name = file.nameWithoutExtension
+                                        }
                                     }
                                 }
                             }
@@ -119,10 +121,14 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
             if (it.button == MouseButton.PRIMARY && automatonVertexView.selected) {
                 val change = Point2D(it.x, it.y) - automatonVertexView.vertex.position
                 selectedElementsViews.forEach { elementView ->
-                    if (elementView is AutomatonVertexView)
+                    if (elementView is AutomatonVertexView) {
                         elementView.vertex.position += change
+                        elementView.vertex.requiresLayout = false
+                        elementView.vertex.forceNoLayout = true
+                    }
                 }
             } else if (it.button == MouseButton.SECONDARY && automaton.allowsModificationsByUser) {
+                automatonVertexView.vertex.requiresLayout = false
                 newTransitionLine.endX = it.x
                 newTransitionLine.endY = it.y
             }
@@ -143,8 +149,10 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
             event.consume()
             if (!event.isStillSincePress) automaton.undoRedoManager.group {
                 selectedElementsViews.forEach {
-                    if (it is AutomatonVertexView)
+                    if (it is AutomatonVertexView) {
                         it.vertex.lastReleasePosition = it.vertex.position
+                        it.vertex.forceNoLayout = false
+                    }
                 }
             }
         }
@@ -152,12 +160,15 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
             it.consume()
             val source = newTransitionSourceProperty.value ?: return@setOnMouseDragReleased
             newTransitionSourceProperty.value = null
-            if (automaton.allowsModificationsByUser)
+            if (automaton.allowsModificationsByUser) {
+                source.vertex.requiresLayout = false
+                automatonVertexView.vertex.requiresLayout = false
                 automaton.addTransition(source.vertex, automatonVertexView.vertex)
+            }
         }
     }
 
-    fun registerEdgeView(edgeView: EdgeView) {
+    fun registerEdgeView(edgeView: AutomatonEdgeView) {
         edgeView.setOnMouseClicked {
             it.consume()
             edgeView.requestFocus()

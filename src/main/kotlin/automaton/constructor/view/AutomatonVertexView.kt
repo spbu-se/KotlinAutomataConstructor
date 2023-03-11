@@ -21,6 +21,8 @@ import javafx.scene.shape.Shape
 import javafx.scene.text.Font.font
 import javafx.scene.text.TextAlignment
 import tornadofx.*
+import kotlin.math.abs
+import kotlin.math.max
 
 class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(vertex) {
     val positionProperty: Property<Point2D> = vertex.position.toProperty().apply { bind(vertex.positionProperty) }
@@ -84,8 +86,8 @@ class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(ve
             textAlignment = TextAlignment.CENTER
             textOrigin = VPos.CENTER
             wrappingWidth = RADIUS * 2
-            textProperty().bind(stringBinding(vertex.nameProperty, settingsTextBinding) {
-                listOf(vertex.nameProperty.value, settingsTextBinding.value).filter { it.isNotEmpty() }
+            textProperty().bind(stringBinding(vertex.nameProperty, vertex.propertiesTextBinding) {
+                listOf(vertex.name, vertex.propetiesText).filter { it.isNotEmpty() }
                     .joinToString(separator = "/")
             })
             fontProperty().bind(textProperty().objectBinding {
@@ -141,5 +143,14 @@ class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(ve
 
     enum class ShapeType {
         CIRCLE, SQUARE;
+
+        fun project(shapeCenter: Point2D, point: Point2D): Point2D {
+            val v = shapeCenter - point
+            return if (v == Vector2D.ZERO) point
+            else shapeCenter - RADIUS * when (this) {
+                CIRCLE -> v.normalize()
+                SQUARE -> v / max(abs(v.x), abs(v.y))
+            }
+        }
     }
 }

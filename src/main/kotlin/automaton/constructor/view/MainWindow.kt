@@ -1,29 +1,35 @@
 package automaton.constructor.view
 
-import automaton.constructor.controller.FileController
-import automaton.constructor.controller.HelpController
-import automaton.constructor.controller.LocaleController
-import automaton.constructor.controller.UndoRedoController
+import automaton.constructor.controller.*
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.action.perform
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.factory.getAllAutomatonFactories
+import automaton.constructor.model.module.layout.dynamic.DynamicLayoutPolicy
+import automaton.constructor.model.module.layout.static.STATIC_LAYOUTS
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.capitalize
 import automaton.constructor.utils.nonNullObjectBinding
 import javafx.beans.property.Property
 import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
+import javafx.scene.control.ToggleGroup
 import tornadofx.*
 
 class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first().createAutomaton()) : Fragment() {
     val fileController = FileController(openedAutomaton, this)
     private val helpController = HelpController()
     private val localeController = find<LocaleController>()
+    private val layoutController = LayoutController(this)
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
-        CentralView(it, fileController)
+        CentralView(it, fileController, layoutController)
     }
     private val centralView: CentralView by centralViewBinding
+    private val selectedAutomatonProperty = centralViewBinding.select { it.selectedAutomatonProperty }.also {
+        layoutController.selectedAutomatonProperty.bind(it)
+    }
+    private val selectedAutomaton by selectedAutomatonProperty
+    private val selectedAutomatonView get() = centralView.selectedAutomatonView
     private val undoRedoControllerProperty: Property<UndoRedoController> = centralViewBinding.select {
         it.selectedUndoRedoControllerBinding
     }
@@ -82,6 +88,35 @@ class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first()
                     }
                 }
             }
+            menu(I18N.messages.getString("MainView.Layout")) {
+                STATIC_LAYOUTS.forEach { layout ->
+                    item(layout.name).action {
+                        layoutController.layout(
+                            selectedAutomaton,
+                            selectedAutomatonView.automatonGraphView.transitionLayoutBounds(),
+                            layout
+                        )
+                    }
+                }
+                separator()
+                val policyToggleGroup = ToggleGroup()
+                DynamicLayoutPolicy.values().forEach { policy ->
+                    radiomenuitem(policy.displayName, policyToggleGroup) {
+                        isSelected = policy == layoutController.policy
+                        action {
+                            if (isSelected) layoutController.policy = policy
+                        }
+                        layoutController.policyProperty.onChange {
+                            if (it == policy)
+                                isSelected = true
+                        }
+                    }
+                }
+                separator()
+                item("Undo dynamic layout").action {
+                    layoutController.undoDynamicLayout()
+                }
+            }
             menu(I18N.messages.getString("MainView.Help")) {
                 shortcutItem(I18N.messages.getString("MainView.Help.UserDocumentation"), "F1") {
                     helpController.onUserDocumentation()
@@ -115,8 +150,9 @@ class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first()
         runLater {
             setOnCloseRequest {
                 if (!fileController.suggestSavingChanges()) it.consume()
+                else layoutController.stopDynamicLayout()
             }
             isMaximized = true
         }
-    }
+    }.also { layoutController.startDynamicLayout() }
 }

@@ -9,7 +9,8 @@ import tornadofx.*
 class Arrow(
     val line: Line,
     val length: Double,
-    val width: Double
+    val width: Double,
+    showLine: Boolean = true
 ) : Group() {
     val normalizedVectorBinding: Binding<Point2D> = nonNullObjectBinding(
         line.startXProperty(), line.startYProperty(),
@@ -43,6 +44,7 @@ class Arrow(
     }
 
     init {
-        add(line)
+        if (showLine)
+            add(line)
     }
 }

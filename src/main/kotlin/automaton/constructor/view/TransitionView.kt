@@ -41,7 +41,7 @@ class TransitionView(
         val text = text {
             fillProperty().bind(colorProperty)
             font = Font.font(48.0)
-            textProperty().bind(settingsTextBinding)
+            textProperty().bind(transition.propertiesTextBinding)
             translateToCenter()
         }
         xProperty = text.xProperty()

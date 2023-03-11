@@ -1,6 +1,7 @@
 package automaton.constructor.view
 
 import automaton.constructor.controller.FileController
+import automaton.constructor.controller.LayoutController
 import automaton.constructor.controller.UndoRedoController
 import automaton.constructor.controller.module.executor.ExecutorController
 import automaton.constructor.model.automaton.Automaton
@@ -16,7 +17,8 @@ import java.util.*
 /**
  * Ancestor for all UI elements other than menu bar at the top
  */
-class CentralView(val automaton: Automaton, override val fileController: FileController) : SplitPane(),
+class CentralView(val automaton: Automaton, override val fileController: FileController,
+                  override val layoutController: LayoutController) : SplitPane(),
     AutomatonViewContext {
     val mainTabView = AutomatonTabView(automaton, this)
     val automatonToTabViewMap: MutableMap<Automaton, AutomatonTabView> =
@@ -26,6 +28,7 @@ class CentralView(val automaton: Automaton, override val fileController: FileCon
     var selectedAutomaton: Automaton by selectedAutomatonProperty
     val selectedAutomatonTabViewBinding = selectedAutomatonProperty.nonNullObjectBinding { getAutomatonTabView(it) }
     val selectedAutomatonTabView: AutomatonTabView by selectedAutomatonTabViewBinding
+    val selectedAutomatonView get() = selectedAutomatonTabView.automatonView
     val selectedUndoRedoControllerBinding =
         selectedAutomatonTabViewBinding.nonNullObjectBinding { it.undoRedoController }
     val selectedUndoRedoController: UndoRedoController by selectedUndoRedoControllerBinding

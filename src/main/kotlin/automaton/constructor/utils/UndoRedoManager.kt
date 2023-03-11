@@ -104,7 +104,13 @@ class UndoRedoManager(val maxUndo: Int = 20) {
     }
 
     fun registerProperty(property: Property<*>) = property.addListener(listener)
+    fun registerProperties(properties: Iterable<Property<*>>) =
+        properties.forEach { registerProperty(it) }
+
     fun unregisterProperty(property: Property<*>) = property.removeListener(listener)
+
+    fun unregisterProperties(properties: Iterable<Property<*>>) =
+        properties.forEach { unregisterProperty(it) }
 
     private fun onSubManagerModified(subMangerListenedValue: ObservableValue<*>) {
         subMangerListenedValue.removeListener(subManagerListener)

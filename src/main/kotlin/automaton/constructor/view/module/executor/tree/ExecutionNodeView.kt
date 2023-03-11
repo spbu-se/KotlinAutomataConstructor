@@ -5,8 +5,8 @@ import automaton.constructor.model.module.executor.ExecutionState
 import automaton.constructor.model.module.executor.SimpleExecutionState
 import automaton.constructor.model.module.executor.SuperExecutionState
 import automaton.constructor.utils.*
+import automaton.constructor.view.AutomatonEdgeView
 import automaton.constructor.view.AutomatonVertexView
-import automaton.constructor.view.EdgeView
 import automaton.constructor.view.TransitionLabelPosition
 import automaton.constructor.view.module.executor.color
 import automaton.constructor.view.module.executor.simpleTooltipContent
@@ -54,7 +54,7 @@ class ExecutionNodeView(
         const val HORIZONTAL_SPACING = 60.0
     }
 
-    private val childToViewMap = mutableMapOf<ExecutionState, Pair<ExecutionNodeView, EdgeView>>()
+    private val childToViewMap = mutableMapOf<ExecutionState, Pair<ExecutionNodeView, AutomatonEdgeView>>()
     private lateinit var observableCenterInDecorNode: ObservableValue<Point2D>
     private lateinit var automatonVertexView: AutomatonVertexView
     private lateinit var childrenBox: HBox
@@ -117,9 +117,10 @@ class ExecutionNodeView(
 
     private fun onChildAdded(child: ExecutionState) {
         val nodeView = childrenBox.executionNodeView(controller, child, treeParent, decorNode)
-        val edgeView = EdgeView(
-            automatonVertexView,
-            nodeView.automatonVertexView,
+        val edgeView = AutomatonEdgeView(
+            null,
+            automatonVertexView.shapeType,
+            nodeView.automatonVertexView.shapeType,
             observableCenterInDecorNode,
             nodeView.observableCenterInDecorNode,
             TransitionLabelPosition.ABOVE
