@@ -1,7 +1,5 @@
 package automaton.constructor.view
 
-import automaton.constructor.model.data.createAutomaton
-import automaton.constructor.model.data.getData
 import automaton.constructor.model.module.layout.static.STATIC_LAYOUTS
 import automaton.constructor.model.transformation.AutomatonTransformation
 import automaton.constructor.utils.I18N
@@ -11,7 +9,7 @@ import tornadofx.*
 
 class AutomatonTransformationView(
     val transformation: AutomatonTransformation,
-    automatonViewContext: AutomatonViewContext
+    private val automatonViewContext: AutomatonViewContext
 ) : VBox() {
     private val automatonView = AutomatonView(transformation.resultingAutomaton, automatonViewContext)
     private var completeWasCalled = false
@@ -61,10 +59,7 @@ class AutomatonTransformationView(
                 I18N.messages.getString("AutomatonTransformation.HasBeenCompleted"), // TODO suggest using layout
                 title = I18N.messages.getString("Dialog.information")
             )
-            MainWindow(
-                // make sure it's a completely fresh Automaton instance independent of this window
-                transformation.resultingAutomaton.getData().createAutomaton()
-            ).show()
+            automatonViewContext.openInNewWindow(transformation.resultingAutomaton)
         }
     }
 }

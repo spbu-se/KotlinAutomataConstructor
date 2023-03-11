@@ -17,8 +17,12 @@ import java.util.*
 /**
  * Ancestor for all UI elements other than menu bar at the top
  */
-class CentralView(val automaton: Automaton, override val fileController: FileController,
-                  override val layoutController: LayoutController) : SplitPane(),
+class CentralView(
+    val automaton: Automaton,
+    override val fileController: FileController,
+    override val layoutController: LayoutController,
+    private val windowOpener: (Automaton) -> Unit
+) : SplitPane(),
     AutomatonViewContext {
     val mainTabView = AutomatonTabView(automaton, this)
     val automatonToTabViewMap: MutableMap<Automaton, AutomatonTabView> =
@@ -66,6 +70,8 @@ class CentralView(val automaton: Automaton, override val fileController: FileCon
             }
         }
     }
+
+    override fun openInNewWindow(automaton: Automaton) = windowOpener(automaton)
 
     private fun getAutomatonTabView(automaton: Automaton) = automatonToTabViewMap.getOrPut(automaton) {
         AutomatonTabView(automaton, this)

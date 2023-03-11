@@ -10,4 +10,5 @@ interface AutomatonViewContext {
     val layoutController: LayoutController
     fun getAutomatonView(automaton: Automaton): AutomatonView
     fun onBuildingBlockDoubleClicked(buildingBlock: BuildingBlock)
+    fun openInNewWindow(automaton: Automaton)
 }

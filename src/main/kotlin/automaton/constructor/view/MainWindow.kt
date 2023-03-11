@@ -4,6 +4,8 @@ import automaton.constructor.controller.*
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.action.perform
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.data.createAutomaton
+import automaton.constructor.model.data.getData
 import automaton.constructor.model.factory.getAllAutomatonFactories
 import automaton.constructor.model.module.layout.dynamic.DynamicLayoutPolicy
 import automaton.constructor.model.module.layout.static.STATIC_LAYOUTS
@@ -16,13 +18,21 @@ import javafx.scene.control.MenuItem
 import javafx.scene.control.ToggleGroup
 import tornadofx.*
 
-class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first().createAutomaton()) : Fragment() {
+class MainWindow(
+    openedAutomaton: Automaton = getAllAutomatonFactories().first().createAutomaton()
+) : Fragment() {
     val fileController = FileController(openedAutomaton, this)
     private val helpController = HelpController()
     private val localeController = find<LocaleController>()
     private val layoutController = LayoutController(this)
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
-        CentralView(it, fileController, layoutController)
+        CentralView(it, fileController, layoutController, windowOpener = { automatonToOpen ->
+            // make sure it's a completely fresh Automaton instance independent of this window
+            MainWindow(automatonToOpen.getData().createAutomaton()).also { newWindow ->
+                newWindow.show()
+                newWindow.layoutController.policy = layoutController.policy
+            }
+        })
     }
     private val centralView: CentralView by centralViewBinding
     private val selectedAutomatonProperty = centralViewBinding.select { it.selectedAutomatonProperty }.also {
