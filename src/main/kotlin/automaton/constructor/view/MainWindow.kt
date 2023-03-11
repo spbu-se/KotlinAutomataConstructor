@@ -113,7 +113,7 @@ class MainWindow(openedAutomaton: Automaton = getAllAutomatonFactories().first()
                     }
                 }
                 separator()
-                item("Undo dynamic layout").action {
+                item(I18N.messages.getString("MainView.Layout.UndoDynamic")).action {
                     layoutController.undoDynamicLayout()
                 }
             }
