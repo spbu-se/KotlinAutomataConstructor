@@ -73,31 +73,6 @@ class MainWindow(
                     enableWhen(undoRedoControllerProperty.select { it.isRedoableBinding })
                 }
             }
-            menu(I18N.messages.getString("MainView.Transform")) {
-                fun fillItems() {
-                    items.clear()
-                    fileController.openedAutomaton.transformationActions.forEach {
-                        item(it.displayName) {
-                            action {
-                                try {
-                                    it.perform()
-                                } catch (e: ActionFailedException) {
-                                    error(e.message)
-                                }
-                            }
-                        }
-                    }
-                }
-                fillItems()
-                centralViewBinding.select { it.selectedAutomatonProperty }.onChange { fillItems() }
-            }
-            menu(I18N.messages.getString("MainView.Language")) {
-                localeController.availableLocales.forEach { locale ->
-                    item(locale.getDisplayName(locale).capitalize(locale)).action {
-                        localeController.setLocale(locale)
-                    }
-                }
-            }
             menu(I18N.messages.getString("MainView.Layout")) {
                 STATIC_LAYOUTS.forEach { layout ->
                     item(layout.name).action {
@@ -125,6 +100,31 @@ class MainWindow(
                 separator()
                 item(I18N.messages.getString("MainView.Layout.UndoDynamic")).action {
                     layoutController.undoDynamicLayout()
+                }
+            }
+            menu(I18N.messages.getString("MainView.Transform")) {
+                fun fillItems() {
+                    items.clear()
+                    fileController.openedAutomaton.transformationActions.forEach {
+                        item(it.displayName) {
+                            action {
+                                try {
+                                    it.perform()
+                                } catch (e: ActionFailedException) {
+                                    error(e.message)
+                                }
+                            }
+                        }
+                    }
+                }
+                fillItems()
+                centralViewBinding.select { it.selectedAutomatonProperty }.onChange { fillItems() }
+            }
+            menu(I18N.messages.getString("MainView.Language")) {
+                localeController.availableLocales.forEach { locale ->
+                    item(locale.getDisplayName(locale).capitalize(locale)).action {
+                        localeController.setLocale(locale)
+                    }
                 }
             }
             menu(I18N.messages.getString("MainView.Help")) {
