@@ -33,7 +33,7 @@ class AutomatonTransformationView(
                             transformation.stop()
                         }
                     }
-                    menubutton("Relayout all") {
+                    menubutton(I18N.messages.getString("AutomatonTransformation.RelayoutAll")) {
                         STATIC_LAYOUTS.forEach { layout ->
                             item(layout.name).action {
                                 automatonViewContext.layoutController.layout(
