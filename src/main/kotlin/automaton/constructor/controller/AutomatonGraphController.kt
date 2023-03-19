@@ -173,6 +173,7 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
             it.consume()
             edgeView.requestFocus()
         }
+        edgeView.transitionViews.forEach { registerTransitionView(it) }
         edgeView.transitionViews.onChange { change ->
             while (change.next())
                 if (change.wasAdded())
