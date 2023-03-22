@@ -13,7 +13,9 @@ import automaton.constructor.view.module.executor.executionStatesTooltip
 import javafx.collections.MapChangeListener
 import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
-import tornadofx.*
+import tornadofx.add
+import tornadofx.fitToParentSize
+import kotlin.collections.set
 
 class AutomatonGraphView(val automaton: Automaton, val automatonViewContext: AutomatonViewContext) : Pane() {
     private val edgePane = subPane()
@@ -90,4 +92,7 @@ class AutomatonGraphView(val automaton: Automaton, val automatonViewContext: Aut
     fun transitionLayoutBounds() = edgeViews.values.flatMap { it.transitionViews }.associate { 
         it.transition to it.layoutBounds
     }
+
+    fun selectVertices(vertices: Set<AutomatonVertex>) =
+        controller.select(vertices.mapNotNullTo(mutableSetOf()) { vertexToViewMap[it] })
 }

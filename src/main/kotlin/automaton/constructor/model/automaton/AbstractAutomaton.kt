@@ -2,6 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.action.Action
 import automaton.constructor.model.action.buildingblock.RemoveBuildingBlockAction
+import automaton.constructor.model.action.state.MergeNondistinguishableStatesAction
 import automaton.constructor.model.action.state.RemoveStateAction
 import automaton.constructor.model.action.transition.RemoveTransitionAction
 import automaton.constructor.model.element.*
@@ -10,6 +11,7 @@ import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transformation.AutomatonTransformation
+import automaton.constructor.model.transformation.MinimizeAction
 import automaton.constructor.model.transition.storage.TransitionStorage
 import automaton.constructor.model.transition.storage.createTransitionStorageTree
 import automaton.constructor.utils.UndoRedoManager
@@ -204,14 +206,17 @@ abstract class AbstractAutomaton(
     )
 
     override val stateActions: List<Action<State>> = listOf(
-        RemoveStateAction(automaton = this)
+        RemoveStateAction(automaton = this),
+        MergeNondistinguishableStatesAction(automaton = this)
     )
 
     override val buildingBlockActions: List<Action<BuildingBlock>> = listOf(
         RemoveBuildingBlockAction(automaton = this)
     )
 
-    override val transformationActions: List<Action<Unit>> = emptyList()
+    override val transformationActions: List<Action<Unit>> = listOf(
+        MinimizeAction(automaton = this)
+    )
 
     final override val isInputForTransformationProperty = null.toProperty<AutomatonTransformation>()
     final override var isInputForTransformation: AutomatonTransformation? by isInputForTransformationProperty

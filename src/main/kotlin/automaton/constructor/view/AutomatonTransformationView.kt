@@ -12,7 +12,6 @@ class AutomatonTransformationView(
     private val automatonViewContext: AutomatonViewContext
 ) : VBox() {
     private val automatonView = AutomatonView(transformation.resultingAutomaton, automatonViewContext)
-    private var completeWasCalled = false
 
     init {
         transformation.isCompletedProperty.onChange { checkCompleted() }
@@ -24,7 +23,6 @@ class AutomatonTransformationView(
                     spacing = 10.0
                     button(I18N.messages.getString("AutomatonTransformation.Complete")) {
                         action {
-                            completeWasCalled = true
                             transformation.complete()
                         }
                     }
@@ -54,9 +52,9 @@ class AutomatonTransformationView(
 
     private fun checkCompleted() {
         if (transformation.isCompleted) {
-            if (!completeWasCalled) information(
-                transformation.displayName,
-                I18N.messages.getString("AutomatonTransformation.HasBeenCompleted"), // TODO suggest using layout
+            information(
+                I18N.messages.getString("AutomatonTransformation.HasBeenCompleted"),
+                content=transformation.completionMessage,
                 title = I18N.messages.getString("Dialog.information")
             )
             automatonViewContext.openInNewWindow(transformation.resultingAutomaton)

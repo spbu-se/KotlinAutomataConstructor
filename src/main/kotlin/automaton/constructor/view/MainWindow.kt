@@ -25,6 +25,7 @@ class MainWindow(
     private val helpController = HelpController()
     private val localeController = find<LocaleController>()
     private val layoutController = LayoutController(this)
+    private val selectController = SelectController()
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
         CentralView(it, fileController, layoutController, windowOpener = { automatonToOpen ->
             // make sure it's a completely fresh Automaton instance independent of this window
@@ -37,6 +38,7 @@ class MainWindow(
     private val centralView: CentralView by centralViewBinding
     private val selectedAutomatonProperty = centralViewBinding.select { it.selectedAutomatonProperty }.also {
         layoutController.selectedAutomatonProperty.bind(it)
+        selectController.selectedAutomatonProperty.bind(it)
     }
     private val selectedAutomaton by selectedAutomatonProperty
     private val selectedAutomatonView get() = centralView.selectedAutomatonView
@@ -118,7 +120,22 @@ class MainWindow(
                     }
                 }
                 fillItems()
-                centralViewBinding.select { it.selectedAutomatonProperty }.onChange { fillItems() }
+                selectedAutomatonProperty.onChange { fillItems() }
+            }
+            menu(I18N.messages.getString("MainView.Select")) {
+                selectController.selectors.forEach { (name, selectingFun) ->
+                    item(name).action {
+                        val selected = selectingFun()
+                        if (selected.isEmpty()) {
+                            warning(
+                                I18N.messages.getString("MainView.Select.NoStatesSelected"),
+                                owner = currentWindow,
+                                title = I18N.messages.getString("Dialog.warning")
+                            )
+                        } else
+                            selectedAutomatonView.automatonGraphView.selectVertices(selected)
+                    }
+                }
             }
             menu(I18N.messages.getString("MainView.Language")) {
                 localeController.availableLocales.forEach { locale ->

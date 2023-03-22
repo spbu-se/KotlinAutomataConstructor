@@ -6,14 +6,17 @@ import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.module.AutomatonModule
+import automaton.constructor.model.module.finalVertices
+import automaton.constructor.model.module.initialVertices
 import automaton.constructor.model.transformation.AutomatonTransformation
+import automaton.constructor.utils.MostlyGeneratedOrInline
 import automaton.constructor.utils.UndoRedoManager
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.Property
 import javafx.collections.ObservableMap
 import javafx.collections.ObservableSet
 import javafx.geometry.Point2D
-import tornadofx.*
+import tornadofx.div
 
 /**
  * An automaton that has:
@@ -189,6 +192,7 @@ fun Automaton.copyAndAddTransitionConditionally(
         ignoreIfCopyAlreadyExists && getOutgoingTransitions(source).any {
             it.target == target && it.readProperties() == transition.readProperties()
         } -> null
+
         else -> copyAndAddTransition(transition, newSource, newTarget)
     }
 }
@@ -220,6 +224,56 @@ fun Automaton.getClosure(state: State): Collection<AutomatonVertex> {
         }
     }
     return closure
+}
+
+@MostlyGeneratedOrInline
+private inline fun bfs(
+    start: Set<AutomatonVertex>,
+    step: (AutomatonVertex) -> Collection<AutomatonVertex>
+): Set<AutomatonVertex> {
+    val reachedVertices = start.toMutableSet()
+    val unhandledQueue = ArrayDeque(reachedVertices)
+    while (unhandledQueue.isNotEmpty()) {
+        val vertex = unhandledQueue.removeFirst()
+        step(vertex).forEach {
+            if (reachedVertices.add(it))
+                unhandledQueue.addLast(it)
+        }
+    }
+    return reachedVertices
+}
+
+fun Automaton.getUnreachableVertices(): Set<AutomatonVertex> =
+    vertices - bfs(initialVertices) { state -> getOutgoingTransitions(state).map { it.target } }
+
+fun Automaton.getDeadVertices(): Set<AutomatonVertex> =
+    vertices - bfs(finalVertices) { state -> getIncomingTransitions(state).map { it.source } }
+
+private fun Automaton.getStateIdentifier(state: State) =
+    state.isFinal to getOutgoingTransitions(state).map {
+        it.readProperties() to it.target
+    }.toSet()
+
+fun Automaton.getNondistinguishableStateGroups(): List<Set<State>> =
+    states.groupBy { getStateIdentifier(it) }.values.filter { it.size > 1 }.map { it.toSet() }
+
+fun Automaton.getNondistinguishableStateGroupByMember(groupMember: State): Set<State> {
+    val memberIdentifier = getStateIdentifier(groupMember)
+    return states.filter { getStateIdentifier(it) == memberIdentifier }.toSet()
+}
+
+fun Automaton.mergeStates(stateGroup: Set<State>) = undoRedoManager.group {
+    if (stateGroup.size <= 1) return@group
+    val mergedState = stateGroup.first()
+    mergedState.isInitial = stateGroup.any { it.isInitial }
+    mergedState.requiresLayout = true
+    val remainingStates = stateGroup.drop(1)
+    remainingStates.forEach { state ->
+        getIncomingTransitions(state).forEach { transition ->
+            addTransition(transition.source, mergedState).writeProperties(transition.readProperties())
+        }
+    }
+    remainingStates.forEach { removeVertex(it) }
 }
 
 val Automaton.transformationOutput: Automaton? get() = isInputForTransformation?.resultingAutomaton

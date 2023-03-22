@@ -35,6 +35,11 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
     var lastSelectedElement by lastSelectedElementProperty
     private val selectedElementsViews = mutableSetOf<AutomatonElementView>()
 
+    fun select(elements: Set<AutomatonElementView>) {
+        clearSelection()
+        selectedElementsViews.addAll(elements.onEach { it.selected = true })
+    }
+
     fun registerGraphView(graphView: AutomatonGraphView) {
         graphView.add(newTransitionLine)
         graphView.setOnMouseClicked {

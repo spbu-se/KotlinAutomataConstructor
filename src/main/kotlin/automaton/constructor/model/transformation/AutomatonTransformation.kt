@@ -4,7 +4,10 @@ import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.resetHighlights
 import automaton.constructor.model.element.AutomatonElement
 import javafx.beans.property.ReadOnlyProperty
-import tornadofx.*
+import tornadofx.getValue
+import tornadofx.onChange
+import tornadofx.setValue
+import tornadofx.toProperty
 
 interface AutomatonTransformation {
     val displayName: String
@@ -12,6 +15,7 @@ interface AutomatonTransformation {
     val resultingAutomaton: Automaton
     val isCompletedProperty: ReadOnlyProperty<Boolean>
     val isCompleted: Boolean
+    val completionMessage: String?
     fun complete()
     fun step(stepSubject: AutomatonElement)
     fun start()
@@ -25,6 +29,8 @@ abstract class AbstractAutomatonTransformation(
     final override val isCompletedProperty = false.toProperty()
     final override var isCompleted: Boolean by isCompletedProperty
         protected set
+
+    override val completionMessage: String? get() = null
 
     init {
         isCompletedProperty.onChange { if (it) stop() }
