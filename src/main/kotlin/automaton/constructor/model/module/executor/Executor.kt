@@ -10,7 +10,8 @@ import javafx.beans.binding.Binding
 import javafx.beans.binding.Bindings.*
 import javafx.beans.binding.BooleanBinding
 import javafx.collections.SetChangeListener
-import tornadofx.*
+import tornadofx.getValue
+import tornadofx.observableSetOf
 
 private val executorFactory = { automaton: Automaton -> Executor(automaton) }
 val Automaton.executor get() = getModule(executorFactory)
@@ -98,7 +99,7 @@ class Executor(val automaton: Automaton, val superState: SuperExecutionState? = 
     }
 
     fun runFor(
-        maxMillis: Long = 1000L,
+        maxMillis: Long = 10_000L,
         strategy: SteppingStrategy = StepByClosureStrategy,
         terminationCondition: (Executor) -> Boolean = { it.status != RUNNING }
     ) {

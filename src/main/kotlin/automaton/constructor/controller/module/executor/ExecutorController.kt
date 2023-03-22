@@ -21,7 +21,7 @@ class ExecutorController(viewedAutomaton: Automaton) : Controller() {
             debuggingExecutor = null
         } ?: run {
             val executor = startNewExecutorOrNull() ?: return@toggleRun
-            executor.runFor(3_000)
+            executor.runFor()
             val executionResult = when (executor.status) {
                 ACCEPTED -> I18N.messages.getString("ExecutorController.Executor.Status.Accepted")
                 REJECTED -> I18N.messages.getString("ExecutorController.Executor.Status.Rejected")
