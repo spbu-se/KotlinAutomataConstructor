@@ -26,26 +26,15 @@ package automaton.constructor.model.module.layout.dynamic
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.module.layout.dynamic.DynamicLayoutPolicy.*
-import tornadofx.*
+import tornadofx.Vector2D
+import tornadofx.plus
+import tornadofx.times
 import java.util.*
 import kotlin.collections.ArrayDeque
-import kotlin.collections.all
-import kotlin.collections.emptySet
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.getOrPut
-import kotlin.collections.getValue
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.maxOrNull
-import kotlin.collections.minOfOrNull
-import kotlin.collections.onEach
-import kotlin.collections.setOf
-import kotlin.collections.sumOf
-import kotlin.collections.toSet
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 private val dynamicLayoutFactory: (Automaton) -> DynamicLayout =
     { automaton: Automaton -> ForceAtlas2Layout(automaton) }
@@ -69,7 +58,7 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
 
     override fun sync(policy: DynamicLayoutPolicy) {
         fa2Vertices = automaton.vertices.map { vertex ->
-            vertexToFA2Vertex.getOrPut(vertex) { ForceAtlas2Vertex(vertex.position, 2.5 * AutomatonVertex.RADIUS) }
+            vertexToFA2Vertex.getOrPut(vertex) { ForceAtlas2Vertex(vertex.position + randomVector(), 2.5 * AutomatonVertex.RADIUS) }
                 .also { fa2Vertex ->
                     if (vertex.shouldBeLayout(policy)) vertex.position = fa2Vertex.pos
                     else fa2Vertex.pos = vertex.position
@@ -117,6 +106,11 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
             it.oldVelocity = it.velocity
             it.velocity = Vector2D.ZERO
         }
+        val posGroups = fa2Vertices.groupBy { it.pos }
+        fa2Vertices.forEach {
+            if ((posGroups[it.pos]?.size ?: 0) > 1)
+                it.pos += randomVector()
+        }
         val attraction = buildAttraction(
             type = props.attractionType,
             dissuadeHubs = props.dissuadeHubs,
@@ -142,7 +136,7 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
             gravity.apply(vertex)
         }
         fa2Edges.forEach { attraction.apply(it) }
-        if (fa2Vertices.all { it.velocity == Vector2D.ZERO }) return
+        if (fa2VerticesToLayout.all { it.velocity == Vector2D.ZERO }) return
         val totalSwinging = fa2VerticesToLayout.sumOf { it.swinging }
         val totalEffectiveTraction = fa2VerticesToLayout.sumOf { it.effectiveTraction }
         val estimatedOptimalTolerance = 0.05 * sqrt(fa2VerticesToLayout.size.toDouble())
@@ -154,22 +148,23 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
             if (temperatureEfficiency > minTemperatureEfficiency) temperatureEfficiency *= 0.5
             tolerance = tolerance.coerceAtLeast(props.tolerance)
         }
-        val targetTemperature = tolerance * temperatureEfficiency * totalEffectiveTraction / totalSwinging
+        val targetTemperature =
+            if (totalSwinging == 0.0) temperature else
+            tolerance * temperatureEfficiency * totalEffectiveTraction / totalSwinging
         if (totalSwinging > tolerance * totalEffectiveTraction) {
             if (temperatureEfficiency > minTemperatureEfficiency) temperatureEfficiency *= 0.7
         } else if (temperature < 1000) temperatureEfficiency *= 1.3
         temperature = targetTemperature.coerceAtMost(1.5 * temperature)
         fa2VerticesToLayout.forEach { vertex ->
             var factor = temperature / (1.0 + sqrt(temperature * vertex.swinging))
-            if (props.preventOverlap) {
-                factor *= 0.1
-                val topSpeed = min(10.0, max(1.0, vertex.limitedVelocity.magnitude() * 1.2))
-                if (vertex.velocity != Vector2D.ZERO)
-                    factor = factor.coerceAtMost(topSpeed / vertex.velocity.magnitude())
-            }
+            if (props.preventOverlap) factor *= 0.1
+            val topSpeed = min(10.0, max(1.0, vertex.limitedVelocity.magnitude() * 1.2))
+            if (vertex.velocity != Vector2D.ZERO)
+                factor = factor.coerceAtMost(topSpeed / vertex.velocity.magnitude())
             vertex.limitedVelocity = factor * vertex.velocity
             vertex.pos += vertex.limitedVelocity
         }
     }
 
+    private fun randomVector() = Vector2D(Random.nextDouble(-0.1, 0.1), Random.nextDouble(-0.1, 0.1))
 }
