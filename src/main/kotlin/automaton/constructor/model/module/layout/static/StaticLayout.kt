@@ -14,7 +14,9 @@ import org.eclipse.elk.core.options.EdgeRouting
 import org.eclipse.elk.graph.ElkLabel
 import org.eclipse.elk.graph.ElkNode
 import org.eclipse.elk.graph.util.ElkGraphUtil
-import tornadofx.*
+import tornadofx.plus
+import tornadofx.times
+import kotlin.collections.set
 
 interface StaticLayout {
     val name: String
@@ -55,6 +57,7 @@ fun Automaton.toElkGraphMapping(transitionLayoutBounds: Map<Transition, Bounds>)
     }
     elkGraph.setProperty(CoreOptions.EDGE_ROUTING, EdgeRouting.SPLINES)
     elkGraph.setProperty(CoreOptions.DIRECTION, Direction.RIGHT)
+    elkGraph.setProperty(CoreOptions.SPACING_EDGE_LABEL, 0.0)
     return ELKGraphMapping(elkGraph, elkNodeToVertex, elkLabelToTransition, elkEdgeToEdge)
 }
 
