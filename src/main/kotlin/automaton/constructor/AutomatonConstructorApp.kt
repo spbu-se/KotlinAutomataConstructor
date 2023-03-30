@@ -20,7 +20,8 @@ class AutomatonConstructorApp : App() {
         val unnamedParams = parameters.unnamed
         MainWindow().apply {
             show()
-            if (unnamedParams.isNotEmpty()) {
+            if (unnamedParams.isEmpty()) fileController.onNew()
+            else {
                 val path = unnamedParams.joinToString("")
                 val file = File(path)
                 if (file.exists()) fileController.open(file)
