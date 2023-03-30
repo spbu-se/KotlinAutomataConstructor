@@ -1,6 +1,8 @@
 package automaton.constructor.model.automaton
 
 import automaton.constructor.model.action.transition.EliminateEpsilonTransitionAction
+import automaton.constructor.model.action.transition.SimplifyRegexEntirelyTransitionAction
+import automaton.constructor.model.action.transition.SimplifyRegexTransitionAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.data.FiniteAutomatonData
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
@@ -26,7 +28,9 @@ class FiniteAutomaton(
     )
 
     override val transitionActions = super.transitionActions + listOf(
-        EliminateEpsilonTransitionAction(automaton = this)
+        EliminateEpsilonTransitionAction(automaton = this),
+        SimplifyRegexTransitionAction(automaton = this),
+        SimplifyRegexEntirelyTransitionAction(automaton = this)
     )
 
     override val transformationActions = super.transformationActions + listOf(DeterminizeAutomatonAction(this))
