@@ -159,6 +159,14 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                         it.vertex.forceNoLayout = false
                     }
                 }
+                if (config.boolean("shownDynamicLayoutHint", true) && automaton.vertices.any { it.requiresLayout }) {
+                    config["shownDynamicLayoutHint"] = false
+                    information(
+                        "To disable dynamic layout, select \"No dynamic layout\" in \"Layout\" menu",
+                        title = I18N.messages.getString("Dialog.information"),
+                    )
+                    config.save()
+                }
             }
         }
         automatonVertexView.setOnMouseDragReleased {
