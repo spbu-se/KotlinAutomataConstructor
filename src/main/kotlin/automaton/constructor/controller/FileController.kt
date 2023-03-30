@@ -1,11 +1,15 @@
 package automaton.constructor.controller
 
+import automaton.constructor.model.action.ActionAvailability
+import automaton.constructor.model.action.transition.SimplifyRegexEntirelyTransitionAction
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.untitledName
 import automaton.constructor.model.data.AutomatonData
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
+import automaton.constructor.model.factory.AutomatonCreationFailedException
 import automaton.constructor.model.factory.getAllAutomatonFactories
+import automaton.constructor.model.module.hasRegexes
 import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers
 import automaton.constructor.utils.*
@@ -56,6 +60,7 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
                 label(I18N.messages.getString("OpenedAutomatonController.SelectAutomatonType"))
                 val listview = listview(getAllAutomatonFactories().toObservable()) {
                     prefHeight = 200.0
+                    selectionModel.select(0)
                 }
                 borderpane {
                     centerProperty().bind(listview.selectionModel.selectedItemProperty().objectBinding {
@@ -68,9 +73,36 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
                     button(I18N.messages.getString("OpenedAutomatonController.OK")) {
                         enableWhen(listview.selectionModel.selectedItemProperty().isNotNull)
                         action {
-                            listview.selectedItem?.let {
-                                openedAutomaton = it.createAutomaton()
+                            listview.selectedItem?.let { automatonFactory ->
+                                try {
+                                    openedAutomaton = automatonFactory.createAutomaton()
+                                } catch (e: AutomatonCreationFailedException) {
+                                    error(
+                                        e.message ?: "Automaton creation failed",
+                                        owner = uiComponent.currentWindow,
+                                        title = I18N.messages.getString("Dialog.error")
+                                    )
+                                    return@action
+                                }
                                 openedFile = null
+                                if (openedAutomaton.hasRegexes) {
+                                    val result = alert(
+                                        Alert.AlertType.CONFIRMATION,
+                                        I18N.messages.getString("SimplifyRegexDialog.Header"),
+                                        I18N.messages.getString("SimplifyRegexDialog.Hint"),
+                                        ButtonType(I18N.messages.getString("SimplifyRegexDialog.ConvertEntirely"), ButtonType.YES.buttonData),
+                                        ButtonType(I18N.messages.getString("SimplifyRegexDialog.ConvertStepByStep"), ButtonType.NO.buttonData),
+                                        owner = uiComponent.currentWindow,
+                                        title = I18N.messages.getString("Dialog.confirmation")
+                                    ).result
+                                    if (result.buttonData == ButtonType.YES.buttonData) {
+                                        val simplifyRegexAction = openedAutomaton.transitionActions.first { it is SimplifyRegexEntirelyTransitionAction }
+                                        openedAutomaton.transitions.toList().forEach {
+                                            if (simplifyRegexAction.getAvailabilityFor(it) == ActionAvailability.AVAILABLE)
+                                                simplifyRegexAction.performOn(it)
+                                        }
+                                    }
+                                }
                             }
                             close()
                         }
