@@ -2,6 +2,7 @@ package automaton.constructor.model.module
 
 import automaton.constructor.model.TestAutomatons
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
+import automaton.constructor.model.property.FormalRegex
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.capitalize
 import org.junit.jupiter.api.Test
@@ -69,7 +70,7 @@ class AutomatonDescriptionProviderTest {
                 I18N.messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
             ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
         )
-        t0[expectedChar] = '0'
+        t0[expectedChar] = FormalRegex.fromString("0")
         assertEquals(
             listOf(
                 automaton.deterministicAdjective,
@@ -85,7 +86,7 @@ class AutomatonDescriptionProviderTest {
                 I18N.messages.getString("AutomatonDescriptionProvider.WithEpsilonTransitions")
             ).filter { it.isNotEmpty() }.joinToString(" ").capitalize(), automaton.description
         )
-        t1[expectedChar] = '0'
+        t1[expectedChar] = FormalRegex.fromString("0")
         assertEquals(
             listOf(
                 automaton.nondeterministicAdjective,

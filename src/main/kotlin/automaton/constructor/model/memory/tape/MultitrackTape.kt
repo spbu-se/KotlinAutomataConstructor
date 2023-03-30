@@ -9,7 +9,9 @@ import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.monospaced
 import javafx.scene.layout.VBox
-import tornadofx.*
+import tornadofx.getValue
+import tornadofx.textfield
+import tornadofx.toProperty
 import java.text.MessageFormat
 
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
@@ -60,6 +62,8 @@ class MultiTrackTape(
 ) : AbstractTape(tracks) {
     override val observableStatus = READY_TO_ACCEPT.toProperty()
     override val status: MemoryUnitStatus by observableStatus
+
+    override fun getCurrentFilterValues() = tracks.map { it.current }
 
     override fun onTransition(transition: Transition) {
         tracks.forEachIndexed { i, track ->

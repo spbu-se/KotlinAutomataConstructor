@@ -8,7 +8,10 @@ import automaton.constructor.utils.filteredSet
 import javafx.beans.binding.Bindings.*
 import javafx.beans.binding.BooleanBinding
 import javafx.collections.SetChangeListener
-import tornadofx.*
+import tornadofx.ChangeListener
+import tornadofx.and
+import tornadofx.booleanBinding
+import tornadofx.toProperty
 
 private val nonDeterminismDetectorFactory = { automaton: Automaton -> NonDeterminismDetector(automaton) }
 val Automaton.nonDeterminismDetector get() = getModule(nonDeterminismDetectorFactory)
@@ -45,7 +48,6 @@ class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
         }
     }
     val isDeterministicBinding: BooleanBinding =
-        isEmpty(nonDeterministicStates).and(size(automaton.initialVertices).booleanBinding {
-            automaton.initialVertices.size <= 1
-        })
+        not(automaton.hasRegexesBinding) and isEmpty(nonDeterministicStates) and
+                (size(automaton.initialVertices).booleanBinding { automaton.initialVertices.size <= 1 })
 }

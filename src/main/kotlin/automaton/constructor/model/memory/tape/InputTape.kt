@@ -10,16 +10,16 @@ import automaton.constructor.model.property.DynamicPropertyDescriptor
 import automaton.constructor.model.property.DynamicPropertyDescriptors
 import automaton.constructor.model.property.DynamicPropertyDescriptors.BLANK_CHAR
 import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.property.FormalRegex.Singleton
 import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.MonospaceEditableString
 import javafx.beans.binding.Bindings.`when`
 import javafx.beans.value.ObservableValue
-import tornadofx.*
+import tornadofx.getValue
 
 class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
-    val expectedChar = DynamicPropertyDescriptors.charOrEps(
-        messages.getString("InputTape.ExpectedChar"),
-        canBeDeemedEpsilon = true
+    val expectedChar = DynamicPropertyDescriptors.formalRegex(
+        messages.getString("InputTape.ExpectedChar")
     )
 
     override val transitionFilters = listOf(expectedChar)
@@ -41,6 +41,8 @@ class InputTape(
             .then(REQUIRES_TERMINATION)
             .otherwise(NOT_READY_TO_ACCEPT)
     override val status: MemoryUnitStatus by observableStatus
+
+    override fun getCurrentFilterValues() = listOf(Singleton(track.current))
 
     override fun onTransition(transition: Transition) {
         if (transition[descriptor.expectedChar] != EPSILON_VALUE)

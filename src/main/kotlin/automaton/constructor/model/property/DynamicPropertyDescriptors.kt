@@ -115,4 +115,32 @@ object DynamicPropertyDescriptors {
             override fun fromString(string: String): String? = if (string == EPSILON_STRING) EPSILON_VALUE else string
         }
     )
+
+    fun formalRegex(name: String) = DynamicPropertyDescriptor(
+        name,
+        EPSILON_VALUE,
+        true,
+        editorFactory = { property ->
+            TextField().apply {
+                textFormatter = TextFormatter(property.descriptor.stringConverter, EPSILON_VALUE) { change ->
+                    change.apply {
+                        if (text.length == 1) setControlNewText(text)
+                        else if (controlNewText.length != 1 && isContentChange) setControlNewText(EPSILON_STRING)
+                    }
+                }.apply { valueProperty().bindBidirectional(property) }
+            }
+        },
+        stringConverter = object : StringConverter<FormalRegex?>() {
+            override fun toString(regex: FormalRegex?) = when (regex) {
+                EPSILON_VALUE -> EPSILON_STRING
+                is FormalRegex.Singleton -> regex.char.toString() // do not escape
+                else -> regex.toPrettyString()
+            }
+            override fun fromString(string: String) = when (string) {
+                EPSILON_STRING -> EPSILON_VALUE
+                in FormalRegex.ESCAPABLE_CHARS.map { it.toString() } -> FormalRegex.Singleton(string.single())
+                else -> FormalRegex.fromString(string)
+            }
+        }
+    )
 }

@@ -9,7 +9,7 @@ import javafx.beans.binding.Bindings.isNotEmpty
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.value.ObservableBooleanValue
 import javafx.collections.ObservableList
-import tornadofx.*
+import tornadofx.observableListOf
 
 private val problemDetectorFactory = { automaton: Automaton -> ProblemDetector(automaton) }
 val Automaton.problemDetector get() = getModule(problemDetectorFactory)
@@ -34,6 +34,8 @@ class ProblemDetector(automaton: Automaton) : AutomatonModule {
             messages.getString("ProblemDetector.RemoveTransitionsFromFinalStates")
         val FIX_PROBLEMS_IN_BUILDING_BLOCKS_MESSAGE: String =
             messages.getString("ProblemDetector.FixProblemsInRedBuildingBlocks")
+        val SIMPLIFY_REGEXES_USING_TRANSITION_CONTEXT_ACTION_MESSAGE: String =
+            messages.getString("ProblemDetector.SimplifyRegexesUsingTransitionContextAction")
     }
 
     init {
@@ -51,6 +53,12 @@ class ProblemDetector(automaton: Automaton) : AutomatonModule {
             PotentialProblem(
                 FIX_PROBLEMS_IN_BUILDING_BLOCKS_MESSAGE,
                 isNotEmpty(automaton.buildingBlocks.filteredSet { it.subAutomaton.hasProblemsBinding })
+            )
+        )
+        potentialProblems.add(
+            PotentialProblem(
+                SIMPLIFY_REGEXES_USING_TRANSITION_CONTEXT_ACTION_MESSAGE,
+                automaton.hasRegexesBinding
             )
         )
     }

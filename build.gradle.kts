@@ -24,6 +24,7 @@ val kotlinxSerializationJsonVersion: String by rootProject
 val tornadofxVersion: String by rootProject
 val elkVersion: String by rootProject
 val eclipseCoreVersion: String by rootProject
+val betterParseVersion: String by rootProject
 val mockkVersion: String by rootProject
 val testfxVersion: String by rootProject
 val monocleVersion: String by rootProject
@@ -57,6 +58,7 @@ dependencies {
     implementation("org.eclipse.elk:org.eclipse.elk.graph.text:$elkVersion")
     implementation("org.eclipse.elk:org.eclipse.elk.alg.graphviz.layouter:$elkVersion")
     implementation("org.eclipse.core:org.eclipse.core.runtime:$eclipseCoreVersion")
+    implementation("com.github.h0tk3y.betterParse:better-parse:$betterParseVersion")
 
     for (module in JavaFXModule.getJavaFXModules(javafx.modules))
         for (platform in JavaFXPlatform.values())
