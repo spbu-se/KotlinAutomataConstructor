@@ -27,8 +27,8 @@ enum class TransitionLabelPosition {
     ABOVE
 }
 
-private const val ARROW_LENGTH = 50.0
-private const val ARROW_WIDTH = 20.0
+private const val ARROW_LENGTH = 25.0
+private const val ARROW_WIDTH = 10.0
 
 class LoopEdgeRenderer(
     val vertexShape: ShapeType,
@@ -49,20 +49,20 @@ class LoopEdgeRenderer(
         override val arrowStartOffsetY = -0.5 * RADIUS
         override val arrowStartOffsetX =
             sqrt(RADIUS * RADIUS - arrowStartOffsetY * arrowStartOffsetY)
-        override val leftArrowLineDX = -RADIUS * 0.1
-        override val leftArrowLineDY = -RADIUS * 0.7
-        override val rightArrowLineDX = RADIUS * 0.5
-        override val rightArrowLineDY = -RADIUS * 0.5
+        override val leftArrowLineDX = -RADIUS * 0.05
+        override val leftArrowLineDY = -RADIUS * 0.35
+        override val rightArrowLineDX = RADIUS * 0.25
+        override val rightArrowLineDY = -RADIUS * 0.25
     }
 
     companion object SquareConstants : Constants {
         override val loopRadius = RADIUS * 0.8
         override val arrowStartOffsetY = -RADIUS
         override val arrowStartOffsetX = loopRadius
-        override val leftArrowLineDX = -RADIUS * 0.4
-        override val leftArrowLineDY = -RADIUS * 0.4
-        override val rightArrowLineDX = RADIUS * 0.3
-        override val rightArrowLineDY = -RADIUS * 0.5
+        override val leftArrowLineDX = -RADIUS * 0.2
+        override val leftArrowLineDY = -RADIUS * 0.2
+        override val rightArrowLineDX = RADIUS * 0.15
+        override val rightArrowLineDY = -RADIUS * 0.25
     }
 
     private val constants = when (vertexShape) {
