@@ -6,6 +6,7 @@ import automaton.constructor.view.MainWindow
 import javafx.scene.control.Alert
 import javafx.scene.control.CheckBox
 import javafx.stage.Stage
+import javafx.util.Duration
 import tornadofx.*
 import java.io.File
 import java.nio.file.Path
@@ -33,8 +34,16 @@ class AutomatonConstructorApp : App() {
                     )
                 }
             }
+            runLater(Duration.millis(100.0)) {
+                modalStage?.let {
+                    if (it.isFocused) showStartUpHintIfNeeded()
+                    else it.focusedProperty().onChangeOnce { showStartUpHintIfNeeded() }
+                } ?: showStartUpHintIfNeeded()
+            }
         }
+    }
 
+    private fun showStartUpHintIfNeeded() {
         if (config.boolean("showStartUpHint", true))
             Alert(Alert.AlertType.INFORMATION).apply {
                 title = I18N.messages.getString("Dialog.information")
