@@ -23,7 +23,7 @@ interface StaticLayout {
     fun configureLayout(elkGraph: ElkNode)
 }
 
-val STATIC_LAYOUTS = listOf(DOTLayout, ELKLayeredLayout)
+val STATIC_LAYOUTS = listOf(ELKLayeredLayout, DOTLayout)
 
 private const val LAYOUT_SCALE = 8.0
 private const val TRANSITION_FONT_SIZE = 4
