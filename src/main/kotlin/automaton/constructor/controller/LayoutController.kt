@@ -61,27 +61,29 @@ class LayoutController(val uiComponent: UIComponent) {
                 policy = LAYOUT_REQUIRING
             automaton.applyLayout(elkGraphMapping, transitionLayoutBounds)
         } addOnFail {
-            alert(
-                Alert.AlertType.ERROR,
-                I18N.messages.getString("LayoutController.SuggestInstallGraphviz"),
-                null,
-                ButtonType(I18N.messages.getString("Dialog.yes.button"), ButtonType.YES.buttonData),
-                ButtonType(I18N.messages.getString("Dialog.no.button"), ButtonType.NO.buttonData),
-                owner = uiComponent.currentWindow,
-                title = I18N.messages.getString("Dialog.error")
-            ) { button ->
-                if (button.buttonData == ButtonType.YES.buttonData) {
-                    val os = System.getProperty("os.name")?.lowercase()
-                    FX.application.hostServices.showDocument(
-                        "https://graphviz.org/download/" + when {
-                            os?.contains("windows") == true -> "#windows"
-                            os?.contains("linux") == true -> "#linux"
-                            os?.contains("mac") == true -> "#mac"
-                            else -> ""
-                        }
-                    )
+            if (!layout.requiresGraphviz) throw it
+            else
+                alert(
+                    Alert.AlertType.ERROR,
+                    I18N.messages.getString("LayoutController.SuggestInstallGraphviz"),
+                    null,
+                    ButtonType(I18N.messages.getString("Dialog.yes.button"), ButtonType.YES.buttonData),
+                    ButtonType(I18N.messages.getString("Dialog.no.button"), ButtonType.NO.buttonData),
+                    owner = uiComponent.currentWindow,
+                    title = I18N.messages.getString("Dialog.error")
+                ) { button ->
+                    if (button.buttonData == ButtonType.YES.buttonData) {
+                        val os = System.getProperty("os.name")?.lowercase()
+                        FX.application.hostServices.showDocument(
+                            "https://graphviz.org/download/" + when {
+                                os?.contains("windows") == true -> "#windows"
+                                os?.contains("linux") == true -> "#linux"
+                                os?.contains("mac") == true -> "#mac"
+                                else -> ""
+                            }
+                        )
+                    }
                 }
-            }
         }
     }
 

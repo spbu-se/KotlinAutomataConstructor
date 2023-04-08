@@ -20,6 +20,7 @@ import kotlin.collections.set
 
 interface StaticLayout {
     val name: String
+    val requiresGraphviz: Boolean
     fun configureLayout(elkGraph: ElkNode)
 }
 

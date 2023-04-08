@@ -8,6 +8,9 @@ object ELKLayeredLayout : StaticLayout {
     override val name: String
         get() = I18N.messages.getString("Layout.ELKLayered")
 
+    override val requiresGraphviz: Boolean
+        get() = false
+
     override fun configureLayout(elkGraph: ElkNode) {
         elkGraph.setProperty(CoreOptions.ALGORITHM, "layered")
     }
