@@ -29,6 +29,7 @@ A comprehensive user guide is available in Russian in the [Wiki of this reposito
 * Automaton graph editing and visualization
     - State and transition addition, editing, and deletion
     - State moving
+    - Automatically laying out automaton graph
     - Group selection
     - Graph pane zooming and scrolling
     - Undoing and redoing performed operations
@@ -41,8 +42,10 @@ A comprehensive user guide is available in Russian in the [Wiki of this reposito
     - Freezing executions states
     - Viewing execution states associated with a given state
 * Transformations
-    - Elimination of epsilon-transitions
     - Determinization of finite automata
+    - Minimization of finite automata
+    - Conversion of regular expression to finite automata
+    - Elimination of epsilon-transitions
     - Conversion of Mealy machine to Moore machine
     - Conversion of Moore machine to Mealy machine
 * Other features
