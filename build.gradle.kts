@@ -77,6 +77,9 @@ jacoco {
 }
 
 tasks {
+    compileJava {
+        targetCompatibility = "11"
+    }
     compileKotlin {
         kotlinOptions.jvmTarget = "11"
     }
