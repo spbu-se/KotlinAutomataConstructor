@@ -25,7 +25,10 @@ package automaton.constructor.model.module.layout.dynamic
 
 import automaton.constructor.model.automaton.GRAPH_PANE_CENTER
 import javafx.geometry.Point2D
-import tornadofx.*
+import tornadofx.Vector2D
+import tornadofx.minus
+import tornadofx.plus
+import tornadofx.times
 import kotlin.math.ln1p
 
 fun interface AttractionForce {
@@ -96,5 +99,7 @@ fun buildGravity(isStrong: Boolean, coefficient: Double) = Gravity { vertex ->
     var factor = coefficient
     val pos = vertex.pos - GRAPH_PANE_CENTER
     if (!isStrong && pos.magnitude() > 1.0) factor /= pos.magnitude()
-    vertex.velocity -= factor * pos
+    vertex.velocity -= factor * Vector2D(pos.x / ASPECT_RATIO, pos.y * ASPECT_RATIO)
 }
+
+private const val ASPECT_RATIO = 16.0 / 9.0
