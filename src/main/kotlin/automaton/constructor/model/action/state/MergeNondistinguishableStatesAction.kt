@@ -19,5 +19,5 @@ class MergeNondistinguishableStatesAction(automaton: Automaton) :
         else AVAILABLE
 
     override fun Automaton.doPerformOn(actionSubject: State) =
-        mergeStates(getNondistinguishableStateGroupByMember(actionSubject))
+        mergeStates(getNondistinguishableStateGroupByMember(actionSubject), mergeState = actionSubject)
 }

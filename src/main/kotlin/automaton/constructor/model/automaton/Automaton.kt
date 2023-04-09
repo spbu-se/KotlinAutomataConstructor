@@ -262,15 +262,14 @@ fun Automaton.getNondistinguishableStateGroupByMember(groupMember: State): Set<S
     return states.filter { getStateIdentifier(it) == memberIdentifier }.toSet()
 }
 
-fun Automaton.mergeStates(stateGroup: Set<State>) = undoRedoManager.group {
+fun Automaton.mergeStates(stateGroup: Set<State>, mergeState: State = stateGroup.first()) = undoRedoManager.group {
     if (stateGroup.size <= 1) return@group
-    val mergedState = stateGroup.first()
-    mergedState.isInitial = stateGroup.any { it.isInitial }
-    mergedState.requiresLayout = true
-    val remainingStates = stateGroup.drop(1)
+    mergeState.isInitial = stateGroup.any { it.isInitial }
+    mergeState.requiresLayout = true
+    val remainingStates = stateGroup.toMutableSet().also { it.remove(mergeState) }
     remainingStates.forEach { state ->
         getIncomingTransitions(state).forEach { transition ->
-            addTransition(transition.source, mergedState).writeProperties(transition.readProperties())
+            addTransition(transition.source, mergeState).writeProperties(transition.readProperties())
         }
     }
     remainingStates.forEach { removeVertex(it) }
