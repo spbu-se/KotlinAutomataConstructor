@@ -46,8 +46,7 @@ fun buildAttraction(
     type: AttractionType,
     dissuadeHubs: Boolean,
     preventOverlap: Boolean,
-    coefficient: Double,
-    edgeWeightExponent: Double
+    coefficient: Double
 ) = AttractionForce { edge ->
     with(edge) {
         val vector = to.pos - from.pos

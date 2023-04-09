@@ -31,7 +31,6 @@ data class ForceAtlas2Props(
     var preventOverlap: Boolean = false,
     var dissuadeHubs: Boolean = false,
     var attractionType: AttractionType = AttractionType.LINEAR,
-    var edgeWeightExponent: Double = 1.0,
     var barnesHutTheta: Double = 0.85
 ) {
     constructor(vertexCount: Int) : this(scaling = if (vertexCount >= 100) 1000.0 else 5000.0)

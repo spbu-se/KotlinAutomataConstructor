@@ -116,7 +116,6 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
             dissuadeHubs = props.dissuadeHubs,
             preventOverlap = props.preventOverlap,
             coefficient = if (props.dissuadeHubs) fa2Edges.size / (10.0 * fa2Vertices.size) else 1.0,
-            edgeWeightExponent = props.edgeWeightExponent
         )
         val repulsion = buildRepulsion(
             preventOverlap = props.preventOverlap,
