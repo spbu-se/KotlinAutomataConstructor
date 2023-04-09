@@ -4,7 +4,10 @@ import javafx.beans.property.Property
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.SetChangeListener
 import javafx.geometry.Point2D
-import tornadofx.*
+import tornadofx.getValue
+import tornadofx.observableSetOf
+import tornadofx.onChange
+import tornadofx.setValue
 
 class AutomatonEdge(val source: AutomatonVertex, val target: AutomatonVertex) {
     val transitions = observableSetOf<Transition>()
@@ -14,7 +17,18 @@ class AutomatonEdge(val source: AutomatonVertex, val target: AutomatonVertex) {
     init {
         transitions.addListener(SetChangeListener {
             resetRouting()
+            if (it.wasAdded()) it.elementAdded.resetPosition()
         })
+        routingProperty.onChange {
+            if (!isRoutingValid()) resetRouting()
+        }
+    }
+
+    private fun isRoutingValid() = when (val routing = routing) {
+        null -> true
+        is PiecewiseCubicSpline ->
+            routing.splinePoints.first().distance(source.position) < 1.5 * AutomatonVertex.RADIUS &&
+                routing.splinePoints.last().distance(target.position) < 1.5 * AutomatonVertex.RADIUS
     }
 
     fun resetRouting() {

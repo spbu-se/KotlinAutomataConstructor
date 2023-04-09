@@ -7,6 +7,7 @@ import automaton.constructor.utils.*
 import automaton.constructor.view.AutomatonVertexView.ShapeType
 import automaton.constructor.view.AutomatonVertexView.ShapeType.CIRCLE
 import automaton.constructor.view.AutomatonVertexView.ShapeType.SQUARE
+import javafx.beans.binding.Bindings.isNotNull
 import javafx.beans.value.ObservableBooleanValue
 import javafx.beans.value.ObservableDoubleValue
 import javafx.beans.value.ObservableValue
@@ -256,6 +257,8 @@ class AutomatonEdgeView(
             ),
             edge
         )
+    private val edgeIsRoutedBinding = edge?.let { isNotNull(it.routingProperty) } ?: false.toProperty()
+    private val edgeIsRouted by edgeIsRoutedBinding
 
     val transitionsGroup = group()
 
@@ -269,25 +272,23 @@ class AutomatonEdgeView(
     }
 
     fun addTransition(transition: Transition) = TransitionView(transition, transitionViews.size).apply {
-        rotateProperty().bind(transition.positionProperty.doubleBinding(edgeRenderer.textAngleInDegreesProperty) { if (transition.position == null) edgeRenderer.textAngleInDegreesProperty.doubleValue() else 0.0 })
-        xProperty
-            .bind(
-                transition.positionProperty.doubleBinding(
-                    edgeRenderer.midPointXProperty,
-                    edgeRenderer.normXProperty,
-                    indexProperty
-                ) {
-                    it?.x ?: (edgeRenderer.midPointX + 60 * (index + 0.5) * edgeRenderer.normX)
-                })
-        yProperty
-            .bind(
-                transition.positionProperty.doubleBinding(
-                    edgeRenderer.midPointYProperty,
-                    edgeRenderer.normYProperty,
-                    indexProperty
-                ) {
-                    it?.y ?: (edgeRenderer.midPointY + 60 * (index + 0.5) * edgeRenderer.normY)
-                })
+        rotateProperty().bind(transition.positionProperty.doubleBinding(edgeRenderer.textAngleInDegreesProperty) {
+            if (!edgeIsRouted || transition.position == null) edgeRenderer.textAngleInDegreesProperty.doubleValue() else 0.0 }
+        )
+        val transitionPositionBinding = transition.positionProperty.nonNullObjectBinding(
+            edgeIsRoutedBinding,
+            edgeRenderer.midPointXProperty,
+            edgeRenderer.normXProperty,
+            indexProperty
+        ) { transitionPosition ->
+            if (edgeIsRouted && transitionPosition != null) transitionPosition
+            else Point2D(
+                edgeRenderer.midPointX + 60 * (index + 0.5) * edgeRenderer.normX,
+                edgeRenderer.midPointY + 60 * (index + 0.5) * edgeRenderer.normY
+            )
+        }
+        xProperty.bind(transitionPositionBinding.x)
+        yProperty.bind(transitionPositionBinding.y)
         transitionsGroup.add(this)
         transitionViews.add(this)
     }
