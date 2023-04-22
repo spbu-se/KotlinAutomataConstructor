@@ -33,23 +33,15 @@ class SimplifyRegexTransitionAction(automaton: FiniteAutomaton) : AbstractAction
                     actionSubject.regex = regex.repeated
                 } else {
                     removeTransition(actionSubject)
-                    val midState =
-                        when {
-                            getOutgoingTransitions(actionSubject.source).isEmpty() -> actionSubject.source
-                            getOutgoingTransitions(actionSubject.target).isEmpty() -> actionSubject.target
-                            else -> addState(
-                                position = (actionSubject.source.position + actionSubject.target.position) / 2.0
-                            ).also {
-                                it.requiresLayout = true
-                                actionSubject.source.requiresLayout = true
-                                actionSubject.target.requiresLayout = true
-                            }
-                        }
-                    if (midState !== actionSubject.source)
-                        addTransition(actionSubject.source, midState).regex = EPSILON_VALUE
+                    val midState = addState(
+                        position = (actionSubject.source.position + actionSubject.target.position) / 2.0
+                    )
+                    midState.requiresLayout = true
+                    actionSubject.source.requiresLayout = true
+                    actionSubject.target.requiresLayout = true
+                    addTransition(actionSubject.source, midState).regex = EPSILON_VALUE
                     addTransition(midState, midState).regex = regex.repeated
-                    if (midState !== actionSubject.target)
-                        addTransition(midState, actionSubject.target).regex = EPSILON_VALUE
+                    addTransition(midState, actionSubject.target).regex = EPSILON_VALUE
                 }
             }
 
