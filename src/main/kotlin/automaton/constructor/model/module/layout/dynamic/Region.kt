@@ -24,7 +24,9 @@ SOFTWARE.
 package automaton.constructor.model.module.layout.dynamic
 
 import javafx.geometry.Point2D
-import tornadofx.*
+import tornadofx.div
+import tornadofx.plus
+import tornadofx.times
 
 class Region(vertices: Collection<ForceAtlas2Vertex>) {
     private val mass = vertices.sumOf { it.mass }
@@ -34,6 +36,7 @@ class Region(vertices: Collection<ForceAtlas2Vertex>) {
         if (vertices.size <= 1 || radius < 1e-4) emptyList()
         else vertices.partition { it.pos.x < massCenter.x }.toList()
             .flatMap { side -> side.partition { v -> v.pos.y < massCenter.y }.toList() }
+            .filter { it.isNotEmpty() }
             .map { Region(it) }
 
     fun repulse(vertex: ForceAtlas2Vertex, repulsion: RepulsionForce, theta: Double) {
