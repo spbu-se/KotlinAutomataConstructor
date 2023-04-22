@@ -113,7 +113,10 @@ class MainWindow(
                                 try {
                                     it.perform()
                                 } catch (e: ActionFailedException) {
-                                    error(e.message)
+                                    error(
+                                        e.message,
+                                        title = I18N.messages.getString("Dialog.error")
+                                    )
                                 }
                             }
                         }

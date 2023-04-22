@@ -239,7 +239,10 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                                             if (automaton.allowsModificationsByUser)
                                                 action.performOn(element)
                                         } catch (exc: ActionFailedException) {
-                                            error(exc.message)
+                                            error(
+                                                exc.message,
+                                                title = I18N.messages.getString("Dialog.error")
+                                            )
                                         }
 
                                     }
