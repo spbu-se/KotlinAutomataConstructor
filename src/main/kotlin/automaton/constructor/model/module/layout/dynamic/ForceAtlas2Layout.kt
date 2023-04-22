@@ -60,7 +60,10 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
         fa2Vertices = automaton.vertices.map { vertex ->
             vertexToFA2Vertex.getOrPut(vertex) { ForceAtlas2Vertex(vertex.position + randomVector(), 2.5 * AutomatonVertex.RADIUS) }
                 .also { fa2Vertex ->
-                    if (vertex.shouldBeLayout(policy)) vertex.position = fa2Vertex.pos
+                    if (vertex.shouldBeLayout(policy)) {
+                        if (vertex.position.distance(fa2Vertex.pos) > 1.0)
+                            vertex.position = fa2Vertex.pos
+                    }
                     else fa2Vertex.pos = vertex.position
                 }
         }.toSet().onEach { it.mass = 1.0 }
