@@ -16,6 +16,7 @@ import javafx.beans.property.Property
 import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.ToggleGroup
+import javafx.scene.image.Image
 import tornadofx.*
 
 class MainWindow(
@@ -174,6 +175,7 @@ class MainWindow(
         owner = null,
         escapeClosesWindow = false,
     )?.apply {
+        icons.add(Image(this::class.java.classLoader.getResourceAsStream("icon.png")))
         width = 1000.0
         height = 600.0
         centerOnScreen()

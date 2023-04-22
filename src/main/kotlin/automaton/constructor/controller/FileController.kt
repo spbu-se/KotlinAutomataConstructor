@@ -53,6 +53,7 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
         if (!suggestSavingChanges()) return
         uiComponent.dialog(I18N.messages.getString("OpenedAutomatonController.NewAutomaton")) {
             clear()
+            uiComponent.currentStage?.icons?.let { stage.icons.addAll(it) }
             stage.x = 100.0
             stage.y = 100.0
             stage.isResizable = false
