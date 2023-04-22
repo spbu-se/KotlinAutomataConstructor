@@ -66,7 +66,7 @@ class LayoutController(val uiComponent: UIComponent) {
                 alert(
                     Alert.AlertType.ERROR,
                     I18N.messages.getString("LayoutController.SuggestInstallGraphviz"),
-                    null,
+                    I18N.messages.getString("LayoutController.SuggestUseOtherLayout"),
                     ButtonType(I18N.messages.getString("Dialog.yes.button"), ButtonType.YES.buttonData),
                     ButtonType(I18N.messages.getString("Dialog.no.button"), ButtonType.NO.buttonData),
                     owner = uiComponent.currentWindow,
