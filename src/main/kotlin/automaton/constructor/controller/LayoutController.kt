@@ -16,7 +16,9 @@ import javafx.geometry.Bounds
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.util.Duration
+import org.eclipse.elk.alg.graphviz.layouter.GraphvizMetaDataProvider
 import org.eclipse.elk.core.RecursiveGraphLayoutEngine
+import org.eclipse.elk.core.data.LayoutMetaDataService
 import org.eclipse.elk.core.util.BasicProgressMonitor
 import tornadofx.*
 import java.text.MessageFormat
@@ -41,6 +43,12 @@ class LayoutController(val uiComponent: UIComponent) {
 
     fun layout(automaton: Automaton, transitionLayoutBounds: Map<Transition, Bounds>, layout: StaticLayout) {
         val elkGraphMapping = automaton.toElkGraphMapping(transitionLayoutBounds)
+        if (layout.requiresGraphviz && !graphvizRegistered) {
+            runCatching {
+                LayoutMetaDataService.getInstance().registerLayoutMetaDataProviders(GraphvizMetaDataProvider())
+            }
+            graphvizRegistered = true
+        }
         layout.configureLayout(elkGraphMapping.elkGraph)
         var isCancelled = false
         val progressMonitor = object : BasicProgressMonitor() {
@@ -122,5 +130,6 @@ class LayoutController(val uiComponent: UIComponent) {
 
     companion object {
         private val DYNAMIC_LAYOUT_PERIOD = Duration.seconds(1 / 50.0)
+        private var graphvizRegistered = false
     }
 }
