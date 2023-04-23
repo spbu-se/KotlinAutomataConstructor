@@ -17,6 +17,8 @@ plugins {
 val appMainClass = "automaton.constructor.AutomatonConstructorAppKt"
 val exeFile = "automata_constructor.exe"
 val appName = "Automata Constructor"
+val addOpensPackages = listOf("java.base/java.lang")
+val appJvmOptions = addOpensPackages.map { "--add-opens=$it=ALL-UNNAMED" }
 val icoFile = "icon.ico"
 
 val appVersion: String by rootProject
@@ -39,7 +41,7 @@ repositories {
 
 application {
     mainClass.set(appMainClass)
-    applicationDefaultJvmArgs += "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    applicationDefaultJvmArgs += appJvmOptions
 }
 
 javafx {
@@ -156,5 +158,12 @@ tasks {
         outfile = exeFile
         icon = "$projectDir\\$icoFile"
         bundledJrePath = "jre"
+        jvmOptions.addAll(appJvmOptions)
+    }
+
+    shadowJar {
+        manifest {
+            attributes["Add-Opens"] = addOpensPackages.joinToString(" ")
+        }
     }
 }
