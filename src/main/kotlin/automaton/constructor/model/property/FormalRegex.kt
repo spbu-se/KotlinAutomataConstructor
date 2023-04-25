@@ -21,17 +21,19 @@ sealed class FormalRegex {
     data class Alternative(val alternative1: FormalRegex?, val alternative2: FormalRegex?) : FormalRegex()
     data class KleeneStar(val repeated: FormalRegex?) : FormalRegex()
     companion object {
-        val ESCAPABLE_CHARS = listOf('\\', '(', ')', '|', '*')
+        val ESCAPABLE_CHARS = listOf('\\', '(', ')', '|', '*', '$')
 
         private val regexGrammar = object : Grammar<FormalRegex?>() {
-            val simpleChar by regexToken("""[^()|*\\]""")
-            val escapedChar by regexToken("""\\[()|*\\]""")
+            val simpleChar by regexToken("""[^()|*$\\]""")
+            val escapedChar by regexToken("""\\[()|*$\\]""")
             val lpar by literalToken("(")
             val rpar by literalToken(")")
             val bar by literalToken("|")
             val star by literalToken("*")
+            val dollar by literalToken("$")
 
             val term: Parser<FormalRegex?> by (simpleChar use { Singleton(text.single()) }) or
+                    (dollar asJust EPSILON_VALUE) or
                     (escapedChar use { Singleton(text.last()) }) or
                     (-lpar * parser(this::rootParser) * -rpar)
 
