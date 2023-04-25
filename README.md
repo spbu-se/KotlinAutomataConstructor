@@ -68,13 +68,16 @@ To build this project, you must use JDK 11+.
 
 This project uses Gradle build system. Here are commands for some of its most important tasks:
 
-| Command              | Description                              |
+| Command (Windows)    | Description                              |
 |----------------------|------------------------------------------|
 | `./gradlew assemble` | Builds without tests                     |
 | `./gradlew run`      | Runs the application                     |
 | `./gradlew test`     | Runs the unit tests                      |
 | `./gradlew msi`      | Builds .msi installer for 64-bit Windows |
 | `./gradlew tasks`    | Displays all runnable tasks              |
+
+When running Gradle task you can specify target platform classifier with `-Pplatform={classifier}` option,
+the following classifiers are supported: `win`, `linux`, `mac`, `win-x86`, `linux-aarch64`, `mac-aarch64`. 
 
 ## Technologies
 

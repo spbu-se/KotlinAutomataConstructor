@@ -1,13 +1,12 @@
 import com.inet.gradle.setup.abstracts.DesktopStarter.Location
 
-import org.openjfx.gradle.JavaFXModule
 import org.openjfx.gradle.JavaFXPlatform
 
 plugins {
     kotlin("jvm") version "1.8.0"
     kotlin("plugin.serialization") version "1.8.0"
     id("jacoco")
-    id("org.openjfx.javafxplugin") version "0.0.10"
+    id("org.openjfx.javafxplugin") version "0.0.13"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("de.inetsoftware.setupbuilder") version "7.2.16"
     id("edu.sc.seis.launch4j") version "2.5.4"
@@ -21,7 +20,12 @@ val addOpensPackages = listOf("java.base/java.lang")
 val appJvmOptions = addOpensPackages.map { "--add-opens=$it=ALL-UNNAMED" }
 val icoFile = "icon.ico"
 
+val platform: String =
+    if (project.hasProperty("platform")) project.property("platform").toString()
+    else JavaFXPlatform.detect(project).classifier
+
 val appVersion: String by rootProject
+val javaFXVersion: String by rootProject
 val kotlinxSerializationJsonVersion: String by rootProject
 val tornadofxVersion: String by rootProject
 val elkVersion: String by rootProject
@@ -45,11 +49,6 @@ application {
     applicationDefaultJvmArgs += appJvmOptions
 }
 
-javafx {
-    version = "17"
-    modules("javafx.controls")
-}
-
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
@@ -63,9 +62,9 @@ dependencies {
     implementation("org.eclipse.core:org.eclipse.core.runtime:$eclipseCoreVersion")
     implementation("com.github.h0tk3y.betterParse:better-parse:$betterParseVersion")
 
-    for (module in JavaFXModule.getJavaFXModules(javafx.modules))
-        for (platform in JavaFXPlatform.values())
-            implementation("org.openjfx:${module.artifactName}:17:${platform.classifier}")
+    implementation("org.openjfx:javafx-base:$javaFXVersion:$platform")
+    implementation("org.openjfx:javafx-graphics:$javaFXVersion:$platform")
+    implementation("org.openjfx:javafx-controls:$javaFXVersion:$platform")
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter")
