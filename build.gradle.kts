@@ -31,6 +31,7 @@ val mockkVersion: String by rootProject
 val testfxVersion: String by rootProject
 val monocleVersion: String by rootProject
 val jacocoVersion: String by rootProject
+val jvmTarget: String by rootProject
 
 version = appVersion
 
@@ -80,13 +81,16 @@ jacoco {
 
 tasks {
     compileJava {
-        targetCompatibility = "11"
+        targetCompatibility = jvmTarget
     }
     compileKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = jvmTarget
+    }
+    compileTestJava {
+        targetCompatibility = jvmTarget
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = jvmTarget
     }
     test {
         finalizedBy("jacocoTestReport")
