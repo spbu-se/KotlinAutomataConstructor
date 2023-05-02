@@ -71,7 +71,8 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                                 automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
                                     if (type != automaton.getTypeData()) error(
                                         I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
-                                        I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType")
+                                        I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType"),
+                                        owner = automatonViewContext.uiComponent.currentWindow
                                     )
                                     else {
                                         automaton.addBuildingBlock(position = Point2D(it.x, it.y)).apply {
@@ -164,6 +165,7 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                     information(
                         "To disable dynamic layout, select \"No dynamic layout\" in \"Layout\" menu",
                         title = I18N.messages.getString("Dialog.information"),
+                        owner = automatonViewContext.uiComponent.currentWindow
                     )
                     config.save()
                 }
@@ -241,7 +243,8 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                                         } catch (exc: ActionFailedException) {
                                             error(
                                                 exc.message,
-                                                title = I18N.messages.getString("Dialog.error")
+                                                title = I18N.messages.getString("Dialog.error"),
+                                                owner = automatonViewContext.uiComponent.currentWindow
                                             )
                                         }
 

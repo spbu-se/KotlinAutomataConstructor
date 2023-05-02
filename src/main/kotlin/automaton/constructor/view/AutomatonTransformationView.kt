@@ -52,11 +52,12 @@ class AutomatonTransformationView(
 
     private fun checkCompleted() {
         if (transformation.isCompleted) {
-            automatonViewContext.openInNewWindow(transformation.resultingAutomaton)
+            val window = automatonViewContext.openInNewWindow(transformation.resultingAutomaton)
             information(
                 I18N.messages.getString("AutomatonTransformation.HasBeenCompleted"),
-                content=transformation.completionMessage,
-                title = I18N.messages.getString("Dialog.information")
+                content = transformation.completionMessage,
+                title = I18N.messages.getString("Dialog.information"),
+                owner = window
             )
         }
     }

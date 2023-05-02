@@ -1,11 +1,13 @@
 package automaton.constructor.controller
 
 import automaton.constructor.utils.I18N
-import tornadofx.*
-import java.util.Locale
+import tornadofx.Controller
+import tornadofx.UIComponent
+import tornadofx.information
+import java.util.*
 
-class LocaleController : Controller() {
-    init {
+class LocaleController(private val uiComponent: UIComponent?) : Controller() {
+    fun initGlobalLocale() {
         I18N.locale = config.string("locale")?.let { Locale.forLanguageTag(it) } ?: Locale.getDefault()
     }
 
@@ -14,7 +16,8 @@ class LocaleController : Controller() {
         config.save()
         information(
             I18N.messages.getString("LocaleController.RestartAppToApplyLanguageChange"),
-            title = I18N.messages.getString("Dialog.information")
+            title = I18N.messages.getString("Dialog.information"),
+            owner = uiComponent?.currentWindow
         )
     }
 

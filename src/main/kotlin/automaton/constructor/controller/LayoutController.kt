@@ -23,7 +23,7 @@ import org.eclipse.elk.core.util.BasicProgressMonitor
 import tornadofx.*
 import java.text.MessageFormat
 
-class LayoutController(val uiComponent: UIComponent) {
+class LayoutController(private val uiComponent: UIComponent) {
     val selectedAutomatonProperty = SimpleObjectProperty<Automaton>()
     var selectedAutomaton by selectedAutomatonProperty
 

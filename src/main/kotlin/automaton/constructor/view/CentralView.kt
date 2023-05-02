@@ -11,6 +11,7 @@ import automaton.constructor.view.module.executor.ExecutorView
 import automaton.constructor.view.module.executor.tree.ExecutionTreeView
 import javafx.scene.control.SplitPane
 import javafx.scene.control.TabPane
+import javafx.stage.Window
 import tornadofx.*
 import java.util.*
 
@@ -19,9 +20,10 @@ import java.util.*
  */
 class CentralView(
     val automaton: Automaton,
+    override val uiComponent: UIComponent,
     override val fileController: FileController,
     override val layoutController: LayoutController,
-    private val windowOpener: (Automaton) -> Unit
+    private val windowOpener: (Automaton) -> Window?
 ) : SplitPane(),
     AutomatonViewContext {
     val mainTabView = AutomatonTabView(automaton, this)
@@ -36,7 +38,7 @@ class CentralView(
     val selectedUndoRedoControllerBinding =
         selectedAutomatonTabViewBinding.nonNullObjectBinding { it.undoRedoController }
     val selectedUndoRedoController: UndoRedoController by selectedUndoRedoControllerBinding
-    val executorController = ExecutorController(automaton).also {
+    val executorController = ExecutorController(automaton, uiComponent).also {
         it.selectedAutomatonProperty.bind(selectedAutomatonProperty)
     }
 

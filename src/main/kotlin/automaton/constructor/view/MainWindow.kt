@@ -24,16 +24,16 @@ class MainWindow(
 ) : Fragment() {
     val fileController = FileController(openedAutomaton, this)
     private val helpController = HelpController()
-    private val localeController = find<LocaleController>()
+    private val localeController = LocaleController(this)
     private val layoutController = LayoutController(this)
     private val selectController = SelectController()
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
-        CentralView(it, fileController, layoutController, windowOpener = { automatonToOpen ->
+        CentralView(it, this, fileController, layoutController, windowOpener = { automatonToOpen ->
             // make sure it's a completely fresh Automaton instance independent of this window
-            MainWindow(automatonToOpen.getData().createAutomaton()).also { newWindow ->
-                newWindow.show()
-                newWindow.layoutController.policy = layoutController.policy
-            }
+            val newWindow = MainWindow(automatonToOpen.getData().createAutomaton())
+            newWindow.layoutController.policy = layoutController.policy
+            newWindow.show()
+            newWindow.currentWindow
         })
     }
     private val centralView: CentralView by centralViewBinding
@@ -116,7 +116,8 @@ class MainWindow(
                                 } catch (e: ActionFailedException) {
                                     error(
                                         e.message,
-                                        title = I18N.messages.getString("Dialog.error")
+                                        title = I18N.messages.getString("Dialog.error"),
+                                        owner = currentWindow
                                     )
                                 }
                             }

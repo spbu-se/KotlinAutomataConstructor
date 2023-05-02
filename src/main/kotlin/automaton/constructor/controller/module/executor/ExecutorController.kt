@@ -9,7 +9,7 @@ import automaton.constructor.utils.I18N
 import automaton.constructor.view.module.executor.executionLeafView
 import tornadofx.*
 
-class ExecutorController(viewedAutomaton: Automaton) : Controller() {
+class ExecutorController(viewedAutomaton: Automaton, private val uiComponent: UIComponent) : Controller() {
     val selectedAutomatonProperty = viewedAutomaton.toProperty()
     val selectedAutomaton: Automaton by selectedAutomatonProperty
     val debuggingExecutorProperty = null.toProperty<Executor>()
@@ -34,7 +34,8 @@ class ExecutorController(viewedAutomaton: Automaton) : Controller() {
                 I18N.messages.getString("ExecutorController.ExecutionResult"),
                 executionResult,
                 graphic = graphic,
-                title = I18N.messages.getString("Dialog.information")
+                title = I18N.messages.getString("Dialog.information"),
+                owner = uiComponent.currentWindow
             )
         }
     }
@@ -48,7 +49,8 @@ class ExecutorController(viewedAutomaton: Automaton) : Controller() {
             error(
                 I18N.messages.getString("ExecutorController.Error.ExecutionFailed"),
                 selectedAutomaton.problems.joinToString("\n") { it.message },
-                title = I18N.messages.getString("Dialog.error")
+                title = I18N.messages.getString("Dialog.error"),
+                owner = uiComponent.currentWindow
             )
             return null
         }

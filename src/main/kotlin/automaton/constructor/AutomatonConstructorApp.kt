@@ -6,6 +6,7 @@ import automaton.constructor.view.MainWindow
 import javafx.scene.control.Alert
 import javafx.scene.control.CheckBox
 import javafx.stage.Stage
+import javafx.stage.Window
 import javafx.util.Duration
 import tornadofx.*
 import java.io.File
@@ -17,7 +18,7 @@ class AutomatonConstructorApp : App() {
     override fun start(stage: Stage) {
         FX.stylesheets.add("style.css")
         super.start(stage)
-        find<LocaleController>()
+        LocaleController(uiComponent = null).initGlobalLocale()
         val unnamedParams = parameters.unnamed
         MainWindow().apply {
             show()
@@ -30,22 +31,24 @@ class AutomatonConstructorApp : App() {
                     error(
                         title=I18N.messages.getString("Dialog.error"),
                         header=MessageFormat.format(I18N.messages.getString("Error.FailedToOpenFile.Header"), path),
-                        content=I18N.messages.getString("Error.FailedToOpenFile.Content")
+                        content=I18N.messages.getString("Error.FailedToOpenFile.Content"),
+                        owner = currentWindow
                     )
                 }
             }
             runLater(Duration.millis(100.0)) {
                 modalStage?.let {
-                    if (it.isFocused) showStartUpHintIfNeeded()
-                    else it.focusedProperty().onChangeOnce { showStartUpHintIfNeeded() }
-                } ?: showStartUpHintIfNeeded()
+                    if (it.isFocused) showStartUpHintIfNeeded(currentWindow)
+                    else it.focusedProperty().onChangeOnce { showStartUpHintIfNeeded(currentWindow) }
+                } ?: showStartUpHintIfNeeded(currentWindow)
             }
         }
     }
 
-    private fun showStartUpHintIfNeeded() {
+    private fun showStartUpHintIfNeeded(owner: Window?) {
         if (config.boolean("showStartUpHint", true))
             Alert(Alert.AlertType.INFORMATION).apply {
+                initOwner(owner)
                 title = I18N.messages.getString("Dialog.information")
                 headerText = I18N.messages.getString("Hint.UseRightClickToAddElements")
                 dialogPane.expandableContent = CheckBox(I18N.messages.getString("Hint.DontShowAgain")).apply {

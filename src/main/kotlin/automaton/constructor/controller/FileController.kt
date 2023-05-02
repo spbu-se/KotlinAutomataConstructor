@@ -22,7 +22,7 @@ import tornadofx.*
 import java.io.File
 import java.text.MessageFormat
 
-class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
+class FileController(openedAutomaton: Automaton, private val uiComponent: UIComponent) {
     private val openedFileProperty = objectProperty<File?>(null)
     private var openedFile: File? by openedFileProperty
 
@@ -51,7 +51,10 @@ class FileController(openedAutomaton: Automaton, val uiComponent: UIComponent) {
 
     fun onNew() {
         if (!suggestSavingChanges()) return
-        uiComponent.dialog(I18N.messages.getString("OpenedAutomatonController.NewAutomaton")) {
+        uiComponent.dialog(
+            I18N.messages.getString("OpenedAutomatonController.NewAutomaton"),
+            owner = uiComponent.currentWindow
+        ) {
             clear()
             uiComponent.currentStage?.icons?.let { stage.icons.addAll(it) }
             stage.x = 100.0
