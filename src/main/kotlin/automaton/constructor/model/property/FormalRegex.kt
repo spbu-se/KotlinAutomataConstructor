@@ -24,17 +24,20 @@ sealed class FormalRegex {
         val ESCAPABLE_CHARS = listOf('\\', '(', ')', '|', '*', '$')
 
         private val regexGrammar = object : Grammar<FormalRegex?>() {
-            val simpleChar by regexToken("""[^()|*$\\]""")
+            val simpleChar by regexToken("""[^()|*$\\$EPSILON_STRING]""")
             val escapedChar by regexToken("""\\[()|*$\\]""")
             val lpar by literalToken("(")
             val rpar by literalToken(")")
             val bar by literalToken("|")
             val star by literalToken("*")
             val dollar by literalToken("$")
+            val eps by literalToken(EPSILON_STRING)
 
-            val term: Parser<FormalRegex?> by (simpleChar use { Singleton(text.single()) }) or
-                    (dollar asJust EPSILON_VALUE) or
+            val term: Parser<FormalRegex?> by (
+                    dollar asJust EPSILON_VALUE) or
+                    (eps asJust EPSILON_VALUE) or
                     (escapedChar use { Singleton(text.last()) }) or
+                    (simpleChar use { Singleton(text.single()) }) or
                     (-lpar * parser(this::rootParser) * -rpar)
 
             val starTerm by (term * -oneOrMore(star)).map { KleeneStar(it) } or term
