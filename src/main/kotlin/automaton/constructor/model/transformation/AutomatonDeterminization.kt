@@ -16,7 +16,27 @@ import javafx.beans.binding.Bindings.isEmpty
 import javafx.collections.SetChangeListener
 import javafx.geometry.Point2D
 import javafx.scene.transform.Rotate
-import tornadofx.*
+import tornadofx.Vector2D
+import tornadofx.observableSetOf
+import tornadofx.plus
+import kotlin.collections.Set
+import kotlin.collections.any
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.filter
+import kotlin.collections.first
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.getOrPut
+import kotlin.collections.getValue
+import kotlin.collections.groupBy
+import kotlin.collections.isNotEmpty
+import kotlin.collections.joinToString
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.collections.sorted
+import kotlin.collections.toSet
 
 class AutomatonDeterminization(
     private val nfa: FiniteAutomaton,
@@ -92,9 +112,9 @@ class DeterminizeAutomatonAction(
     override fun FiniteAutomaton.doGetAvailabilityFor(actionSubject: Unit) = ActionAvailability.AVAILABLE
 
     override fun FiniteAutomaton.doPerformOn(actionSubject: Unit) {
-        if (automaton.isDeterministic) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.AlreadyDeterministic"))
-        if (automaton.initialVertices.isEmpty()) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.AddInitStates"))
-        if (automaton.buildingBlocks.isNotEmpty()) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.NotSupportedForBuildingBlocks"))
+        if (isDeterministic) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.AlreadyDeterministic"))
+        if (initialVertices.isEmpty()) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.AddInitStates"))
+        if (buildingBlocks.isNotEmpty()) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.NotSupportedForBuildingBlocks"))
         AutomatonDeterminization(automaton).start()
     }
 }

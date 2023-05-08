@@ -39,7 +39,7 @@ class RegisterAutomaton(
         registers = registers.map { it.getData() }
     )
 
-    override fun createSubAutomaton() = RegisterAutomaton(inputTape, registers)
+    override fun createEmptyAutomatonOfSameType() = RegisterAutomaton(inputTape, registers)
 
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("RegisterAutomaton")

@@ -53,7 +53,7 @@ class AutomatonTest {
             I18N.messages.getString("CustomAutomaton.Untitled")
         ) {
             override fun getTypeData(): AutomatonTypeData = error("Unexpected `getTypeData()` call")
-            override fun createSubAutomaton() = error("Unexpected `createSubAutomaton()` call")
+            override fun createEmptyAutomatonOfSameType() = error("Unexpected `createSubAutomaton()` call")
         }
         transitions = automaton.transitions
         states = automaton.states

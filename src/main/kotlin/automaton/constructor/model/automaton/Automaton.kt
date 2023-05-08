@@ -86,12 +86,12 @@ interface Automaton {
     fun addState(name: String? = null, position: Point2D = GRAPH_PANE_CENTER): State
 
     fun addBuildingBlock(
-        subAutomaton: Automaton = createSubAutomaton(),
+        subAutomaton: Automaton = createEmptyAutomatonOfSameType(),
         name: String? = null,
         position: Point2D = Point2D.ZERO
     ): BuildingBlock
 
-    fun createSubAutomaton(): Automaton
+    fun createEmptyAutomatonOfSameType(): Automaton
 
     fun removeVertex(vertex: AutomatonVertex)
 

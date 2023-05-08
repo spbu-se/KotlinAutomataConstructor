@@ -35,7 +35,7 @@ class FiniteAutomaton(
 
     override val transformationActions = super.transformationActions + listOf(DeterminizeAutomatonAction(this))
 
-    override fun createSubAutomaton() = FiniteAutomaton(inputTape)
+    override fun createEmptyAutomatonOfSameType() = FiniteAutomaton(inputTape)
 
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("FiniteAutomaton")

@@ -32,7 +32,7 @@ class MealyMooreMachine(
         outputTape = outputTape.getData()
     )
 
-    override fun createSubAutomaton() = MealyMooreMachine(inputTape, outputTape)
+    override fun createEmptyAutomatonOfSameType() = MealyMooreMachine(inputTape, outputTape)
 
     override val stateActions = super.stateActions + listOf(
         MooreToMealyAction(mealyMooreMachine = this),

@@ -23,7 +23,7 @@ class CustomAutomaton(
         memoryUnitDescriptors = memoryDescriptors.map { it.getData() }
     )
 
-    override fun createSubAutomaton() = CustomAutomaton(memoryDescriptors)
+    override fun createEmptyAutomatonOfSameType() = CustomAutomaton(memoryDescriptors)
 
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("CustomAutomaton")

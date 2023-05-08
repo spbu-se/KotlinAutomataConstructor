@@ -8,7 +8,9 @@ import kotlinx.serialization.Serializable
 /**
  * The data of an [automaton][Automaton].
  *
- * It consists of a [base] type data, a list of [vertices] data, and a list of [transitions] data.
+  * It consists of a [base] type data, a list of [vertices] data, list of [transitions] data and a list of [edges] data.
+ *
+ * [edges] data may skip non-routed edges for backward compatability.
  */
 @MostlyGeneratedOrInline
 @Serializable
@@ -54,7 +56,7 @@ fun Automaton.addContent(
         it.id to when (it) {
             is StateData -> addState(it.name, Point2D(it.x, it.y)).apply { writeProperties(it.properties) }
             is BuildingBlockData -> addBuildingBlock(
-                createSubAutomaton().apply { addContent(it.vertices, it.transitions, it.edges) },
+                createEmptyAutomatonOfSameType().apply { addContent(it.vertices, it.transitions, it.edges) },
                 it.name,
                 Point2D(it.x, it.y)
             )

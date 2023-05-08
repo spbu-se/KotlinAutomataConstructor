@@ -29,7 +29,7 @@ class MultiTrackTuringMachine(
         tracks = tracks.getData()
     )
 
-    override fun createSubAutomaton() = MultiTrackTuringMachine(tracks)
+    override fun createEmptyAutomatonOfSameType() = MultiTrackTuringMachine(tracks)
 
     companion object {
         val DISPLAY_NAME: String = I18N.messages.getString("MultiTrackTuringMachine")
