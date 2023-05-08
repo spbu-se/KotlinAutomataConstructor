@@ -26,8 +26,8 @@ interface StaticLayout {
 
 val STATIC_LAYOUTS = listOf(ELKLayeredLayout, DOTLayout)
 
-private const val LAYOUT_SCALE = 8.0
-private const val TRANSITION_FONT_SIZE = 4
+private const val LAYOUT_SCALE = 5.0
+private const val TRANSITION_FONT_SIZE = 7
 
 fun Automaton.toElkGraphMapping(transitionLayoutBounds: Map<Transition, Bounds>): ELKGraphMapping {
     val elkGraph = ElkGraphUtil.createGraph()

@@ -10,6 +10,10 @@ import tornadofx.onChange
 import tornadofx.setValue
 
 class AutomatonEdge(val source: AutomatonVertex, val target: AutomatonVertex) {
+    companion object {
+        private const val MAX_END_POINT_DEVIATION = 2 * AutomatonVertex.RADIUS
+    }
+
     val transitions = observableSetOf<Transition>()
     val routingProperty = SimpleObjectProperty<Routing>(null)
     var routing by routingProperty
@@ -27,8 +31,8 @@ class AutomatonEdge(val source: AutomatonVertex, val target: AutomatonVertex) {
     private fun isRoutingValid() = when (val routing = routing) {
         null -> true
         is PiecewiseCubicSpline ->
-            routing.splinePoints.first().distance(source.position) < 1.5 * AutomatonVertex.RADIUS &&
-                routing.splinePoints.last().distance(target.position) < 1.5 * AutomatonVertex.RADIUS
+            routing.splinePoints.first().distance(source.position) < MAX_END_POINT_DEVIATION &&
+                routing.splinePoints.last().distance(target.position) < MAX_END_POINT_DEVIATION
     }
 
     fun resetRouting() {
