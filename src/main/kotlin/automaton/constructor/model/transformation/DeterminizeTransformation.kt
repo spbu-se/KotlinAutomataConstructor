@@ -38,7 +38,7 @@ import kotlin.collections.set
 import kotlin.collections.sorted
 import kotlin.collections.toSet
 
-class AutomatonDeterminization(
+class DeterminizeTransformation(
     private val nfa: FiniteAutomaton,
     private val dfa: FiniteAutomaton = FiniteAutomaton(nfa.inputTape)
 ) : AbstractAutomatonTransformation(nfa, dfa) {
@@ -115,6 +115,6 @@ class DeterminizeAutomatonAction(
         if (isDeterministic) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.AlreadyDeterministic"))
         if (initialVertices.isEmpty()) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.AddInitStates"))
         if (buildingBlocks.isNotEmpty()) throw ActionFailedException(I18N.messages.getString("AutomatonDeterminization.NotSupportedForBuildingBlocks"))
-        AutomatonDeterminization(automaton).start()
+        DeterminizeTransformation(automaton).start()
     }
 }

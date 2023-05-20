@@ -20,7 +20,7 @@ class MultiTrackTuringMachine(
     I18N.messages.getString("MultiTrackTuringMachine.Untitled")
 ), AutomatonWithTracks {
     init {
-        require(tracks.trackCount > 1) {
+        require(tracks.trackCount > 0) {
             "Illegal `tracks` argument when creating `MultiTrackTuringMachine`"
         }
     }

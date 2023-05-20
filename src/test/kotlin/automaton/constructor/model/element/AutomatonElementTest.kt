@@ -1,7 +1,9 @@
-package automaton.constructor.model.property
+package automaton.constructor.model.element
 
-import automaton.constructor.model.element.AutomatonElement
 import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.property.DynamicProperty
+import automaton.constructor.model.property.DynamicPropertyDescriptor
+import automaton.constructor.model.property.DynamicPropertyGroup
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach

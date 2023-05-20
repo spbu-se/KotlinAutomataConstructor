@@ -69,7 +69,7 @@ fun Automaton.applyLayout(elkGraphMapping: ELKGraphMapping, transitionLayoutBoun
                 .subtract(elkGraph.width / 2, elkGraph.height / 2) * LAYOUT_SCALE + GRAPH_PANE_CENTER
 
             elkGraph.children.forEach { elkNode ->
-                elkNodeToVertex[elkNode]?.let { vertex ->
+                elkNodeToVertex[elkNode]?.takeIf { it in vertices }?.let { vertex ->
                     vertex.lastReleasePosition = fixElkPos(
                         elkNode.x + (AutomatonVertex.RADIUS / LAYOUT_SCALE),
                         elkNode.y + (AutomatonVertex.RADIUS / LAYOUT_SCALE)
@@ -78,7 +78,7 @@ fun Automaton.applyLayout(elkGraphMapping: ELKGraphMapping, transitionLayoutBoun
                 }
             }
             elkGraph.containedEdges.forEach { elkEdge ->
-                elkEdgeToEdge[elkEdge]?.routing =
+                elkEdgeToEdge[elkEdge]?.takeIf { it in edges.values }?.routing =
                     AutomatonEdge.PiecewiseCubicSpline(
                         elkEdge.sections.flatMapIndexed { i, elkEdgeSection ->
                             buildList {
@@ -88,7 +88,7 @@ fun Automaton.applyLayout(elkGraphMapping: ELKGraphMapping, transitionLayoutBoun
                             }
                         })
                 elkEdge.labels.forEach { elkLabel ->
-                    elkLabelToTransition[elkLabel]?.let { transition ->
+                    elkLabelToTransition[elkLabel]?.takeIf { it in transitions }?.let { transition ->
                         val layoutBounds = transitionLayoutBounds[transition]
                         if (layoutBounds != null) {
                             transition.position = fixElkPos(

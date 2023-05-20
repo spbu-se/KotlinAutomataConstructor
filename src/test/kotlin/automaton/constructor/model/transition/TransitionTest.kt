@@ -2,7 +2,7 @@ package automaton.constructor.model.transition
 
 import automaton.constructor.model.element.State
 import automaton.constructor.model.element.Transition
-import automaton.constructor.model.property.AutomatonElementTest
+import automaton.constructor.model.element.AutomatonElementTest
 import automaton.constructor.model.property.DynamicProperty
 import automaton.constructor.model.property.DynamicPropertyGroup
 import automaton.constructor.model.property.EPSILON_VALUE

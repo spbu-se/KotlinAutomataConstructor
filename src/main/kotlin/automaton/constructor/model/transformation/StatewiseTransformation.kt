@@ -47,7 +47,8 @@ class StatewiseTransformationAction(
     val automaton: Automaton,
     private val unavailableMessage: String,
     override val keyCombination: KeyCombination? = null,
-    private val stateActionFinder: (Automaton) -> Action<State>
+    // internal for testing
+    internal val stateActionFinder: (Automaton) -> Action<State>
 ) : Action<Unit> {
     override fun getAvailabilityFor(actionSubject: Unit): ActionAvailability {
         val stateAction = stateActionFinder(automaton)

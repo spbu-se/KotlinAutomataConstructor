@@ -262,7 +262,7 @@ fun Automaton.getNondistinguishableStateGroupByMember(groupMember: State): Set<S
     return states.filter { getStateIdentifier(it) == memberIdentifier }.toSet()
 }
 
-fun Automaton.mergeStates(stateGroup: Set<State>, mergeState: State = stateGroup.first()) = undoRedoManager.group {
+fun Automaton.mergeStates(stateGroup: Set<State>, mergeState: State = stateGroup.minBy { it.name }) = undoRedoManager.group {
     if (stateGroup.size <= 1) return@group
     mergeState.isInitial = stateGroup.any { it.isInitial }
     mergeState.requiresLayout = true

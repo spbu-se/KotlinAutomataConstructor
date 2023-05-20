@@ -58,8 +58,7 @@ fun FormalRegex?.toPrettyString(): String = when (this) {
         else -> char.toString()
     }
     is FormalRegex.KleeneStar -> when (repeated) {
-        EPSILON_VALUE -> ""
-        is FormalRegex.Singleton -> "${repeated.toPrettyString()}*"
+        is FormalRegex.Singleton, EPSILON_VALUE -> "${repeated.toPrettyString()}*"
         else -> "(${repeated.toPrettyString()})*"
     }
     is FormalRegex.Concatenation -> when (left) {

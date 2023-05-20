@@ -1,0 +1,191 @@
+{
+    "base": {
+        "type": "finite-automaton",
+        "inputTape": {
+        }
+    },
+    "vertices": [
+        {
+            "type": "state",
+            "id": 2,
+            "name": "S2",
+            "x": 499700.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 3,
+            "name": "S3",
+            "x": 499900.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 9,
+            "name": "S9",
+            "x": 500200.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 0,
+            "name": "S0",
+            "x": 499500.0,
+            "y": 500000.0,
+            "isInitial": true,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 8,
+            "name": "S8",
+            "x": 499800.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 5,
+            "name": "S5",
+            "x": 500300.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 4,
+            "name": "S4",
+            "x": 500100.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 1,
+            "name": "S1",
+            "x": 500500.0,
+            "y": 500000.0,
+            "isFinal": true,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 6,
+            "name": "S6",
+            "x": 499800.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 7,
+            "name": "S7",
+            "x": 500200.0,
+            "y": 500000.0,
+            "requiresLayout": true
+        }
+    ],
+    "transitions": [
+        {
+            "source": 2,
+            "target": 6,
+            "properties": [
+                "ε"
+            ]
+        },
+        {
+            "source": 9,
+            "target": 7,
+            "properties": [
+                "S"
+            ]
+        },
+        {
+            "source": 0,
+            "target": 2,
+            "properties": [
+                "đ"
+            ]
+        },
+        {
+            "source": 7,
+            "target": 9,
+            "properties": [
+                "a"
+            ]
+        },
+        {
+            "source": 9,
+            "target": 7,
+            "properties": [
+                "ε"
+            ]
+        },
+        {
+            "source": 7,
+            "target": 5,
+            "properties": [
+                "ε"
+            ]
+        },
+        {
+            "source": 6,
+            "target": 8,
+            "properties": [
+                "ε"
+            ]
+        },
+        {
+            "source": 3,
+            "target": 4,
+            "properties": [
+                "ε"
+            ]
+        },
+        {
+            "source": 5,
+            "target": 1,
+            "properties": [
+                "d"
+            ]
+        },
+        {
+            "source": 3,
+            "target": 4,
+            "properties": [
+                "S"
+            ]
+        },
+        {
+            "source": 8,
+            "target": 6,
+            "properties": [
+                "ā"
+            ]
+        },
+        {
+            "source": 6,
+            "target": 8,
+            "properties": [
+                "S"
+            ]
+        },
+        {
+            "source": 6,
+            "target": 3,
+            "properties": [
+                "ε"
+            ]
+        },
+        {
+            "source": 4,
+            "target": 7,
+            "properties": [
+                "ε"
+            ]
+        }
+    ]
+}

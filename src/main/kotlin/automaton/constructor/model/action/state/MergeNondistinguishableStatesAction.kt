@@ -15,8 +15,8 @@ class MergeNondistinguishableStatesAction(automaton: Automaton) :
         displayName = I18N.messages.getString("Action.MergeNondistinguishableStates")
     ) {
     override fun Automaton.doGetAvailabilityFor(actionSubject: State) =
-        if (getNondistinguishableStateGroupByMember(actionSubject).isEmpty()) DISABLED
-        else AVAILABLE
+        if (getNondistinguishableStateGroupByMember(actionSubject).size > 1) AVAILABLE
+        else DISABLED
 
     override fun Automaton.doPerformOn(actionSubject: State) =
         mergeStates(getNondistinguishableStateGroupByMember(actionSubject), mergeState = actionSubject)

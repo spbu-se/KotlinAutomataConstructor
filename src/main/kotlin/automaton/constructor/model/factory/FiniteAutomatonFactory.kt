@@ -13,8 +13,8 @@ import tornadofx.*
 import java.text.MessageFormat
 
 class FiniteAutomatonFactory : AbstractAutomatonFactory(FiniteAutomaton.DISPLAY_NAME) {
-    private val regexProperty = "".toProperty()
-    private var regex by regexProperty
+    val regexProperty = "".toProperty()
+    var regex by regexProperty
 
     override fun createAutomaton() = FiniteAutomaton(inputTape = InputTapeDescriptor()).apply {
         if (regex.isNotEmpty()) {

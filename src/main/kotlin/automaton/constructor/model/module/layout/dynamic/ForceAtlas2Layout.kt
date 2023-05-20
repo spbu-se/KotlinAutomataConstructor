@@ -49,6 +49,8 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
     private val vertexToFA2Vertex = WeakHashMap<AutomatonVertex, ForceAtlas2Vertex>()
     private val props = ForceAtlas2Props(automaton.vertices.size)
 
+    internal var forceOptimized = false
+
     private fun AutomatonVertex.shouldBeLayout(policy: DynamicLayoutPolicy) = !forceNoLayout &&
             when (policy) {
                 LAYOUT_ALL -> true
@@ -128,7 +130,7 @@ class ForceAtlas2Layout(val automaton: Automaton) : DynamicLayout {
             isStrong = props.strongGravity,
             coefficient = props.gravityCoefficient / props.scaling
         )
-        val optimized = fa2VerticesToLayout.size > 1000
+        val optimized = fa2VerticesToLayout.size > 1000 || forceOptimized
         val rootRegion = if (optimized) Region(fa2Vertices) else null
         val vertexStream =
             if (optimized) fa2VerticesToLayout.parallelStream() else fa2VerticesToLayout.stream()

@@ -1,0 +1,33 @@
+{
+    "base": {
+        "type": "finite-automaton",
+        "inputTape": {
+        }
+    },
+    "vertices": [
+        {
+            "type": "state",
+            "id": 0,
+            "name": "S0",
+            "x": 499602.0000000001,
+            "y": 499770.0,
+            "requiresLayout": true
+        },
+        {
+            "type": "state",
+            "id": 1,
+            "name": "S2",
+            "x": 500062.0330898465,
+            "y": 499962.0330898464
+        }
+    ],
+    "transitions": [
+        {
+            "source": 0,
+            "target": 1,
+            "properties": [
+                "ε"
+            ]
+        }
+    ]
+}

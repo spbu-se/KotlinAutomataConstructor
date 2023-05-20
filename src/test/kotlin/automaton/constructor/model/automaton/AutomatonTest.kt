@@ -2,11 +2,15 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.TestAutomatons
 import automaton.constructor.model.factory.FiniteAutomatonFactory
+import automaton.constructor.model.transformation.AutomatonTransformation
+import io.mockk.every
+import io.mockk.mockk
 import javafx.geometry.Point2D
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 class AutomatonTest {
     @Test
@@ -65,5 +69,22 @@ class AutomatonTest {
         assertNull(automaton.copyAndAddTransitionConditionally(
             automaton.transitions.first { it.isPure() }, ignoreIfTransitionIsPureLoop = true
         ))
+    }
+
+    @Test
+    fun `transformationOutput should be null when transformation is not set`() {
+        val automaton = TestAutomatons.EMPTY_INPUT_DETECTOR_WITH_EPSILON_LOOP
+        assertNull(automaton.transformationOutput)
+    }
+
+
+    @Test
+    fun `transformationOutput should be set when transformation is set`() {
+        val automaton = TestAutomatons.EMPTY_INPUT_DETECTOR_WITH_EPSILON_LOOP
+        val transformation = mockk<AutomatonTransformation>()
+        val resultingAutomaton = mockk<Automaton>()
+        every { transformation.resultingAutomaton } returns resultingAutomaton
+        automaton.isInputForTransformation = transformation
+        assertSame(resultingAutomaton, automaton.transformationOutput)
     }
 }
