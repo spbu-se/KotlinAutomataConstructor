@@ -122,7 +122,7 @@ tasks {
         vendor = "spbu-se"
         application = appName
         appIdentifier = "automaton.constructor"
-        version = "1.1.1.0"
+        version = "1.2.0.0"
         licenseFile("LICENSE")
         icons = icoFile
         bundleJre = System.getenv("JAVA_HOME")
