@@ -24,7 +24,7 @@ class MainWindow(
 ) : Fragment() {
     val fileController = FileController(openedAutomaton, this)
     private val helpController = HelpController()
-    private val localeController = LocaleController(this)
+    private val settingsController by inject<SettingsController>()
     private val layoutController = LayoutController(this)
     private val selectController = SelectController()
     private val centralViewBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
@@ -142,11 +142,21 @@ class MainWindow(
                     }
                 }
             }
-            menu(I18N.messages.getString("MainView.Language")) {
-                localeController.availableLocales.forEach { locale ->
-                    item(locale.getDisplayName(locale).capitalize(locale)).action {
-                        localeController.setLocale(locale)
+            menu(I18N.messages.getString("MainView.Settings")) {
+                menu(I18N.messages.getString("MainView.Language")) {
+                    settingsController.availableLocales.forEach { locale ->
+                        item(locale.getDisplayName(locale).capitalize(locale)).action {
+                            settingsController.setLocale(locale)
+                            information(
+                                I18N.messages.getString("LocaleController.RestartAppToApplyLanguageChange"),
+                                title = I18N.messages.getString("Dialog.information"),
+                                owner = currentWindow
+                            )
+                        }
                     }
+                }
+                item(I18N.messages.getString("MainView.EnableAllHints")).action {
+                    settingsController.enableAllHints()
                 }
             }
             menu(I18N.messages.getString("MainView.Help")) {

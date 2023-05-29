@@ -1,6 +1,6 @@
 package automaton.constructor
 
-import automaton.constructor.controller.LocaleController
+import automaton.constructor.controller.SettingsController
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.MainWindow
 import javafx.scene.control.Alert
@@ -15,10 +15,12 @@ import java.nio.file.Paths
 import java.text.MessageFormat
 
 class AutomatonConstructorApp : App() {
+    private val settingsController by inject<SettingsController>()
+
     override fun start(stage: Stage) {
         FX.stylesheets.add("style.css")
         super.start(stage)
-        LocaleController(uiComponent = null).initGlobalLocale()
+        SettingsController().initGlobalLocale()
         val unnamedParams = parameters.unnamed
         MainWindow().apply {
             show()
@@ -46,17 +48,17 @@ class AutomatonConstructorApp : App() {
     }
 
     private fun showStartUpHintIfNeeded(owner: Window?) {
-        if (config.boolean("showStartUpHint", true))
+        if (settingsController.isHintEnabled(SettingsController.Hint.STARTUP))
             Alert(Alert.AlertType.INFORMATION).apply {
                 initOwner(owner)
                 title = I18N.messages.getString("Dialog.information")
                 headerText = I18N.messages.getString("Hint.UseRightClickToAddElements")
-                dialogPane.expandableContent = CheckBox(I18N.messages.getString("Hint.DontShowAgain")).apply {
-                    setOnAction {
-                        config["showStartUpHint"] = !isSelected
-                        config.save()
+                dialogPane.expandableContent = CheckBox(I18N.messages.getString("Hint.DontShowAgain"))
+                    .also { dontShowCheckbox ->
+                        dontShowCheckbox.setOnAction {
+                            settingsController.setHintEnabled(SettingsController.Hint.STARTUP, !dontShowCheckbox.isSelected)
+                        }
                     }
-                }
                 dialogPane.isExpanded = true
             }.show()
     }

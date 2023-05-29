@@ -18,6 +18,7 @@ import tornadofx.*
 
 class AutomatonGraphController(val automaton: Automaton, val automatonViewContext: AutomatonViewContext) :
     Controller() {
+    private val settingsController by inject<SettingsController>()
     private val newTransitionLine = Line().apply { isVisible = false }
     private var newTransitionSourceProperty = objectProperty<AutomatonVertexView?>(null).apply {
         onChange {
@@ -160,14 +161,13 @@ class AutomatonGraphController(val automaton: Automaton, val automatonViewContex
                         it.vertex.forceNoLayout = false
                     }
                 }
-                if (config.boolean("shownDynamicLayoutHint", true) && automaton.vertices.any { it.requiresLayout }) {
-                    config["shownDynamicLayoutHint"] = false
+                if (settingsController.isHintEnabled(SettingsController.Hint.DYNAMIC_LAYOUT) && automaton.vertices.any { it.requiresLayout }) {
                     information(
-                        "To disable dynamic layout, select \"No dynamic layout\" in \"Layout\" menu",
+                        I18N.messages.getString("AutomatonGraphController.DynamicLayoutHint"),
                         title = I18N.messages.getString("Dialog.information"),
                         owner = automatonViewContext.uiComponent.currentWindow
                     )
-                    config.save()
+                    settingsController.setHintEnabled(SettingsController.Hint.DYNAMIC_LAYOUT, false)
                 }
             }
         }
