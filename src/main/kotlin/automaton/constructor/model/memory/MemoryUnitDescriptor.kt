@@ -39,5 +39,7 @@ interface MemoryUnitDescriptor : Editable {
      * Creates [MemoryUnit] described by this descriptor with initial data specified in editor returned by
      * [createEditor]
      */
-    fun createMemoryUnit(): MemoryUnit
+    fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor = this): MemoryUnit
+
+    fun copy(): MemoryUnitDescriptor = getData().createDescriptor()
 }

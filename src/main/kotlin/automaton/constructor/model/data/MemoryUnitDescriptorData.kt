@@ -32,8 +32,8 @@ interface MemoryUnitDescriptorData {
 @Serializable
 @SerialName("input-tape")
 @MostlyGeneratedOrInline
-object InputTapeDescriptorData : MemoryUnitDescriptorData {
-    override fun createDescriptor() = InputTapeDescriptor()
+class InputTapeDescriptorData(val value: String = "") : MemoryUnitDescriptorData {
+    override fun createDescriptor() = InputTapeDescriptor(value)
 }
 
 /**
@@ -42,8 +42,11 @@ object InputTapeDescriptorData : MemoryUnitDescriptorData {
 @Serializable
 @SerialName("multi-track-tape")
 @MostlyGeneratedOrInline
-data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescriptorData {
-    override fun createDescriptor() = MultiTrackTapeDescriptor(trackCount)
+data class MultiTrackTapeDescriptorData(
+    val trackCount: Int,
+    val values: List<String> = listOf()
+) : MemoryUnitDescriptorData {
+    override fun createDescriptor() = MultiTrackTapeDescriptor(trackCount, values)
 }
 
 /**
@@ -52,8 +55,8 @@ data class MultiTrackTapeDescriptorData(val trackCount: Int) : MemoryUnitDescrip
 @Serializable
 @SerialName("stack")
 @MostlyGeneratedOrInline
-data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDescriptorData {
-    override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack)
+data class StackDescriptorData(val acceptsByEmptyStack: Boolean, val value: String = "") : MemoryUnitDescriptorData {
+    override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack, value)
 }
 
 /**
@@ -62,8 +65,8 @@ data class StackDescriptorData(val acceptsByEmptyStack: Boolean) : MemoryUnitDes
 @Serializable
 @SerialName("register")
 @MostlyGeneratedOrInline
-object RegisterDescriptorData : MemoryUnitDescriptorData {
-    override fun createDescriptor() = RegisterDescriptor()
+class RegisterDescriptorData(val value: String = "") : MemoryUnitDescriptorData {
+    override fun createDescriptor() = RegisterDescriptor(value)
 }
 
 /**

@@ -61,6 +61,7 @@ dependencies {
     implementation("org.eclipse.elk:org.eclipse.elk.alg.graphviz.layouter:$elkVersion")
     implementation("org.eclipse.core:org.eclipse.core.runtime:$eclipseCoreVersion")
     implementation("com.github.h0tk3y.betterParse:better-parse:$betterParseVersion")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
 
     implementation("org.openjfx:javafx-base:$javaFXVersion:$platform")
     implementation("org.openjfx:javafx-graphics:$javaFXVersion:$platform")

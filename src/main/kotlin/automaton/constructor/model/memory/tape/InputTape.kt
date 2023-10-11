@@ -15,9 +15,14 @@ import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.MonospaceEditableString
 import javafx.beans.binding.Bindings.`when`
 import javafx.beans.value.ObservableValue
+import kotlinx.serialization.Serializable
 import tornadofx.getValue
 
-class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
+class InputTapeDescriptor() : MonospaceEditableString(), MemoryUnitDescriptor {
+    constructor(initValue: String) : this() {
+        value = initValue
+    }
+
     val expectedChar = DynamicPropertyDescriptors.formalRegex(
         messages.getString("InputTape.ExpectedChar")
     )
@@ -27,9 +32,10 @@ class InputTapeDescriptor : MonospaceEditableString(), MemoryUnitDescriptor {
     override var displayName: String = messages.getString("InputTape")
     override val isAlwaysReadyToTerminate get() = false
 
-    override fun getData() = InputTapeDescriptorData
+    override fun getData() = InputTapeDescriptorData(value)
 
-    override fun createMemoryUnit() = InputTape(this, Track(value))
+    override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
+        InputTape(this, Track((initMemoryContent as InputTapeDescriptor).value))
 }
 
 class InputTape(
