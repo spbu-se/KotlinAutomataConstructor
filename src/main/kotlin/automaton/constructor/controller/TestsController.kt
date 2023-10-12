@@ -10,7 +10,7 @@ import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.runAsyncWithDialog
 import automaton.constructor.view.TestAndResult
-import automaton.constructor.view.TestsFragment
+import automaton.constructor.view.TestsView
 import automaton.constructor.view.TestsResultsFragment
 import automaton.constructor.view.module.executor.executionLeafView
 import javafx.concurrent.Task
@@ -44,7 +44,7 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
     }
     private fun saveAsync(tests: List<Test>, uiComponent: UIComponent, file: File): Task<Unit> {
         return uiComponent.runAsyncWithDialog(
-            "Saving tests",
+            I18N.messages.getString("TestsController.Saving"),
             daemon = false
         ) {
             val testsForSerializing = TestsForSerializing(tests.map { test -> test.input.map { it.getData() } },
@@ -55,7 +55,7 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
         }
     }
     fun createTests() {
-        find<TestsFragment>(mapOf(TestsFragment::controller to this)).openWindow()
+        find<TestsView>(mapOf(TestsView::controller to this)).openWindow()
     }
     private fun chooseFile(mode: FileChooserMode): File =
         chooseFile(
@@ -68,14 +68,14 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
     }
     private fun openAsync(uiComponent: UIComponent, file: File): Task<List<Test>> {
         return uiComponent.runAsyncWithDialog(
-            "Opening tests",
+            I18N.messages.getString("TestsController.Opening"),
             daemon = false
         ) {
             val deserializedTests =
                 formatForSerializing.decodeFromString<TestsForSerializing>(file.readText())
             if (deserializedTests.automatonType != openedAutomaton::class.simpleName!!) {
                 throw RuntimeException(
-                    "Unable to load this set of tests for chosen automaton"
+                    I18N.messages.getString("TestsController.UnableToOpen")
                 )
             }
             deserializedTests.tests.map { test -> Test(test.map { it.createDescriptor() }) }
@@ -108,7 +108,7 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
         if (!wereTestsModified) return true
         val result = alert(
             Alert.AlertType.CONFIRMATION,
-            "Would you like to save tests?",
+            I18N.messages.getString("TestsController.SuggestToSave"),
             null,
             ButtonType(I18N.messages.getString("Dialog.yes.button"), ButtonType.YES.buttonData),
             ButtonType(I18N.messages.getString("Dialog.no.button"), ButtonType.NO.buttonData),

@@ -33,15 +33,20 @@ class TestTableCell: TableCell<TestAndResult, Test>() {
 
 class TestsResultsFragment: Fragment() {
     val testsAndResults: List<TestAndResult> by param()
-    override val root = tableview(testsAndResults.asObservable())
-    private val testColumn = TableColumn<TestAndResult, Test>("Test")
-    private val resultColumn = TableColumn<TestAndResult, String>("Result")
-    private val descriptionColumn = TableColumn<TestAndResult, SettingGroupEditor?>("Description")
+    override val root = tableview(testsAndResults.asObservable()) {
+        minWidth = 630.0 // just for testing
+    }
+    private val testColumn = TableColumn<TestAndResult, Test>(I18N.messages.getString(
+        "TestsResultsFragment.Test"))
+    private val resultColumn = TableColumn<TestAndResult, String>(I18N.messages.getString(
+        "TestsResultsFragment.Result"))
+    private val descriptionColumn = TableColumn<TestAndResult, SettingGroupEditor?>(I18N.messages.getString(
+        "TestsResultsFragment.Description"))
 
     init {
-        testColumn.cellValueFactory = PropertyValueFactory<TestAndResult, Test>("test")
+        testColumn.cellValueFactory = PropertyValueFactory("test")
         testColumn.setCellFactory { TestTableCell() }
-        resultColumn.cellValueFactory = PropertyValueFactory<TestAndResult, String>("result")
+        resultColumn.cellValueFactory = PropertyValueFactory("result")
         descriptionColumn.cellValueFactory = PropertyValueFactory<TestAndResult, SettingGroupEditor?>("graphic")
         root.columns.add(testColumn)
         root.columns.add(resultColumn)

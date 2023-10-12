@@ -1,16 +1,15 @@
 package automaton.constructor.view
 
 import automaton.constructor.controller.FileController
+import automaton.constructor.utils.I18N
 import javafx.beans.property.IntegerProperty
 import javafx.beans.property.StringProperty
 import javafx.scene.control.ListCell
 import javafx.scene.text.Text
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import tornadofx.*
-import java.io.File
 import java.nio.file.Files
 import kotlin.io.path.Path
 
@@ -31,13 +30,13 @@ class ExampleCell(
         super.updateItem(item, empty)
         graphic = if (item != null) {
             counter.set(counter.value + 1) // this whole counter thing obviously needs to be remade
-            Text().apply { text = item.name }
+            Text().apply { text = I18N.messages.getString("ExamplesFragment.${item.name}") }
         } else
             null
     }
 }
 
-class ExamplesFragment: Fragment() {
+class ExamplesView: View() {
     val fileController: FileController by param()
     private val examples = mutableListOf<Example>().asObservable()
     init {
@@ -47,9 +46,10 @@ class ExamplesFragment: Fragment() {
     }
     override val root = hbox {
         val examplesListView = listview(examples)
-        val description = Text().apply { text = "Choose an example" }
+        val description = Text().apply { text = I18N.messages.getString("ExamplesFragment.Choose") }
         val counter = 0.toProperty()
         val automatonName = "".toProperty()
+        minWidth = 800.0 // just for testing
         examplesListView.setCellFactory { ExampleCell(counter, automatonName) }
         add(description)
         counter.addListener(ChangeListener { _, _, _ ->
@@ -63,7 +63,7 @@ class ExamplesFragment: Fragment() {
             Files.walk(automatonsPath).forEach {
                 if (it.toFile().name == "$newValue.atmtn") {
                     fileController.open(it.toFile())
-                    this@ExamplesFragment.close()
+                    this@ExamplesView.close()
                 }
             }
         })

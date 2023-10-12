@@ -2,17 +2,10 @@ package automaton.constructor.view
 
 import automaton.constructor.controller.Test
 import automaton.constructor.controller.TestsController
-import automaton.constructor.model.data.MemoryUnitDescriptorData
-import automaton.constructor.model.data.serializersModule
 import automaton.constructor.utils.*
-import javafx.beans.property.Property
 import tornadofx.*
 import javafx.scene.control.Button
 import javafx.scene.control.ListCell
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 
 class TestCell(val controller: TestsController): ListCell<Test>() {
     private var currentMemoryDescriptors = controller.openedAutomaton.memoryDescriptors.map { it.copy() }
@@ -37,7 +30,7 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
     }
 }
 
-class TestsFragment: Fragment() {
+class TestsView: View() {
     val controller: TestsController by param()
     private val tests = mutableListOf<Test>().asObservable()
     init {
@@ -49,23 +42,23 @@ class TestsFragment: Fragment() {
         currentWindow?.setOnCloseRequest {
             if (!controller.suggestSavingChanges(tests, this))
                 it.consume()
+            tests.clear()
         }
     }
     override val root = vbox {
-        val addButton = Button("Add")
-        val deleteButton = Button("Delete")
-        val saveButton = Button("Save")
-        val loadButton = Button("Load")
+        val addButton = Button(I18N.messages.getString("TestsFragment.Add"))
+        val deleteButton = Button(I18N.messages.getString("TestsFragment.Delete"))
+        val saveButton = Button(I18N.messages.getString("TestsFragment.Save"))
+        val loadButton = Button(I18N.messages.getString("TestsFragment.Load"))
+        minWidth = 500.0 // just for testing
         hbox {
             add(addButton)
             add(deleteButton)
-        }
-        hbox {
             add(saveButton)
             add(loadButton)
         }
         val testsListView = listview(tests)
-        button("Run") {
+        button(I18N.messages.getString("TestsFragment.Run")) {
             action {
                 controller.runOnTests(tests)
             }
@@ -82,10 +75,10 @@ class TestsFragment: Fragment() {
             }
         }
         saveButton.setOnAction {
-            controller.saveTests(tests, this@TestsFragment)
+            controller.saveTests(tests, this@TestsView)
         }
         loadButton.setOnAction {
-            val openedTests = controller.openTests(this@TestsFragment)
+            val openedTests = controller.openTests(this@TestsView)
             openedTests.forEach { test -> tests.add(test) }
         }
     }

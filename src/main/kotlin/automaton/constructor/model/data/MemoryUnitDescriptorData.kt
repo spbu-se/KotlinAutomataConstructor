@@ -32,7 +32,7 @@ interface MemoryUnitDescriptorData {
 @Serializable
 @SerialName("input-tape")
 @MostlyGeneratedOrInline
-class InputTapeDescriptorData(val value: String = "") : MemoryUnitDescriptorData {
+data class InputTapeDescriptorData(val value: String = "") : MemoryUnitDescriptorData {
     override fun createDescriptor() = InputTapeDescriptor(value)
 }
 
@@ -55,7 +55,7 @@ data class MultiTrackTapeDescriptorData(
 @Serializable
 @SerialName("stack")
 @MostlyGeneratedOrInline
-data class StackDescriptorData(val acceptsByEmptyStack: Boolean, val value: String = "") : MemoryUnitDescriptorData {
+data class StackDescriptorData(val acceptsByEmptyStack: Boolean, val value: String = "z") : MemoryUnitDescriptorData {
     override fun createDescriptor() = StackDescriptor(acceptsByEmptyStack, value)
 }
 
@@ -65,7 +65,7 @@ data class StackDescriptorData(val acceptsByEmptyStack: Boolean, val value: Stri
 @Serializable
 @SerialName("register")
 @MostlyGeneratedOrInline
-class RegisterDescriptorData(val value: String = "") : MemoryUnitDescriptorData {
+data class RegisterDescriptorData(val value: String = "0") : MemoryUnitDescriptorData {
     override fun createDescriptor() = RegisterDescriptor(value)
 }
 

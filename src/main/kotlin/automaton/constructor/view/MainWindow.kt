@@ -61,8 +61,8 @@ class MainWindow(
                 shortcutItem(I18N.messages.getString("MainView.File.Open"), "Shortcut+O") {
                     fileController.onOpen()
                 }
-                item("Examples").action {
-                    find<ExamplesFragment>(mapOf(ExamplesFragment::fileController to fileController)).openModal()
+                item(I18N.messages.getString("MainView.Examples")).action {
+                    find<ExamplesView>(mapOf(ExamplesView::fileController to fileController)).openModal()
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.Save"), "Shortcut+S") {
                     fileController.onSave()
@@ -149,11 +149,11 @@ class MainWindow(
                     }
                 }
             }
-            menu("Tests") {
-                item("Create a set of tests").action {
+            menu(I18N.messages.getString("MainView.Tests")) {
+                item(I18N.messages.getString("MainView.Tests.Create")).action {
                     testsController.createTests()
                 }
-                item("Open a set of tests").action {
+                item(I18N.messages.getString("MainView.Tests.Open")).action {
 
                 }
             }
