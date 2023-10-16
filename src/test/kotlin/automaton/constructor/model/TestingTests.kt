@@ -21,7 +21,7 @@ class TestingTests: ApplicationTest() {
         app = FxToolkit.setupApplication(AutomatonConstructorApp::class.java)
     }
     override fun start(stage: Stage) {
-        stage.show()
+        //stage.show()
     }
     @AfterEach
     fun afterEachTest() {
