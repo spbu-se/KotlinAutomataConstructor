@@ -1,6 +1,7 @@
 package automaton.constructor.model
 
 import automaton.constructor.AutomatonConstructorApp
+import automaton.constructor.utils.I18N
 import javafx.application.Application
 import javafx.scene.Node
 import javafx.stage.Stage
@@ -28,50 +29,63 @@ class TestingTests: ApplicationTest() {
     }
 
     private fun openExampleAndRunTest(automaton: String, test: String) {
-        clickOn("OK")
-        clickOn("File")
-        clickOn("Examples")
+        clickOn(I18N.messages.getString("OpenedAutomatonController.OK"))
+        clickOn(I18N.messages.getString("MainView.File"))
+        clickOn(I18N.messages.getString("MainView.Examples"))
         doubleClickOn(automaton)
-        clickOn("Tests")
-        clickOn("Create a set of tests")
-        clickOn("Add")
+        clickOn(I18N.messages.getString("MainView.Tests"))
+        clickOn(I18N.messages.getString("MainView.Tests.Create"))
+        clickOn(I18N.messages.getString("TestsFragment.Add"))
         clickOn(from(rootNode(window("Test").scene)).lookup(".text-field").query<Node>()).write(test)
-        clickOn(from(rootNode(window("Test").scene)).lookup("Run").query<Node>())
+        clickOn(from(rootNode(window("Test").scene)).lookup(I18N.messages.getString(
+            "TestsFragment.Run")).query<Node>())
     }
 
     @Test
     fun runningTestOnFiniteAutomatonTest() {
-        openExampleAndRunTest("Even binary numbers recognizer", "1")
-        verifyThat(".table-view", hasTableCell("Input rejected"))
+        openExampleAndRunTest(I18N.automatonExamples.getString(
+            "ExamplesFragment.evenBinaryNumbersRecognizer"), "1")
+        verifyThat(".table-view", hasTableCell(I18N.messages.getString(
+            "ExecutorController.Executor.Status.Rejected")))
     }
 
     @Test
     fun runningTestOnCorrectBracketSequenceRecognizer() {
-        openExampleAndRunTest("Correct bracket sequence recognizer", "()[]{}")
-        verifyThat(".table-view", hasTableCell("Input accepted"))
+        openExampleAndRunTest(I18N.automatonExamples.getString(
+            "ExamplesFragment.correctBracketSeqRecognizer"), "()[]{}")
+        verifyThat(".table-view", hasTableCell(I18N.messages.getString(
+            "ExecutorController.Executor.Status.Accepted")))
     }
 
     @Test
     fun runningTestOnTuringMachine() {
-        openExampleAndRunTest("Binary number adder", "100+111")
-        verifyThat(".table-view", hasTableCell("Input accepted"))
+        openExampleAndRunTest(I18N.automatonExamples.getString(
+            "ExamplesFragment.binaryNumberAdder"), "100+111")
+        verifyThat(".table-view", hasTableCell(I18N.messages.getString(
+            "ExecutorController.Executor.Status.Accepted")))
     }
 
     @Test
     fun runningTestOnEvenPalindromesRecognizer() {
-        openExampleAndRunTest("Even palindromes recognizer", "110011")
-        verifyThat(".table-view", hasTableCell("Input accepted"))
+        openExampleAndRunTest(I18N.automatonExamples.getString(
+            "ExamplesFragment.evenPalindromesRecognizer"), "110011")
+        verifyThat(".table-view", hasTableCell(I18N.messages.getString(
+            "ExecutorController.Executor.Status.Accepted")))
     }
 
     @Test
     fun runningTestOnRegisterAutomaton() {
-        openExampleAndRunTest("Recognizer of numbers consisting of 3 zeros and 1 one", "110011")
-        verifyThat(".table-view", hasTableCell("Input rejected"))
+        openExampleAndRunTest(I18N.automatonExamples.getString(
+            "ExamplesFragment.threeZerosAndOneOne"), "110011")
+        verifyThat(".table-view", hasTableCell(I18N.messages.getString(
+            "ExecutorController.Executor.Status.Rejected")))
     }
 
     @Test
     fun runningTestOnMealyMooreMachine() {
-        openExampleAndRunTest("Remover zeros from binary numbers", "110011")
-        verifyThat(".table-view", hasTableCell("Input accepted"))
+        openExampleAndRunTest(I18N.automatonExamples.getString(
+            "ExamplesFragment.zeroRemover"), "110011")
+        verifyThat(".table-view", hasTableCell(I18N.messages.getString(
+            "ExecutorController.Executor.Status.Accepted")))
     }
 }
