@@ -39,7 +39,7 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
         }
     }
     fun saveTests(tests: List<Test>, uiComponent: UIComponent) {
-        val file = chooseFile(FileChooserMode.Save)
+        val file = chooseFile(FileChooserMode.Save) ?: return
         saveAsync(tests, uiComponent, file)
     }
     private fun saveAsync(tests: List<Test>, uiComponent: UIComponent, file: File): Task<Unit> {
@@ -55,15 +55,17 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
         }
     }
     fun createTests() {
-        find<TestsView>(mapOf(TestsView::controller to this)).openWindow()
+        val testsWindow = find<TestsView>(mapOf(TestsView::controller to this))
+        testsWindow.title = "Test"
+        testsWindow.openWindow()
     }
-    private fun chooseFile(mode: FileChooserMode): File =
+    private fun chooseFile(mode: FileChooserMode): File? =
         chooseFile(
             filters = arrayOf(FileChooser.ExtensionFilter("1", "*.json")),
             mode = mode
-        ).first()
+        ).firstOrNull()
     fun openTests(uiComponent: UIComponent): List<Test> {
-        val file = chooseFile(FileChooserMode.Single)
+        val file = chooseFile(FileChooserMode.Single) ?: return listOf()
         return openAsync(uiComponent, file).get()
     }
     private fun openAsync(uiComponent: UIComponent, file: File): Task<List<Test>> {

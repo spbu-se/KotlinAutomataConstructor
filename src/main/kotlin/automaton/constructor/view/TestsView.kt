@@ -42,7 +42,8 @@ class TestsView: View() {
         currentWindow?.setOnCloseRequest {
             if (!controller.suggestSavingChanges(tests, this))
                 it.consume()
-            tests.clear()
+            else
+                tests.clear()
         }
     }
     override val root = vbox {

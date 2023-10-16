@@ -5,6 +5,9 @@ import automaton.constructor.utils.I18N
 import javafx.beans.property.IntegerProperty
 import javafx.beans.property.StringProperty
 import javafx.scene.control.ListCell
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -30,7 +33,7 @@ class ExampleCell(
         super.updateItem(item, empty)
         graphic = if (item != null) {
             counter.set(counter.value + 1) // this whole counter thing obviously needs to be remade
-            Text().apply { text = I18N.messages.getString("ExamplesFragment.${item.name}") }
+            Text().apply { text = I18N.automatonExamples.getString("ExamplesFragment.${item.name}") }
         } else
             null
     }
@@ -47,15 +50,22 @@ class ExamplesView: View() {
     override val root = hbox {
         val examplesListView = listview(examples)
         val description = Text().apply { text = I18N.messages.getString("ExamplesFragment.Choose") }
+        val image = ImageView()
+        val descriptionVBox = VBox(description, image)
         val counter = 0.toProperty()
         val automatonName = "".toProperty()
-        minWidth = 800.0 // just for testing
+        minWidth = 800.0
+        add(descriptionVBox)
         examplesListView.setCellFactory { ExampleCell(counter, automatonName) }
-        add(description)
         counter.addListener(ChangeListener { _, _, _ ->
             val selectedCellIndex = examplesListView.selectionModel.selectedIndex
             if (selectedCellIndex != -1) {
-                description.text = examples[selectedCellIndex].description
+                description.text =
+                    I18N.automatonExamples.getString(
+                        "ExamplesFragment.${examples[selectedCellIndex].name}Description")
+                image.image = Image(
+                    "file:///${System.getProperty("user.dir")}/src/main/resources/examples/images/${examples[selectedCellIndex].name}.png",
+                    true)
             }
         })
         automatonName.addListener(ChangeListener { _, _, newValue ->

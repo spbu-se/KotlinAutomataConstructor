@@ -153,9 +153,6 @@ class MainWindow(
                 item(I18N.messages.getString("MainView.Tests.Create")).action {
                     testsController.createTests()
                 }
-                item(I18N.messages.getString("MainView.Tests.Open")).action {
-
-                }
             }
             menu(I18N.messages.getString("MainView.Settings")) {
                 menu(I18N.messages.getString("MainView.Language")) {
