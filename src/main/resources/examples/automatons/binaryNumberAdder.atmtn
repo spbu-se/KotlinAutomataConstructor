@@ -1,0 +1,404 @@
+{
+    "base": {
+        "type": "turing-machine",
+        "tape": {
+            "trackCount": 1
+        }
+    },
+    "vertices": [
+        {
+            "type": "building-block",
+            "id": 0,
+            "name": "incr",
+            "x": 499170.8285673943,
+            "y": 499586.8512925497,
+            "vertices": [
+                {
+                    "type": "state",
+                    "id": 0,
+                    "name": "S0",
+                    "x": 499512.5018535406,
+                    "y": 500030.0018535406,
+                    "isInitial": true
+                },
+                {
+                    "type": "state",
+                    "id": 1,
+                    "name": "S1",
+                    "x": 499932.5018535406,
+                    "y": 500022.5018535406,
+                    "isFinal": true
+                }
+            ],
+            "transitions": [
+                {
+                    "source": 0,
+                    "target": 1,
+                    "properties": [
+                        "□",
+                        "1",
+                        "•"
+                    ]
+                },
+                {
+                    "source": 0,
+                    "target": 0,
+                    "properties": [
+                        "1",
+                        "0",
+                        "←"
+                    ]
+                },
+                {
+                    "source": 0,
+                    "target": 1,
+                    "properties": [
+                        "0",
+                        "1",
+                        "•"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "building-block",
+            "id": 1,
+            "name": "R until plus",
+            "x": 498926.8576029542,
+            "y": 499945.14744656865,
+            "isInitial": true,
+            "vertices": [
+                {
+                    "type": "state",
+                    "id": 0,
+                    "name": "S1",
+                    "x": 500127.465125084,
+                    "y": 500019.965125084,
+                    "isFinal": true
+                },
+                {
+                    "type": "state",
+                    "id": 1,
+                    "name": "S0",
+                    "x": 499687.465125084,
+                    "y": 500027.465125084,
+                    "isInitial": true
+                }
+            ],
+            "transitions": [
+                {
+                    "source": 1,
+                    "target": 1,
+                    "properties": [
+                        "0",
+                        "0",
+                        "→"
+                    ]
+                },
+                {
+                    "source": 1,
+                    "target": 0,
+                    "properties": [
+                        "+",
+                        "+",
+                        "•"
+                    ]
+                },
+                {
+                    "source": 1,
+                    "target": 1,
+                    "properties": [
+                        "1",
+                        "1",
+                        "→"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "state",
+            "id": 2,
+            "name": "S3",
+            "x": 500719.6682302039,
+            "y": 499934.28510613955
+        },
+        {
+            "type": "building-block",
+            "id": 3,
+            "name": "L until plus",
+            "x": 499928.3285673943,
+            "y": 499584.3512925497,
+            "vertices": [
+                {
+                    "type": "state",
+                    "id": 0,
+                    "name": "S1",
+                    "x": 500222.49725392467,
+                    "y": 499997.49725392467,
+                    "isFinal": true
+                },
+                {
+                    "type": "state",
+                    "id": 1,
+                    "name": "S0",
+                    "x": 499844.99725392467,
+                    "y": 499999.99725392467,
+                    "isInitial": true
+                }
+            ],
+            "transitions": [
+                {
+                    "source": 1,
+                    "target": 1,
+                    "properties": [
+                        "1",
+                        "1",
+                        "←"
+                    ]
+                },
+                {
+                    "source": 1,
+                    "target": 0,
+                    "properties": [
+                        "+",
+                        "+",
+                        "•"
+                    ]
+                },
+                {
+                    "source": 1,
+                    "target": 1,
+                    "properties": [
+                        "0",
+                        "0",
+                        "←"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "building-block",
+            "id": 4,
+            "name": "decr",
+            "x": 499630.9715277891,
+            "y": 499945.12477741484,
+            "vertices": [
+                {
+                    "type": "state",
+                    "id": 0,
+                    "name": "S1",
+                    "x": 500094.9853770883,
+                    "y": 499887.4853770883
+                },
+                {
+                    "type": "state",
+                    "id": 1,
+                    "name": "S3",
+                    "x": 500609.9853770883,
+                    "y": 499887.4853770883,
+                    "isFinal": true
+                },
+                {
+                    "type": "building-block",
+                    "id": 2,
+                    "name": "R until blank",
+                    "x": 499580.0275976956,
+                    "y": 499892.5275976956,
+                    "isInitial": true,
+                    "vertices": [
+                        {
+                            "type": "state",
+                            "id": 0,
+                            "name": "S0",
+                            "x": 499637.5,
+                            "y": 499927.5,
+                            "isInitial": true
+                        },
+                        {
+                            "type": "state",
+                            "id": 1,
+                            "name": "S1",
+                            "x": 500130.00459961593,
+                            "y": 499922.50459961593,
+                            "isFinal": true
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "source": 0,
+                            "target": 0,
+                            "properties": [
+                                "1",
+                                "1",
+                                "→"
+                            ]
+                        },
+                        {
+                            "source": 0,
+                            "target": 1,
+                            "properties": [
+                                "□",
+                                "□",
+                                "•"
+                            ]
+                        },
+                        {
+                            "source": 0,
+                            "target": 0,
+                            "properties": [
+                                "0",
+                                "0",
+                                "→"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "transitions": [
+                {
+                    "source": 0,
+                    "target": 1,
+                    "properties": [
+                        "+",
+                        "+",
+                        "•"
+                    ]
+                },
+                {
+                    "source": 0,
+                    "target": 1,
+                    "properties": [
+                        "1",
+                        "0",
+                        "•"
+                    ]
+                },
+                {
+                    "source": 2,
+                    "target": 0,
+                    "properties": [
+                        "□",
+                        "□",
+                        "←"
+                    ]
+                },
+                {
+                    "source": 0,
+                    "target": 0,
+                    "properties": [
+                        "0",
+                        "1",
+                        "←"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "state",
+            "id": 5,
+            "name": "S2",
+            "x": 500191.5614396806,
+            "y": 499939.6971964462
+        },
+        {
+            "type": "state",
+            "id": 6,
+            "name": "S4",
+            "x": 501160.0083066971,
+            "y": 499935.0083066971,
+            "isFinal": true
+        }
+    ],
+    "transitions": [
+        {
+            "source": 5,
+            "target": 2,
+            "properties": [
+                "□",
+                "□",
+                "←"
+            ]
+        },
+        {
+            "source": 2,
+            "target": 2,
+            "properties": [
+                "□",
+                "□",
+                "←"
+            ]
+        },
+        {
+            "source": 4,
+            "target": 5,
+            "properties": [
+                "+",
+                "□",
+                "→"
+            ]
+        },
+        {
+            "source": 5,
+            "target": 5,
+            "properties": [
+                "1",
+                "□",
+                "→"
+            ]
+        },
+        {
+            "source": 0,
+            "target": 1,
+            "properties": [
+                "1",
+                "1",
+                "→"
+            ]
+        },
+        {
+            "source": 2,
+            "target": 6,
+            "properties": [
+                "0",
+                "0",
+                "•"
+            ]
+        },
+        {
+            "source": 2,
+            "target": 6,
+            "properties": [
+                "1",
+                "1",
+                "•"
+            ]
+        },
+        {
+            "source": 3,
+            "target": 0,
+            "properties": [
+                "+",
+                "+",
+                "←"
+            ]
+        },
+        {
+            "source": 4,
+            "target": 3,
+            "properties": [
+                "0",
+                "0",
+                "←"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 4,
+            "properties": [
+                "+",
+                "+",
+                "→"
+            ]
+        }
+    ]
+}

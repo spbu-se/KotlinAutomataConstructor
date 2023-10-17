@@ -16,6 +16,10 @@ import java.text.MessageFormat
 
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
+    constructor(trackCount: Int, initValues: List<String>) : this(trackCount) {
+        valueProperties.zip(initValues).forEach { (a, b) -> a.value = b }
+    }
+
     val headMoveDirection =
         DynamicPropertyDescriptors.enum<HeadMoveDirection>(messages.getString("MultitrackTape.HeadMoveDirection"))
     val expectedChars = List(trackCount) { i ->
@@ -40,9 +44,11 @@ class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     else messages.getString("MultitrackTape.Multi-trackTape")
     override val allowsStepByClosure get() = false
 
-    override fun getData() = MultiTrackTapeDescriptorData(trackCount)
+    override fun getData() = MultiTrackTapeDescriptorData(trackCount, valueProperties.map { it.value })
 
-    override fun createMemoryUnit() = MultiTrackTape(this, valueProperties.map { Track(it.value) })
+    override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
+        MultiTrackTape(this,
+            (initMemoryContent as MultiTrackTapeDescriptor).valueProperties.map { Track(it.value) })
 
     override fun createEditor() = VBox().apply {
         valueProperties.forEach { valueProperty ->

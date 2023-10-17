@@ -29,7 +29,8 @@ class OutputTapeDescriptor : MemoryUnitDescriptor {
 
     override val acceptanceRequiringPolicy get() = AcceptanceRequiringPolicy.ALWAYS
 
-    override fun createMemoryUnit() = OutputTape(descriptor = this, initValue = "")
+    override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
+        OutputTape(descriptor = this, initValue = "")
 
     override fun createEditor(): Node? = null
 
