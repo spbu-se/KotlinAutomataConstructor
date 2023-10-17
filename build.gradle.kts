@@ -102,6 +102,7 @@ tasks {
             systemProperty("testfx.headless", "true")
             systemProperty("prism.order", "sw")
             systemProperty("prism.text", "t2k")
+            systemProperty("java.awt.headless", "true")
         }
     }
     jacocoTestReport {

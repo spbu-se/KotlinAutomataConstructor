@@ -33,11 +33,6 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
 class TestsView: View() {
     val controller: TestsController by param()
     private val tests = mutableListOf<Test>().asObservable()
-    init {
-        /*someKindOfProperty.addListener(ChangeListener { _, _, _ ->
-            suggest to save changes and close
-        })*/
-    }
     override fun onDock() {
         currentWindow?.setOnCloseRequest {
             if (!controller.suggestSavingChanges(tests, this))
