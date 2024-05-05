@@ -24,13 +24,13 @@ class TransitionView(
 
     override fun getSettings() = listOf(
         SettingGroup(
-            messages.getString("TransitionView.Transition").toProperty(), listOf(
+            I18N.messages.getString("TransitionView.Transition").toProperty(), listOf(
                 Setting(
-                    messages.getString("TransitionView.Source"),
+                    I18N.messages.getString("TransitionView.Source"),
                     createUnmodifiableSettingControl(transition.source.nameProperty)
                 ),
                 Setting(
-                    messages.getString("TransitionView.Target"),
+                    I18N.messages.getString("TransitionView.Target"),
                     createUnmodifiableSettingControl(transition.target.nameProperty)
                 )
             )

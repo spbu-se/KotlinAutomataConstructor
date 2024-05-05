@@ -17,7 +17,7 @@ import tornadofx.add
 import tornadofx.fitToParentSize
 import kotlin.collections.set
 
-class AutomatonGraphView(val automaton: Automaton, val automatonViewContext: AutomatonViewContext) : Pane() {
+class AutomatonGraphView(val automaton: Automaton, private val automatonViewContext: AutomatonViewContext) : Pane() {
     private val edgePane = subPane()
     val edgeViews = mutableMapOf<Pair<AutomatonVertex, AutomatonVertex>, AutomatonEdgeView>()
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonVertexView>()

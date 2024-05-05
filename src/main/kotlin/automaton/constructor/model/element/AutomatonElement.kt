@@ -72,4 +72,18 @@ sealed class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDesc
                 .replace("\\n", "\n")
         }
     val propetiesText by propertiesTextBinding
+
+    val filtersTextBinding =
+        stringBinding(this, *propertyGroups.flatMap { it.filters }.toTypedArray()) {
+            propertyGroups.flatMap { it.filters }.joinToString(separator = ",") { it.displayValue }
+        }
+    val filtersText by filtersTextBinding
+
+    val sideEffectsTextBinding =
+        stringBinding(this, *propertyGroups.flatMap { it.sideEffects }.toTypedArray()) {
+            propertyGroups.asSequence().map { (_, _, sideEffects) ->
+                sideEffects.joinToString(separator = ",") { it.displayValue }
+            }.filter { it.isNotEmpty() }.joinToString(separator = ";")
+        }
+    val sideEffectsText by sideEffectsTextBinding
 }

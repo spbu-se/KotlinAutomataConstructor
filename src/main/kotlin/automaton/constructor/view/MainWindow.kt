@@ -4,6 +4,7 @@ import automaton.constructor.controller.*
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.action.perform
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
 import automaton.constructor.model.factory.getAllAutomatonFactories
@@ -51,6 +52,10 @@ class MainWindow(
         TestsController(it)
     }
     private val testsController: TestsController by testsControllerBinding
+    private val algorithmsControllerBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
+        AlgorithmsController(it)
+    }
+    private val algorithmsController by algorithmsControllerBinding
 
     override val root = borderpane {
         top = menubar {
@@ -152,6 +157,13 @@ class MainWindow(
             menu(I18N.messages.getString("MainView.Tests")) {
                 item(I18N.messages.getString("MainView.Tests.Create")).action {
                     testsController.createTests()
+                }
+            }
+            menu("Algorithms") {
+                menu("Pushdown automaton") {
+                    item("Convert into context-free grammar").action {
+                        algorithmsController.convertToCFG()
+                    }
                 }
             }
             menu(I18N.messages.getString("MainView.Settings")) {

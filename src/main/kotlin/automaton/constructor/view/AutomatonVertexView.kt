@@ -24,7 +24,7 @@ import tornadofx.*
 import kotlin.math.abs
 import kotlin.math.max
 
-class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(vertex) {
+class AutomatonVertexView(vertex: AutomatonVertex) : AutomatonBasicVertexView(vertex) {
     val positionProperty: Property<Point2D> = vertex.position.toProperty().apply { bind(vertex.positionProperty) }
     val colorProperty: Property<Color> = DEFAULT_COLOR.toProperty().apply {
         val colorBinding =
@@ -105,20 +105,6 @@ class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(ve
             yProperty().bind(positionProperty.y)
         }
     }
-
-    override fun getSettings() = listOf(
-        SettingGroup(
-            messages.getString("StateView.State").toProperty(), listOf(
-                Setting(messages.getString("StateView.Name"),
-                    TextField().apply { textProperty().bindBidirectional(vertex.nameProperty) }),
-                Setting(messages.getString("StateView.Initial"),
-                    CheckBox().apply { selectedProperty().bindBidirectional(vertex.isInitialProperty) })
-            ) + if (vertex.alwaysEffectivelyFinal) emptyList() else listOf(
-                Setting(messages.getString("StateView.Final"),
-                    CheckBox().apply { selectedProperty().bindBidirectional(vertex.isFinalProperty) })
-            )
-        )
-    ) + super.getSettings()
 
     private fun placeShape(radius: Double, op: Shape.() -> Unit) = when (shapeType) {
         CIRCLE -> circle {
