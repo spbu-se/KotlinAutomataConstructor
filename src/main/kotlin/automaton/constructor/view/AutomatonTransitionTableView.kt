@@ -2,7 +2,6 @@ package automaton.constructor.view
 
 import automaton.constructor.controller.AutomatonRepresentationController
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.AutomatonVertex
@@ -13,7 +12,6 @@ import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.hoverableTooltip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.beans.value.ChangeListener
 import javafx.collections.ListChangeListener
 import javafx.collections.SetChangeListener
 import javafx.scene.control.*
@@ -36,7 +34,7 @@ class StateCell(private val table: AutomatonTransitionTableView): TableCell<Tran
         if (item != null) {
             colourProperty.bind(table.vertexToViewMap[item]!!.colourProperty)
             this.style = "-fx-background-color: ${colour};"
-            colourProperty.addListener(tornadofx.ChangeListener { _, _, newValue ->
+            colourProperty.addListener(ChangeListener { _, _, newValue ->
                 this.style = "-fx-background-color: ${newValue};"
             })
             graphic = table.vertexToViewMap[item]
@@ -64,6 +62,42 @@ class InputCell(private val table: AutomatonTransitionTableView): TableCell<Tran
     }
 }
 
+class NewTransitionPopup(val automaton: Automaton): Fragment() {
+    val source = SimpleObjectProperty<AutomatonVertex>()
+    val target = SimpleObjectProperty<AutomatonVertex>()
+    override val root = vbox {
+        label("What transition would you like to add?")
+        hbox {
+            label("Source vertex")
+            val sourceBox = combobox(source, automaton.vertices.toList())
+
+            class VertexCell : ListCell<AutomatonVertex>() {
+                override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    graphic = if (item != null) {
+                        label(item.name) {
+                            textFill = Color.BLACK
+                        }
+                    } else {
+                        null
+                    }
+                }
+            }
+            sourceBox.setCellFactory { VertexCell() }
+            sourceBox.buttonCell = VertexCell()
+            label("Target vertex")
+            val targetBox = combobox(target, automaton.vertices.toList())
+            targetBox.setCellFactory { VertexCell() }
+            targetBox.buttonCell = VertexCell()
+        }
+        button("Add") {
+            action {
+                automaton.addTransition(source.value, target.value)
+            }
+        }
+    }
+}
+
 class AutomatonTransitionTableView(
     val automaton: Automaton,
     private val automatonViewContext: AutomatonViewContext
@@ -75,7 +109,7 @@ class AutomatonTransitionTableView(
     private val inputsCount = mutableMapOf<String, Int>()
     val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonBasicVertexView>()
-    val transitionToViewMap = mutableMapOf<Transition, BasicTransitionView>()
+    val transitionToViewMap = mutableMapOf<Transition, TransitionTableTransitionView>()
 
     init {
         automaton.vertices.addListener(SetChangeListener {
@@ -169,41 +203,7 @@ class AutomatonTransitionTableView(
                 }
                 button("Add transition") {
                     action {
-                        val newTransitionPopup = object: Fragment() {
-                            val source = SimpleObjectProperty<AutomatonVertex>()
-                            val target = SimpleObjectProperty<AutomatonVertex>()
-                            override val root = vbox {
-                                label("What transition would you like to add?")
-                                hbox {
-                                    label("Source vertex")
-                                    val sourceBox = combobox(source, automaton.vertices.toList())
-                                    class VertexCell: ListCell<AutomatonVertex>() {
-                                        override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
-                                            super.updateItem(item, empty)
-                                            graphic = if (item != null) {
-                                                label(item.name) {
-                                                    textFill = Color.BLACK
-                                                }
-                                            } else {
-                                                null
-                                            }
-                                        }
-                                    }
-                                    sourceBox.setCellFactory { VertexCell() }
-                                    sourceBox.buttonCell = VertexCell()
-                                    label("Target vertex")
-                                    val targetBox = combobox(target, automaton.vertices.toList())
-                                    targetBox.setCellFactory { VertexCell() }
-                                    targetBox.buttonCell = VertexCell()
-                                }
-                                button("Add") {
-                                    action {
-                                        automaton.addTransition(source.value, target.value)
-                                    }
-                                }
-                            }
-                        }
-                        newTransitionPopup.openWindow()
+                        find<NewTransitionPopup>().openWindow()
                     }
                     style = "-fx-font-size:30"
                 }
@@ -252,7 +252,7 @@ class AutomatonTransitionTableView(
     }
 
     private fun registerTransition(transition: Transition) {
-        val transitionView = BasicTransitionView(transition)
+        val transitionView = TransitionTableTransitionView(transition)
         controller.registerAutomatonElementView(transitionView)
         transitionToViewMap[transition] = transitionView
         transition.filtersTextBinding.addListener { _, oldValue, _ ->
@@ -269,7 +269,7 @@ class AutomatonTransitionTableView(
     
     private fun addTransitionToTable(transition: Transition) {
         if (!inputsCount.contains(transition.filtersText)) {
-            inputColumns.add(TableColumn<TransitionMap, List<Transition>>(transition.filtersText))
+            inputColumns.add(TableColumn(transition.filtersText))
         }
 
         var transitionMap = transitionsByVertices.find { it.source == transition.source }

@@ -21,6 +21,7 @@ import tornadofx.*
 class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonViewContext) : Pane() {
     val automatonGraphView = AutomatonGraphView(automaton, automatonViewContext)
     val automatonTransitionTableView = AutomatonTransitionTableView(automaton, automatonViewContext)
+    val automatonAdjacencyMatrixView = AutomatonAdjacencyMatrixView(automaton, automatonViewContext)
     val undoRedoController = UndoRedoController(this)
 
     init {
@@ -34,15 +35,17 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
         }
         val graphTab = customizedZoomScrollPane { add(automatonGraphView) }
         val tableTab = customizedZoomScrollPane { add(automatonTransitionTableView) }
-        val tabsAndSettings = vbox {
-            tabpane {
-                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                tab("Graph representation") {
-                    add(graphTab)
-                }
-                tab("State-transition table representation") {
-                    add(tableTab)
-                }
+        val matrixTab = customizedZoomScrollPane { add(automatonAdjacencyMatrixView) }
+        tabpane {
+            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+            tab("Graph representation") {
+                add(graphTab)
+            }
+            tab("State-transition table representation") {
+                add(tableTab)
+            }
+            tab("Adjacency matrix representation") {
+                add(matrixTab)
             }
         }
         val settingsEditor = SettingsEditor().apply {
@@ -52,11 +55,13 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             automatonTransitionTableView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
                 settingsProperty.set(newValue?.getSettings())
             })
+            automatonAdjacencyMatrixView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+                settingsProperty.set(newValue?.getSettings())
+            })
             editingDisabledProperty.bind(not(automaton.allowsModificationsByUserProperty))
             visibleWhen(automaton.isOutputOfTransformationProperty.booleanBinding { it == null })
         }
         add(settingsEditor)
-        //tabsAndSettings.add(settingsEditor)
         label {
             isWrapText = true
             layoutXProperty().bind(this@AutomatonView.widthProperty() - widthProperty() - 10.0)

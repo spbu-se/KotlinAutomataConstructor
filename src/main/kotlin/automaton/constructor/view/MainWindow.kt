@@ -164,6 +164,7 @@ class MainWindow(
                     item("Convert into context-free grammar").action {
                         algorithmsController.convertToCFG()
                     }
+
                 }
             }
             menu(I18N.messages.getString("MainView.Settings")) {

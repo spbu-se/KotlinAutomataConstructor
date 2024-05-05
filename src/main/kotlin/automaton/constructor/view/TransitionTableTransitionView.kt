@@ -7,8 +7,8 @@ import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.createUnmodifiableSettingControl
 import tornadofx.*
 
-open class BasicTransitionView(val transition: Transition) : AutomatonElementView(transition) {
-    var textLength = 0;
+class TransitionTableTransitionView(val transition: Transition) : AutomatonElementView(transition) {
+    var textLength = 0
 
     init {
         hbox {
