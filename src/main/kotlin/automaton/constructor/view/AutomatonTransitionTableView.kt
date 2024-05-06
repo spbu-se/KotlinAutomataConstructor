@@ -11,6 +11,10 @@ import tornadofx.*
 
 class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: AutomatonViewContext
 ): AutomatonTableView<TransitionTableTransitionView>(automaton, automatonViewContext) {
+    init {
+        sourceColumn.text = "State"
+    }
+
     override fun registerVertex(vertex: AutomatonVertex) {
         val vertexView = AutomatonBasicVertexView(vertex)
         controller.registerAutomatonElementView(vertexView)

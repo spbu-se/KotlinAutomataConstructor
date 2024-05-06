@@ -169,41 +169,41 @@ abstract class AutomatonTableView<T: TableTransitionView>(
         vbox {
             add(table)
             hbox {
-                vbox {
-                    button("Add state") {
+                button("Add state") {
+                    action {
+                        automaton.addState()
+                    }
+                    style = "-fx-font-size:30"
+                }
+                if (automaton.allowsBuildingBlocks) {
+                    button("Add empty building block") {
                         action {
-                            automaton.addState()
+                            automaton.addBuildingBlock()
                         }
                         style = "-fx-font-size:30"
                     }
-                    if (automaton.allowsBuildingBlocks) {
-                        button("Add empty building block") {
-                            action {
-                                automaton.addBuildingBlock()
-                            }
-                        }
-                        button("Copy building block from file") {
-                            action {
-                                if (!automaton.allowsModificationsByUser) return@action
-                                val file = automatonViewContext.fileController.chooseFile(
-                                    I18N.messages.getString("MainView.File.Open"),
-                                    FileChooserMode.Single
-                                ) ?: return@action
-                                automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
-                                    if (type != automaton.getTypeData()) error(
-                                        I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
-                                        I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType"),
-                                        owner = automatonViewContext.uiComponent.currentWindow
-                                    )
-                                    else {
-                                        automaton.addBuildingBlock().apply {
-                                            subAutomaton.addContent(vertices, transitions, edges)
-                                            name = file.nameWithoutExtension
-                                        }
+                    button("Copy building block from file") {
+                        action {
+                            if (!automaton.allowsModificationsByUser) return@action
+                            val file = automatonViewContext.fileController.chooseFile(
+                                I18N.messages.getString("MainView.File.Open"),
+                                FileChooserMode.Single
+                            ) ?: return@action
+                            automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
+                                if (type != automaton.getTypeData()) error(
+                                    I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
+                                    I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType"),
+                                    owner = automatonViewContext.uiComponent.currentWindow
+                                )
+                                else {
+                                    automaton.addBuildingBlock().apply {
+                                        subAutomaton.addContent(vertices, transitions, edges)
+                                        name = file.nameWithoutExtension
                                     }
                                 }
                             }
                         }
+                        style = "-fx-font-size:30"
                     }
                 }
                 button("Add transition") {
