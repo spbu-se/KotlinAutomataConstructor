@@ -5,12 +5,10 @@ import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.hoverableTooltip
-import javafx.beans.property.Property
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ListChangeListener
 import javafx.scene.control.TableColumn
 import javafx.scene.layout.Pane
-import tornadofx.ChangeListener
 import tornadofx.add
 import tornadofx.fitToParentSize
 

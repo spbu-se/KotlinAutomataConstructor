@@ -10,7 +10,6 @@ import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.collections.ListChangeListener
 import javafx.collections.SetChangeListener
 import javafx.scene.control.ListCell
 import javafx.scene.control.TableCell

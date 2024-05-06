@@ -53,7 +53,7 @@ class MainWindow(
     }
     private val testsController: TestsController by testsControllerBinding
     private val algorithmsControllerBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
-        AlgorithmsController(it)
+        AlgorithmsController(it, fileController, layoutController)
     }
     private val algorithmsController by algorithmsControllerBinding
 
@@ -164,7 +164,9 @@ class MainWindow(
                     item("Convert into context-free grammar").action {
                         algorithmsController.convertToCFG()
                     }
-
+                    item("Hellings algorithm").action {
+                        algorithmsController.executeHellingsAlgo()
+                    }
                 }
             }
             menu(I18N.messages.getString("MainView.Settings")) {

@@ -1,6 +1,7 @@
 package automaton.constructor.view.algorithms
 
 import automaton.constructor.controller.AlgorithmsController
+import automaton.constructor.controller.algorithms.ConversionToCFGController
 import automaton.constructor.model.element.CFGSymbol
 import automaton.constructor.model.element.ContextFreeGrammar
 import automaton.constructor.model.element.Nonterminal
@@ -11,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
 import tornadofx.*
 
-class LeftSideCell(val controller: AlgorithmsController): TableCell<Production, Nonterminal>() {
+class LeftSideCell(val controller: ConversionToCFGController): TableCell<Production, Nonterminal>() {
     override fun updateItem(item: Nonterminal?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -22,7 +23,7 @@ class LeftSideCell(val controller: AlgorithmsController): TableCell<Production, 
     }
 }
 
-class RightSideCell(val controller: AlgorithmsController): TableCell<Production, List<CFGSymbol>>() {
+class RightSideCell(val controller: ConversionToCFGController): TableCell<Production, List<CFGSymbol>>() {
     override fun updateItem(item: List<CFGSymbol>?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -43,7 +44,7 @@ class RightSideCell(val controller: AlgorithmsController): TableCell<Production,
 
 class ConversionToCFGView: View() {
     val grammar: ContextFreeGrammar by param()
-    val controller: AlgorithmsController by param()
+    val controller: ConversionToCFGController by param()
     private val productionsTableView = tableview(grammar.productions.toObservable())
     private val leftSideColumn = TableColumn<Production, Nonterminal>("Left side")
     private val rightSideColumn = TableColumn<Production, List<CFGSymbol>>("Right side")
