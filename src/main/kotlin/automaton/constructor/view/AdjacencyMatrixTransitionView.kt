@@ -9,9 +9,7 @@ import tornadofx.ChangeListener
 import tornadofx.label
 import tornadofx.toProperty
 
-class AdjacencyMatrixTransitionView(val transition: Transition): AutomatonElementView(transition) {
-    var textLength = 0
-
+class AdjacencyMatrixTransitionView(transition: Transition): TableTransitionView(transition) {
     init {
         label {
             textProperty().bind(transition.propertiesTextBinding)
@@ -21,19 +19,4 @@ class AdjacencyMatrixTransitionView(val transition: Transition): AutomatonElemen
             })
         }
     }
-
-    override fun getSettings() = listOf(
-        SettingGroup(
-            I18N.messages.getString("TransitionView.Transition").toProperty(), listOf(
-                Setting(
-                    I18N.messages.getString("TransitionView.Source"),
-                    createUnmodifiableSettingControl(transition.source.nameProperty)
-                ),
-                Setting(
-                    I18N.messages.getString("TransitionView.Target"),
-                    createUnmodifiableSettingControl(transition.target.nameProperty)
-                )
-            )
-        )
-    ) + super.getSettings()
 }

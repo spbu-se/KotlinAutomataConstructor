@@ -7,9 +7,7 @@ import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.createUnmodifiableSettingControl
 import tornadofx.*
 
-class TransitionTableTransitionView(val transition: Transition) : AutomatonElementView(transition) {
-    var textLength = 0
-
+class TransitionTableTransitionView(transition: Transition): TableTransitionView(transition) {
     init {
         hbox {
             label {
@@ -32,19 +30,4 @@ class TransitionTableTransitionView(val transition: Transition) : AutomatonEleme
             }
         }
     }
-
-    override fun getSettings() = listOf(
-        SettingGroup(
-            I18N.messages.getString("TransitionView.Transition").toProperty(), listOf(
-                Setting(
-                    I18N.messages.getString("TransitionView.Source"),
-                    createUnmodifiableSettingControl(transition.source.nameProperty)
-                ),
-                Setting(
-                    I18N.messages.getString("TransitionView.Target"),
-                    createUnmodifiableSettingControl(transition.target.nameProperty)
-                )
-            )
-        )
-    ) + super.getSettings()
 }
