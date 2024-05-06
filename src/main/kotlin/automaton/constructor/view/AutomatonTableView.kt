@@ -22,14 +22,14 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import tornadofx.*
 
-class TransitionMap(
+class TransitionMap<K>(
     val source: AutomatonVertex,
-    val transitions: MutableMap<String, SimpleObjectProperty<List<Transition>>> = mutableMapOf()
+    val transitions: MutableMap<K, SimpleObjectProperty<List<Transition>>> = mutableMapOf()
 )
 
-class SourceCell<T: TableTransitionView>(
-    private val table: AutomatonTableView<T>
-): TableCell<TransitionMap, AutomatonVertex>() {
+class SourceCell<T: TableTransitionView, K>(
+    private val table: AutomatonTableView<T, K>
+): TableCell<TransitionMap<K>, AutomatonVertex>() {
     private val colourProperty = SimpleStringProperty("")
     private var colour by colourProperty
     override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
@@ -48,9 +48,9 @@ class SourceCell<T: TableTransitionView>(
     }
 }
 
-class TransitionsCell<T: TableTransitionView>(
-    private val table: AutomatonTableView<T>
-): TableCell<TransitionMap, List<Transition>>() {
+class TransitionsCell<T: TableTransitionView, K>(
+    private val table: AutomatonTableView<T, K>
+): TableCell<TransitionMap<K>, List<Transition>>() {
     override fun updateItem(item: List<Transition>?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -104,15 +104,14 @@ class NewTransitionPopup(val automaton: Automaton): Fragment() {
     }
 }
 
-abstract class AutomatonTableView<T: TableTransitionView>(
-    private val automaton: Automaton,
+abstract class AutomatonTableView<T: TableTransitionView, K>(
+    val automaton: Automaton,
     val automatonViewContext: AutomatonViewContext
 ): Pane() {
-    val transitionsByVertices = observableListOf<TransitionMap>()
-    private val table = TableView(transitionsByVertices)
-    val sourceColumn = TableColumn<TransitionMap, AutomatonVertex>()
-    val transitionsColumns = observableListOf<TableColumn<TransitionMap, List<Transition>>>()
-    val filtersCount = mutableMapOf<String, Int>()
+    val transitionsByVertices = observableListOf<TransitionMap<K>>()
+    val table = TableView(transitionsByVertices)
+    val sourceColumn = TableColumn<TransitionMap<K>, AutomatonVertex>()
+    val transitionsColumns = observableListOf<TableColumn<TransitionMap<K>, List<Transition>>>()
     val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonBasicVertexView>()
     val transitionToViewMap = mutableMapOf<Transition, T>()
@@ -131,38 +130,6 @@ abstract class AutomatonTableView<T: TableTransitionView>(
             }
             if (it.wasRemoved()) {
                 unregisterTransition(it.elementRemoved)
-            }
-        })
-        transitionsByVertices.addListener(ListChangeListener {
-            while (it.next()) {
-                if (it.wasAdded()) {
-                    val addedMap = it.addedSubList.first()
-                    filtersCount.keys.forEach { filter ->
-                        addedMap.transitions[filter] = SimpleObjectProperty(listOf())
-                    }
-                }
-            }
-        })
-        transitionsColumns.addListener(ListChangeListener {
-            while (it.next()) {
-                if (it.wasAdded()) {
-                    val addedColumn = it.addedSubList.first()
-                    filtersCount[addedColumn.text] = 0
-                    transitionsByVertices.forEach {
-                        it.transitions[addedColumn.text] = SimpleObjectProperty(listOf())
-                    }
-                    addedColumn.setCellValueFactory { p0 ->
-                        p0!!.value.transitions[addedColumn.text]!!
-                    }
-                    addedColumn.setCellFactory { TransitionsCell(this) }
-                    addedColumn.minWidth = computeCellWidth(addedColumn.text.length)
-                    table.columns.add(addedColumn)
-                }
-                if (it.wasRemoved()) {
-                    val removedColumn = it.removed.first()
-                    filtersCount.remove(removedColumn.text)
-                    table.columns.remove(removedColumn)
-                }
             }
         })
 

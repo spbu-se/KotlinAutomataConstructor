@@ -5,13 +5,44 @@ import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.hoverableTooltip
+import javafx.beans.property.SimpleObjectProperty
+import javafx.collections.ListChangeListener
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
 import tornadofx.*
 
 class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: AutomatonViewContext
-): AutomatonTableView<TransitionTableTransitionView>(automaton, automatonViewContext) {
+): AutomatonTableView<TransitionTableTransitionView, String>(automaton, automatonViewContext) {
+    private val filtersCount = mutableMapOf<String, Int>()
     init {
+        transitionsByVertices.addListener(ListChangeListener {
+            while (it.next()) {
+                if (it.wasAdded()) {
+                    val addedMap = it.addedSubList.first()
+                    filtersCount.keys.forEach { filter ->
+                        addedMap.transitions[filter] = SimpleObjectProperty(listOf())
+                    }
+                }
+            }
+        })
+        transitionsColumns.addListener(ListChangeListener {
+            while (it.next()) {
+                if (it.wasAdded()) {
+                    registerColumn(it.addedSubList.first())
+                }
+                if (it.wasRemoved()) {
+                    val removedColumn = it.removed.first()
+                    filtersCount.remove(removedColumn.text)
+                    table.columns.remove(removedColumn)
+                }
+            }
+        })
+        transitionsByVertices.forEach { map ->
+            filtersCount.keys.forEach { filter ->
+                map.transitions[filter] = SimpleObjectProperty(listOf())
+            }
+        }
+        transitionsColumns.forEach { registerColumn(it) }
         sourceColumn.text = "State"
     }
 
@@ -84,5 +115,18 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
         if (filtersCount[filtersText] == 0) {
             transitionsColumns.removeAll { it.text == filtersText }
         }
+    }
+
+    fun registerColumn(addedColumn: TableColumn<TransitionMap<String>, List<Transition>>) {
+        filtersCount[addedColumn.text] = 0
+        transitionsByVertices.forEach {
+            it.transitions[addedColumn.text] = SimpleObjectProperty(listOf())
+        }
+        addedColumn.setCellValueFactory { p0 ->
+            p0!!.value.transitions[addedColumn.text]!!
+        }
+        addedColumn.setCellFactory { TransitionsCell(this) }
+        addedColumn.minWidth = computeCellWidth(addedColumn.text.length)
+        table.columns.add(addedColumn)
     }
 }
