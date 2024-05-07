@@ -57,8 +57,8 @@ class TransitionsCell<T: TableTransitionView, K>(
                 item.forEach {
                     add(table.transitionToViewMap[it]!!)
                     val prefWidth = table.computeCellWidth(table.transitionToViewMap[it]!!.textLength)
-                    this@TransitionsCell.tableColumn.prefWidth =
-                        maxOf(this@TransitionsCell.tableColumn.prefWidth, prefWidth)
+                    this@TransitionsCell.tableColumn.minWidth =
+                        maxOf(this@TransitionsCell.tableColumn.minWidth, prefWidth)
                 }
             }
         } else {
@@ -110,7 +110,7 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
     val transitionsByVertices = observableListOf<TransitionMap<K>>()
     val table = TableView(transitionsByVertices)
     val sourceColumn = TableColumn<TransitionMap<K>, AutomatonVertex>()
-    val transitionsColumns = observableListOf<TableColumn<TransitionMap<K>, List<Transition>>>()
+    val transitionsColumns = TableColumn<TransitionMap<K>, List<Transition>>("Description")
     val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonBasicVertexView>()
     val transitionToViewMap = mutableMapOf<Transition, T>()
@@ -186,7 +186,8 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
         sourceColumn.setCellFactory { SourceCell(this) }
         sourceColumn.minWidth = 150.0
-        table.columns.add(0, sourceColumn)
+        transitionsColumns.minWidth = 1750.0
+        table.columns.addAll(sourceColumn, transitionsColumns)
 
         table.style {
             minWidth = 1900.0.px
@@ -202,6 +203,10 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
     abstract fun registerTransition(transition: Transition)
 
     abstract fun unregisterTransition(transition: Transition)
+
+    abstract fun registerColumn(addedColumn: TableColumn<TransitionMap<K>, List<Transition>>)
+
+    abstract fun unregisterColumn(removedColumn: TableColumn<TransitionMap<K>, List<Transition>>)
 
     fun computeCellWidth(textLength: Int) = SYMBOL_WIDTH * textLength + ADDITIONAL_GAP
 
