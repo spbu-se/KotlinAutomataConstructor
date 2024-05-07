@@ -7,8 +7,7 @@ import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.view.algorithms.HellingsAlgoExecutionView
 import automaton.constructor.view.algorithms.HellingsAlgoInputView
-import tornadofx.Controller
-import tornadofx.observableListOf
+import tornadofx.*
 
 class HellingsTransition(
     val nonterminal: Nonterminal,
@@ -51,6 +50,50 @@ class HellingsAlgoController(
             HellingsAlgoExecutionView::r to r
         ))
         hellingsAlgoExecutionWindow.openWindow()
+
+        hellingsAlgoExecutionWindow.nextIterationButton.action {
+            if (m.isEmpty()) {
+                hellingsAlgoExecutionWindow.close()
+            }
+            val mTransition = m.removeFirst()
+            val rToAdd = mutableListOf<HellingsTransition>()
+            do {
+                r.addAll(rToAdd)
+                rToAdd.clear()
+                r.filter {
+                    it.target == mTransition.source
+                }.forEach { rTransition ->
+                    grammar.productions.filter {
+                        it.rightSide == mutableListOf(rTransition.nonterminal, mTransition.nonterminal)
+                    }.forEach { production ->
+                        if (r.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target } &&
+                            rToAdd.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target }) {
+                            val newTransition = HellingsTransition(production.leftSide, rTransition.source, mTransition.target, false)
+                            m.add(newTransition)
+                            rToAdd.add(newTransition)
+                        }
+                    }
+                }
+            } while (rToAdd.isNotEmpty())
+            do {
+                r.addAll(rToAdd)
+                rToAdd.clear()
+                r.filter {
+                    it.source == mTransition.target
+                }.forEach { rTransition ->
+                    grammar.productions.filter {
+                        it.rightSide == mutableListOf(mTransition.nonterminal, rTransition.nonterminal)
+                    }.forEach { production ->
+                        if (r.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target } &&
+                            rToAdd.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target }) {
+                            val newTransition = HellingsTransition(production.leftSide, mTransition.source, rTransition.target, false)
+                            m.add(newTransition)
+                            rToAdd.add(newTransition)
+                        }
+                    }
+                }
+            } while (rToAdd.isNotEmpty())
+        }
     }
 
     fun getTestGrammar(): ContextFreeGrammar {

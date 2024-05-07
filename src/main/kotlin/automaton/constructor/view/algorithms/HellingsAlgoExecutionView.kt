@@ -4,6 +4,7 @@ import automaton.constructor.controller.algorithms.HellingsTransition
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.Nonterminal
 import javafx.collections.ObservableList
+import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
@@ -34,6 +35,7 @@ class HellingsAlgoExecutionView: View() {
     val r: ObservableList<HellingsTransition> by param()
     private val mListView = ListView(m).apply { this.setCellFactory { HellingsTransitionCell() } }
     private val rListView = ListView(r).apply { this.setCellFactory { HellingsTransitionCell() } }
+    val nextIterationButton = Button("Next iteration")
 
     override val root = vbox {
         hbox {
@@ -46,6 +48,6 @@ class HellingsAlgoExecutionView: View() {
                 add(rListView)
             }
         }
-        button("Next iteration")
+        add(nextIterationButton)
     }
 }
