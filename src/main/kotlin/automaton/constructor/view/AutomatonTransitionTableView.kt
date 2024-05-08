@@ -32,6 +32,8 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
         }
         sourceColumn.text = "State"
         transitionsColumns.text = "Inputs"
+        automaton.vertices.forEach { registerVertex(it) }
+        automaton.transitions.forEach { registerTransition(it) }
     }
 
     override fun registerVertex(vertex: AutomatonVertex) {

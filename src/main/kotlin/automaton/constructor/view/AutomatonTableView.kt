@@ -178,8 +178,6 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
             }
         }
 
-        automaton.vertices.forEach { registerVertex(it) }
-        automaton.transitions.forEach { registerTransition(it) }
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
         sourceColumn.setCellFactory { SourceCell(this) }
         sourceColumn.minWidth = SOURCE_COLUMN_WIDTH
@@ -187,8 +185,8 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
         table.columns.addAll(sourceColumn, transitionsColumns)
 
         table.style {
-            minWidth = 1900.0.px
-            minHeight = 1000.0.px
+            minWidth = TABLE_WIDTH.px
+            minHeight = TABLE_HEIGHT.px
             fontSize = 40.0.px
         }
     }
@@ -207,6 +205,7 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
 
     companion object {
         const val TABLE_WIDTH = 1900.0
+        const val TABLE_HEIGHT = 1000.0
         const val SOURCE_COLUMN_WIDTH = 150.0
         const val TRANSITIONS_COLUMNS_WIDTH = 1750.0
     }

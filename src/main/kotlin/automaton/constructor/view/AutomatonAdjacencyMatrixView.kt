@@ -28,6 +28,8 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         }
         sourceColumn.text = "Source"
         transitionsColumns.text = "Targets"
+        automaton.vertices.forEach { registerVertex(it) }
+        automaton.transitions.forEach { registerTransition(it) }
     }
 
     override fun registerVertex(vertex: AutomatonVertex) {
