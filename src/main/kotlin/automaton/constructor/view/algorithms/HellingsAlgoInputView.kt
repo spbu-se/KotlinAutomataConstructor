@@ -12,7 +12,7 @@ import automaton.constructor.view.AutomatonViewContext
 import javafx.stage.Window
 import tornadofx.*
 
-class HellingsAlgoInputView: View(), AutomatonViewContext {
+class HellingsAlgoInputView: Fragment(), AutomatonViewContext {
     val hellingsAlgoController: HellingsAlgoController by param()
     override val uiComponent = this
     override val fileController: FileController by param()

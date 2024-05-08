@@ -27,6 +27,7 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
             automaton.vertices.forEach { map.transitions[it] = SimpleObjectProperty(listOf()) }
         }
         sourceColumn.text = "Source"
+        transitionsColumns.text = "Targets"
     }
 
     override fun registerVertex(vertex: AutomatonVertex) {
@@ -88,13 +89,14 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
             p0!!.value.transitions[vertex]!!
         }
         addedColumn.setCellFactory { TransitionsCell(this) }
-        addedColumn.minWidth = computeCellWidth(addedColumn.text.length)
         if (transitionsColumns.columns.none { it.text == addedColumn.text }) {
             transitionsColumns.columns.add(addedColumn)
         }
+        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
     }
 
     override fun unregisterColumn(removedColumn: TableColumn<TransitionMap<AutomatonVertex>, List<Transition>>) {
         transitionsColumns.columns.remove(removedColumn)
+        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
     }
 }

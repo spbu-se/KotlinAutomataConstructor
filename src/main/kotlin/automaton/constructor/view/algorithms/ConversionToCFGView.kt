@@ -1,6 +1,5 @@
 package automaton.constructor.view.algorithms
 
-import automaton.constructor.controller.AlgorithmsController
 import automaton.constructor.controller.algorithms.ConversionToCFGController
 import automaton.constructor.model.element.CFGSymbol
 import automaton.constructor.model.element.ContextFreeGrammar
@@ -42,7 +41,7 @@ class RightSideCell(val controller: ConversionToCFGController): TableCell<Produc
     }
 }
 
-class ConversionToCFGView: View() {
+class ConversionToCFGView: Fragment() {
     val grammar: ContextFreeGrammar by param()
     val controller: ConversionToCFGController by param()
     private val productionsTableView = tableview(grammar.productions.toObservable())
@@ -54,6 +53,8 @@ class ConversionToCFGView: View() {
         leftSideColumn.setCellFactory { LeftSideCell(controller) }
         rightSideColumn.cellValueFactory = PropertyValueFactory("rightSide")
         rightSideColumn.setCellFactory { RightSideCell(controller) }
+        leftSideColumn.minWidth = 100.0
+        rightSideColumn.minWidth = 100.0
         productionsTableView.columns.addAll(leftSideColumn, rightSideColumn)
     }
 

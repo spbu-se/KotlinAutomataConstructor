@@ -56,9 +56,6 @@ class TransitionsCell<T: TableTransitionView, K>(
             VBox().apply {
                 item.forEach {
                     add(table.transitionToViewMap[it]!!)
-                    val prefWidth = table.computeCellWidth(table.transitionToViewMap[it]!!.textLength)
-                    this@TransitionsCell.tableColumn.minWidth =
-                        maxOf(this@TransitionsCell.tableColumn.minWidth, prefWidth)
                 }
             }
         } else {
@@ -110,7 +107,7 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
     val transitionsByVertices = observableListOf<TransitionMap<K>>()
     val table = TableView(transitionsByVertices)
     val sourceColumn = TableColumn<TransitionMap<K>, AutomatonVertex>()
-    val transitionsColumns = TableColumn<TransitionMap<K>, List<Transition>>("Description")
+    val transitionsColumns = TableColumn<TransitionMap<K>, List<Transition>>()
     val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonBasicVertexView>()
     val transitionToViewMap = mutableMapOf<Transition, T>()
@@ -185,8 +182,8 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
         automaton.transitions.forEach { registerTransition(it) }
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
         sourceColumn.setCellFactory { SourceCell(this) }
-        sourceColumn.minWidth = 150.0
-        transitionsColumns.minWidth = 1750.0
+        sourceColumn.minWidth = SOURCE_COLUMN_WIDTH
+        transitionsColumns.minWidth = TRANSITIONS_COLUMNS_WIDTH
         table.columns.addAll(sourceColumn, transitionsColumns)
 
         table.style {
@@ -208,10 +205,9 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
 
     abstract fun unregisterColumn(removedColumn: TableColumn<TransitionMap<K>, List<Transition>>)
 
-    fun computeCellWidth(textLength: Int) = SYMBOL_WIDTH * textLength + ADDITIONAL_GAP
-
     companion object {
-        const val SYMBOL_WIDTH = 23.0
-        const val ADDITIONAL_GAP = 30.0
+        const val TABLE_WIDTH = 1900.0
+        const val SOURCE_COLUMN_WIDTH = 150.0
+        const val TRANSITIONS_COLUMNS_WIDTH = 1750.0
     }
 }

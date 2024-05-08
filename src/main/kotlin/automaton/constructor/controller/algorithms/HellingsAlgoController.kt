@@ -7,13 +7,14 @@ import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.view.algorithms.HellingsAlgoExecutionView
 import automaton.constructor.view.algorithms.HellingsAlgoInputView
+import javafx.beans.property.SimpleBooleanProperty
 import tornadofx.*
 
 class HellingsTransition(
     val nonterminal: Nonterminal,
     val source: AutomatonVertex,
     val target: AutomatonVertex,
-    var isNew: Boolean
+    var isNew: SimpleBooleanProperty
 )
 
 class HellingsAlgoController(
@@ -33,18 +34,21 @@ class HellingsAlgoController(
     fun execute(graph: FiniteAutomaton) {
         val m = observableListOf<HellingsTransition>()
         val r = observableListOf<HellingsTransition>()
-        val grammar = getTestGrammar()
+        val grammar = openedAutomaton.convertToCFG()
         graph.transitions.forEach { transition ->
             val production = grammar.productions.find {
                 it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
             }
             if (production != null) {
-                val newHellingsTransition = HellingsTransition(production.leftSide, transition.source, transition.target, false)
+                val newHellingsTransition = HellingsTransition(production.leftSide, transition.source,
+                    transition.target, SimpleBooleanProperty(false)
+                )
                 m.add(newHellingsTransition)
                 r.add(newHellingsTransition)
             }
         }
 
+        ConversionToCFGController(openedAutomaton).convertToCFG()
         val hellingsAlgoExecutionWindow = find<HellingsAlgoExecutionView>(mapOf(
             HellingsAlgoExecutionView::m to m,
             HellingsAlgoExecutionView::r to r
@@ -54,7 +58,10 @@ class HellingsAlgoController(
         hellingsAlgoExecutionWindow.nextIterationButton.action {
             if (m.isEmpty()) {
                 hellingsAlgoExecutionWindow.close()
+                return@action
             }
+            m.forEach { it.isNew.set(false) }
+            r.forEach { it.isNew.set(false) }
             val mTransition = m.removeFirst()
             val rToAdd = mutableListOf<HellingsTransition>()
             do {
@@ -68,7 +75,8 @@ class HellingsAlgoController(
                     }.forEach { production ->
                         if (r.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target } &&
                             rToAdd.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target }) {
-                            val newTransition = HellingsTransition(production.leftSide, rTransition.source, mTransition.target, false)
+                            val newTransition = HellingsTransition(production.leftSide, rTransition.source,
+                                mTransition.target, SimpleBooleanProperty(true))
                             m.add(newTransition)
                             rToAdd.add(newTransition)
                         }
@@ -86,33 +94,17 @@ class HellingsAlgoController(
                     }.forEach { production ->
                         if (r.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target } &&
                             rToAdd.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target }) {
-                            val newTransition = HellingsTransition(production.leftSide, mTransition.source, rTransition.target, false)
+                            val newTransition = HellingsTransition(production.leftSide, mTransition.source,
+                                rTransition.target, SimpleBooleanProperty(true))
                             m.add(newTransition)
                             rToAdd.add(newTransition)
                         }
                     }
                 }
             } while (rToAdd.isNotEmpty())
+            if (m.isEmpty()) {
+                hellingsAlgoExecutionWindow.nextIterationButton.text = "Close"
+            }
         }
-    }
-
-    fun getTestGrammar(): ContextFreeGrammar {
-        val grammar = ContextFreeGrammar()
-        val s = Nonterminal("S").also { grammar.initialNonterminal = it }
-        val a = Nonterminal("A")
-        val b = Nonterminal("B")
-        val s1 = Nonterminal("S1")
-        grammar.addNonterminal(s)
-        grammar.addNonterminal(a)
-        grammar.addNonterminal(b)
-        grammar.addNonterminal(s1)
-        grammar.productions.addAll(listOf(
-            Production(s, mutableListOf(a, b)),
-            Production(s, mutableListOf(a, s1)),
-            Production(s1, mutableListOf(s, b)),
-            Production(a, mutableListOf(Terminal('a'))),
-            Production(b, mutableListOf(Terminal('b')))
-        ))
-        return grammar
     }
 }

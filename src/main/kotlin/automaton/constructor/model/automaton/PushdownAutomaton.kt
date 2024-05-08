@@ -25,6 +25,7 @@ class PushdownAutomaton(
     I18N.messages.getString("PushdownAutomaton.Untitled")
 ), AutomatonWithInputTape,
     AutomatonWithStacks {
+    private var grammar: ContextFreeGrammar? = null
     init {
         require(stacks.isNotEmpty()) {
             "Illegal `stacks` argument when creating `PushdownAutomaton`"
@@ -71,7 +72,7 @@ class PushdownAutomaton(
     }
 
     private fun makeTheOnlyOneFinalState() {
-        if (finalVertices.isEmpty()) {
+        if (finalVertices.size < 2) {
             return
         }
         val newFinalState = addState()
@@ -121,14 +122,17 @@ class PushdownAutomaton(
     }
 
     fun convertToCFG(): ContextFreeGrammar {
-        //simplify()
-        val grammar = ContextFreeGrammar()
+        if (grammar != null) {
+            return grammar as ContextFreeGrammar
+        }
+        simplify()
+        val newGrammar = ContextFreeGrammar()
         val nonterminals = mutableListOf<MutableList<Nonterminal>>()
         var biggestNonterminal: Nonterminal? = null
         vertices.forEach { vertice1 ->
             val list = mutableListOf<Nonterminal>()
             vertices.forEach { vertice2 ->
-                val newNonterminal = grammar.addNonterminal()
+                val newNonterminal = newGrammar.addNonterminal()
                 list.add(newNonterminal)
                 if (vertice1.isInitial && vertice2.isFinal) {
                     biggestNonterminal = newNonterminal
@@ -138,12 +142,12 @@ class PushdownAutomaton(
         }
 
         for (i in nonterminals.indices) {
-            grammar.productions.add(Production(nonterminals[i][i], mutableListOf()))
+            newGrammar.productions.add(Production(nonterminals[i][i], mutableListOf()))
         }
         for (i in nonterminals.indices) {
             for (j in nonterminals.indices) {
                 for (k in nonterminals.indices) {
-                    grammar.productions.add(Production(nonterminals[i][j],
+                    newGrammar.productions.add(Production(nonterminals[i][j],
                         mutableListOf(nonterminals[i][k], nonterminals[k][j])
                     ))
                 }
@@ -166,17 +170,18 @@ class PushdownAutomaton(
                     if (transition2.readProperties()[0] != "ε") {
                         rightSideOfNewProduction.add(Terminal(transition2.readProperties()[0][0]))
                     }
-                    grammar.productions.add(
+                    newGrammar.productions.add(
                         Production(nonterminals[indexOfSource1][indexOfTarget2], rightSideOfNewProduction))
                 }
             }
         }
         val initialNonterminal = Nonterminal("S")
-        grammar.addNonterminal(initialNonterminal)
-        grammar.initialNonterminal = initialNonterminal
-        grammar.productions.add(Production(initialNonterminal, mutableListOf(biggestNonterminal!!)))
-        grammar.convertToCNF()
-        grammar.removeUselessNonterminals()
-        return grammar
+        newGrammar.addNonterminal(initialNonterminal)
+        newGrammar.initialNonterminal = initialNonterminal
+        newGrammar.productions.add(Production(initialNonterminal, mutableListOf(biggestNonterminal!!)))
+        newGrammar.convertToCNF()
+        newGrammar.removeUselessNonterminals()
+        grammar = newGrammar
+        return newGrammar
     }
 }

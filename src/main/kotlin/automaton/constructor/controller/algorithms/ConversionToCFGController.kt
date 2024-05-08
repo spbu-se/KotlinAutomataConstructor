@@ -8,7 +8,7 @@ import javafx.scene.text.Font
 import tornadofx.Controller
 import tornadofx.label
 
-class ConversionToCFGController(val openedAutomaton: PushdownAutomaton): Controller() {
+class ConversionToCFGController(private val openedAutomaton: PushdownAutomaton): Controller() {
     fun convertToCFG() {
         val conversionToCFGWindow = find<ConversionToCFGView>(mapOf(
             ConversionToCFGView::grammar to openedAutomaton.convertToCFG(),

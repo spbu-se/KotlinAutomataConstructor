@@ -31,6 +31,7 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
             }
         }
         sourceColumn.text = "State"
+        transitionsColumns.text = "Inputs"
     }
 
     override fun registerVertex(vertex: AutomatonVertex) {
@@ -114,14 +115,15 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
             p0!!.value.transitions[addedColumn.text]!!
         }
         addedColumn.setCellFactory { TransitionsCell(this) }
-        addedColumn.minWidth = computeCellWidth(addedColumn.text.length)
         if (transitionsColumns.columns.none { it.text == addedColumn.text }) {
             transitionsColumns.columns.add(addedColumn)
         }
+        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
     }
 
     override fun unregisterColumn(removedColumn: TableColumn<TransitionMap<String>, List<Transition>>) {
         filtersCount.remove(removedColumn.text)
         transitionsColumns.columns.remove(removedColumn)
+        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
     }
 }

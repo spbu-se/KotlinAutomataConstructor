@@ -1,36 +1,40 @@
 package automaton.constructor.view.algorithms
 
 import automaton.constructor.controller.algorithms.HellingsTransition
-import automaton.constructor.model.element.AutomatonVertex
-import automaton.constructor.model.element.Nonterminal
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import tornadofx.*
-import java.awt.Color
 
 class HellingsTransitionCell: ListCell<HellingsTransition>() {
+    private val isNew = SimpleBooleanProperty()
     override fun updateItem(item: HellingsTransition?, empty: Boolean) {
         super.updateItem(item, empty)
-        graphic = if (item != null) {
-            if (item.isNew) {
-                this.style = "-fx-background-color: blue"
-            }
-            this.style = if (item.isNew) {
-                "-fx-background-color: blue"
+        if (item != null) {
+            isNew.bind(item.isNew)
+            this.style = if (item.isNew.value) {
+                "-fx-background-color: aqua;"
             } else {
-                "-fx-background-color: white"
+                "-fx-background-color: white;"
             }
-            label(item.nonterminal.value + ", " + item.source.name + ", " + item.target.name)
+            isNew.addListener(ChangeListener { _, _, newValue ->
+                this.style = if (newValue) {
+                    "-fx-background-color: aqua;"
+                } else {
+                    "-fx-background-color: white;"
+                }
+            })
+            graphic = label(item.nonterminal.value + ", " + item.source.name + ", " + item.target.name)
         } else {
-            null
+            this.style = "-fx-background-color: white;"
+            graphic = null
         }
     }
 }
 
-class HellingsAlgoExecutionView: View() {
+class HellingsAlgoExecutionView: Fragment() {
     val m: ObservableList<HellingsTransition> by param()
     val r: ObservableList<HellingsTransition> by param()
     private val mListView = ListView(m).apply { this.setCellFactory { HellingsTransitionCell() } }
@@ -38,6 +42,9 @@ class HellingsAlgoExecutionView: View() {
     val nextIterationButton = Button("Next iteration")
 
     override val root = vbox {
+        label ("Each triple (N, S, T) means that a word composed of symbols on the path between vertices S " +
+                "and T is output in the grammar if we take N as the initial nonterminal.")
+        label ("Once the algorithm finishes, the list r contains the solution.")
         hbox {
             vbox {
                 label("m:")
@@ -49,5 +56,8 @@ class HellingsAlgoExecutionView: View() {
             }
         }
         add(nextIterationButton)
+        style {
+            fontSize = 15.0.px
+        }
     }
 }
