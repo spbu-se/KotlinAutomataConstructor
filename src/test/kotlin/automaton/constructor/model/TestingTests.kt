@@ -2,6 +2,7 @@ package automaton.constructor.model
 
 import automaton.constructor.AutomatonConstructorApp
 import automaton.constructor.utils.I18N
+import automaton.constructor.view.MainWindow
 import javafx.application.Application
 import javafx.scene.Node
 import javafx.stage.Stage
@@ -12,6 +13,7 @@ import org.testfx.api.FxAssert.verifyThat
 import org.testfx.api.FxToolkit
 import org.testfx.framework.junit5.ApplicationTest
 import org.testfx.matcher.control.TableViewMatchers.hasTableCell
+import tornadofx.*
 
 
 class TestingTests: ApplicationTest() {
@@ -39,6 +41,7 @@ class TestingTests: ApplicationTest() {
         clickOn(from(rootNode(window("Test").scene)).lookup(".text-field").query<Node>()).write(test)
         clickOn(from(rootNode(window("Test").scene)).lookup(I18N.messages.getString(
             "TestsFragment.Run")).query<Node>())
+        clickOn(rootNode(window("Tests results").scene))
     }
 
     @Test

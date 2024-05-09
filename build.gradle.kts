@@ -73,7 +73,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.testfx:testfx-core:$testfxVersion")
     testImplementation("org.testfx:testfx-junit5:$testfxVersion")
-    testImplementation("org.testfx:openjfx-monocle:$monocleVersion")
+    testImplementation("org.testfx:openjfx-monocle:jdk-12.0.1+2")
     testImplementation("org.testng:testng:7.1.0")
 }
 

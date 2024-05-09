@@ -103,7 +103,9 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
             val graphic = executor.acceptedExeStates.firstOrNull()?.let { executionLeafView(it) }
             testsAndResults.add(TestAndResult(test, executionResult, graphic))
         }
-        find<TestsResultsFragment>(mapOf(TestsResultsFragment::testsAndResults to testsAndResults)).openWindow()
+        val testsResultsWindow = find<TestsResultsFragment>(mapOf(TestsResultsFragment::testsAndResults to testsAndResults))
+        testsResultsWindow.title = "Tests results"
+        testsResultsWindow.openWindow()
     }
 
     fun suggestSavingChanges(tests: List<Test>, uiComponent: UIComponent): Boolean {
