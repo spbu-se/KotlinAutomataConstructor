@@ -1,6 +1,6 @@
 package automaton.constructor.view
 
-import automaton.constructor.controller.Test
+import automaton.constructor.model.memory.Test
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.SettingGroupEditor

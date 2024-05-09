@@ -2,6 +2,7 @@ package automaton.constructor.model.automaton
 
 import automaton.constructor.model.automaton.flavours.AutomatonWithTapes
 import automaton.constructor.model.data.MultiTapeTuringMachineData
+import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.utils.I18N
 

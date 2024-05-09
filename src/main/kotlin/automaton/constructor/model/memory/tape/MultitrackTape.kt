@@ -16,8 +16,8 @@ import java.text.MessageFormat
 
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
-    constructor(trackCount: Int, initValues: List<String>) : this(trackCount) {
-        valueProperties.zip(initValues).forEach { (a, b) -> a.value = b }
+    constructor(newTrackCount: Int, initialValues: List<String>) : this(newTrackCount) {
+        valueProperties.zip(initialValues).forEach { (a, b) -> a.value = b }
     }
 
     val headMoveDirection =
