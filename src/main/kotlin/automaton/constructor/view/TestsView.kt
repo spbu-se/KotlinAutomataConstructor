@@ -3,6 +3,7 @@ package automaton.constructor.view
 import automaton.constructor.controller.TestsController
 import automaton.constructor.model.memory.Test
 import automaton.constructor.utils.*
+import javafx.geometry.Insets
 import tornadofx.*
 import javafx.scene.control.Button
 import javafx.scene.control.ListCell
@@ -48,19 +49,23 @@ class TestsView: View() {
         val deleteButton = Button(I18N.messages.getString("TestsFragment.Delete"))
         val saveButton = Button(I18N.messages.getString("TestsFragment.Save"))
         val loadButton = Button(I18N.messages.getString("TestsFragment.Load"))
-        minWidth = 500.0 // just for testing
+        minWidth = 500.0
 
-        hbox {
+        hbox(5) {
             add(addButton)
             add(deleteButton)
             add(saveButton)
             add(loadButton)
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
         val testsListView = listview(tests)
-        button(I18N.messages.getString("TestsFragment.Run")) {
-            action {
-                controller.runOnTests(tests)
+        hbox {
+            button(I18N.messages.getString("TestsFragment.Run")) {
+                action {
+                    controller.runOnTests(tests)
+                }
             }
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
 
         testsListView.setCellFactory { TestCell(controller) }

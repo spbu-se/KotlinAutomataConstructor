@@ -3,6 +3,7 @@ package automaton.constructor.view
 import automaton.constructor.controller.FileController
 import automaton.constructor.utils.I18N
 import javafx.beans.property.StringProperty
+import javafx.geometry.Insets
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
@@ -48,13 +49,14 @@ class ExamplesView: View() {
             deserializedExamples.forEach { examples.add(it) }
         }
     }
-    override val root = hbox {
+    override val root = hbox(5) {
         val examplesListView = listview(examples)
         val description = Text().apply { text = I18N.messages.getString("ExamplesFragment.Choose") }
         val image = ImageView()
         val descriptionVBox = VBox(description, image)
         val automatonName = "".toProperty()
         minWidth = 800.0
+        padding = Insets(5.0, 5.0, 5.0, 5.0)
 
         add(descriptionVBox)
 
