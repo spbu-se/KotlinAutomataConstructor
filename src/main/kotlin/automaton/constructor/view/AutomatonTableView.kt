@@ -2,6 +2,7 @@ package automaton.constructor.view
 
 import automaton.constructor.controller.AutomatonRepresentationController
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.GRAPH_PANE_INIT_SIZE
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.AutomatonVertex
@@ -21,14 +22,11 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import tornadofx.*
 
-class TransitionMap<K>(
-    val source: AutomatonVertex,
-    val transitions: MutableMap<K, SimpleObjectProperty<List<Transition>>> = mutableMapOf()
-)
+interface TransitionMap
 
-class SourceCell<T: TableTransitionView, K>(
-    private val table: AutomatonTableView<T, K>
-): TableCell<TransitionMap<K>, AutomatonVertex>() {
+class VertexCell<T: TableTransitionView, M: TransitionMap>(
+    private val table: AutomatonTableView<T, M>
+): TableCell<M, AutomatonVertex>() {
     private val colourProperty = SimpleStringProperty("")
     private var colour by colourProperty
     override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
@@ -47,9 +45,9 @@ class SourceCell<T: TableTransitionView, K>(
     }
 }
 
-class TransitionsCell<T: TableTransitionView, K>(
-    private val table: AutomatonTableView<T, K>
-): TableCell<TransitionMap<K>, List<Transition>>() {
+class TransitionsCell<T: TableTransitionView, M: TransitionMap>(
+    private val table: AutomatonTableView<T, M>
+): TableCell<M, List<Transition>>() {
     override fun updateItem(item: List<Transition>?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -100,14 +98,13 @@ class NewTransitionPopup(val automaton: Automaton): Fragment() {
     }
 }
 
-abstract class AutomatonTableView<T: TableTransitionView, K>(
+abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     val automaton: Automaton,
     val automatonViewContext: AutomatonViewContext
 ): Pane() {
-    val transitionsByVertices = observableListOf<TransitionMap<K>>()
+    val transitionsByVertices = observableListOf<M>()
     val table = TableView(transitionsByVertices)
-    val sourceColumn = TableColumn<TransitionMap<K>, AutomatonVertex>()
-    val transitionsColumns = TableColumn<TransitionMap<K>, List<Transition>>()
+    val sourceColumn = TableColumn<M, AutomatonVertex>()
     val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonBasicVertexView>()
     val transitionToViewMap = mutableMapOf<Transition, T>()
@@ -179,10 +176,9 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
         }
 
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
-        sourceColumn.setCellFactory { SourceCell(this) }
+        sourceColumn.setCellFactory { VertexCell(this) }
         sourceColumn.minWidth = SOURCE_COLUMN_WIDTH
-        transitionsColumns.minWidth = TRANSITIONS_COLUMNS_WIDTH
-        table.columns.addAll(sourceColumn, transitionsColumns)
+        table.columns.add(sourceColumn)
 
         table.style {
             minWidth = TABLE_WIDTH.px
@@ -199,13 +195,9 @@ abstract class AutomatonTableView<T: TableTransitionView, K>(
 
     abstract fun unregisterTransition(transition: Transition)
 
-    abstract fun registerColumn(addedColumn: TableColumn<TransitionMap<K>, List<Transition>>)
-
-    abstract fun unregisterColumn(removedColumn: TableColumn<TransitionMap<K>, List<Transition>>)
-
     companion object {
-        const val TABLE_WIDTH = 1900.0
-        const val TABLE_HEIGHT = 1000.0
+        const val TABLE_WIDTH = 3400.0
+        const val TABLE_HEIGHT = 1300.0
         const val SOURCE_COLUMN_WIDTH = 150.0
         const val TRANSITIONS_COLUMNS_WIDTH = 1750.0
     }

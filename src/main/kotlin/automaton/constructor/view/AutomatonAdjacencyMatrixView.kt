@@ -12,8 +12,14 @@ import javafx.scene.layout.Pane
 import tornadofx.add
 import tornadofx.fitToParentSize
 
+class AdjacencyMatrixTransitionMap(
+    val source: AutomatonVertex,
+    val transitions: MutableMap<AutomatonVertex, SimpleObjectProperty<List<Transition>>> = mutableMapOf()
+): TransitionMap
+
 class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: AutomatonViewContext
-): AutomatonTableView<AdjacencyMatrixTransitionView, AutomatonVertex>(automaton, automatonViewContext) {
+): AutomatonTableView<AdjacencyMatrixTransitionView, AdjacencyMatrixTransitionMap>(automaton, automatonViewContext) {
+    private val transitionsColumns = TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>("Targets")
     init {
         transitionsByVertices.addListener(ListChangeListener {
             while (it.next()) {
@@ -27,7 +33,6 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
             automaton.vertices.forEach { map.transitions[it] = SimpleObjectProperty(listOf()) }
         }
         sourceColumn.text = "Source"
-        transitionsColumns.text = "Targets"
         automaton.vertices.forEach { registerVertex(it) }
         automaton.transitions.forEach { registerTransition(it) }
     }
@@ -50,8 +55,8 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         }
         vertexToViewMap[vertex] = vertexView
         if (transitionsByVertices.none { it.source == vertex }) {
-            transitionsByVertices.add(TransitionMap(vertex))
-            val newColumn = TableColumn<TransitionMap<AutomatonVertex>, List<Transition>>(vertex.name)
+            transitionsByVertices.add(AdjacencyMatrixTransitionMap(vertex))
+            val newColumn = TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>(vertex.name)
             newColumn.textProperty().bind(vertex.nameProperty)
             registerColumn(newColumn)
         }
@@ -60,7 +65,7 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
     override fun unregisterVertex(vertex: AutomatonVertex) {
         transitionsByVertices.removeAll { it.source == vertex }
         unregisterColumn(
-            transitionsColumns.columns.find { it.text == vertex.name } as TableColumn<TransitionMap<AutomatonVertex>, List<Transition>>)
+            transitionsColumns.columns.find { it.text == vertex.name } as TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>)
         vertexToViewMap.remove(vertex)
     }
 
@@ -82,7 +87,7 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         transitionToViewMap.remove(transition)
     }
 
-    override fun registerColumn(addedColumn: TableColumn<TransitionMap<AutomatonVertex>, List<Transition>>) {
+    private fun registerColumn(addedColumn: TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>) {
         val vertex = automaton.vertices.find { it.name == addedColumn.text }!!
         transitionsByVertices.forEach {
             it.transitions[vertex] = SimpleObjectProperty(listOf())
@@ -97,7 +102,7 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
     }
 
-    override fun unregisterColumn(removedColumn: TableColumn<TransitionMap<AutomatonVertex>, List<Transition>>) {
+    private fun unregisterColumn(removedColumn: TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>) {
         transitionsColumns.columns.remove(removedColumn)
         transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
     }

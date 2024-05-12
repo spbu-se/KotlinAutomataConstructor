@@ -6,32 +6,31 @@ import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.hoverableTooltip
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.ListChangeListener
 import javafx.scene.control.*
+import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.Pane
 import tornadofx.*
 
+class TransitionTableTransitionMap(
+    val source: AutomatonVertex,
+    val target: AutomatonVertex,
+    val transitions: SimpleObjectProperty<List<Transition>> = SimpleObjectProperty(listOf())
+): TransitionMap
+
 class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: AutomatonViewContext
-): AutomatonTableView<TransitionTableTransitionView, String>(automaton, automatonViewContext) {
-    private val filtersCount = mutableMapOf<String, Int>()
+): AutomatonTableView<TransitionTableTransitionView, TransitionTableTransitionMap>(automaton, automatonViewContext) {
+    private val targetColumn = TableColumn<TransitionTableTransitionMap, AutomatonVertex>("To state")
+    private val transitionColumn = TableColumn<TransitionTableTransitionMap, List<Transition>>("Label")
+
     init {
-        transitionsByVertices.addListener(ListChangeListener {
-            while (it.next()) {
-                if (it.wasAdded()) {
-                    val addedMap = it.addedSubList.first()
-                    filtersCount.keys.forEach { filter ->
-                        addedMap.transitions[filter] = SimpleObjectProperty(listOf())
-                    }
-                }
-            }
-        })
-        transitionsByVertices.forEach { map ->
-            filtersCount.keys.forEach { filter ->
-                map.transitions[filter] = SimpleObjectProperty(listOf())
-            }
+        sourceColumn.text = "From state"
+        targetColumn.cellValueFactory = PropertyValueFactory("target")
+        targetColumn.setCellFactory { VertexCell(this) }
+        transitionColumn.setCellValueFactory { p0 ->
+            p0!!.value.transitions
         }
-        sourceColumn.text = "State"
-        transitionsColumns.text = "Inputs"
+        transitionColumn.setCellFactory { TransitionsCell(this) }
+        table.columns.addAll(targetColumn, transitionColumn)
         automaton.vertices.forEach { registerVertex(it) }
         automaton.transitions.forEach { registerTransition(it) }
     }
@@ -53,9 +52,6 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
             }
         }
         vertexToViewMap[vertex] = vertexView
-        if (transitionsByVertices.none { it.source == vertex }) {
-            transitionsByVertices.add(TransitionMap(vertex))
-        }
     }
 
     override fun unregisterVertex(vertex: AutomatonVertex) {
@@ -67,10 +63,6 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
         val transitionView = TransitionTableTransitionView(transition)
         controller.registerAutomatonElementView(transitionView)
         transitionToViewMap[transition] = transitionView
-        transition.filtersTextBinding.addListener { _, oldValue, _ ->
-            deleteTransitionFromTable(transition, oldValue)
-            addTransitionToTable(transition)
-        }
         addTransitionToTable(transition)
     }
 
@@ -80,52 +72,26 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
     }
     
     private fun addTransitionToTable(transition: Transition) {
-        if (!filtersCount.contains(transition.filtersText)) {
-            registerColumn(TableColumn<TransitionMap<String>, List<Transition>>(transition.filtersText))
+        var transitionMap = transitionsByVertices.find {
+            it.source == transition.source && it.target == transition.target
         }
-
-        var transitionMap = transitionsByVertices.find { it.source == transition.source }
         if (transitionMap == null) {
-            transitionMap = TransitionMap(transition.source)
+            transitionMap = TransitionTableTransitionMap(transition.source, transition.target)
             transitionsByVertices.add(transitionMap)
         }
-        val list = transitionMap.transitions[transition.filtersText]!!.get()
-        transitionMap.transitions[transition.filtersText]!!.set(list + transition)
-        filtersCount[transition.filtersText] = filtersCount[transition.filtersText]!! + 1
+        val list = transitionMap.transitions.get()
+        transitionMap.transitions.set(list + transition)
     }
     
-    private fun deleteTransitionFromTable(transition: Transition, filtersText: String = transition.filtersText) {
+    private fun deleteTransitionFromTable(transition: Transition) {
         transitionsByVertices.find { map ->
-            map.source == transition.source
-        }.apply {
-            val list = this!!.transitions[filtersText]!!.value
-            this.transitions[filtersText]!!.set(list - transition)
+            map.source == transition.source && map.target == transition.target
+        }.also {
+            val list = it!!.transitions.value
+            it.transitions.set(list - transition)
+            if (it.transitions.value.isEmpty()) {
+                transitionsByVertices.remove(it)
+            }
         }
-        filtersCount[filtersText] = filtersCount[filtersText]!! - 1
-        if (filtersCount[filtersText] == 0) {
-            unregisterColumn(
-                transitionsColumns.columns.find { it.text == filtersText } as TableColumn<TransitionMap<String>, List<Transition>>)
-        }
-    }
-
-    override fun registerColumn(addedColumn: TableColumn<TransitionMap<String>, List<Transition>>) {
-        filtersCount[addedColumn.text] = 0
-        transitionsByVertices.forEach {
-            it.transitions[addedColumn.text] = SimpleObjectProperty(listOf())
-        }
-        addedColumn.setCellValueFactory { p0 ->
-            p0!!.value.transitions[addedColumn.text]!!
-        }
-        addedColumn.setCellFactory { TransitionsCell(this) }
-        if (transitionsColumns.columns.none { it.text == addedColumn.text }) {
-            transitionsColumns.columns.add(addedColumn)
-        }
-        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
-    }
-
-    override fun unregisterColumn(removedColumn: TableColumn<TransitionMap<String>, List<Transition>>) {
-        filtersCount.remove(removedColumn.text)
-        transitionsColumns.columns.remove(removedColumn)
-        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
     }
 }
