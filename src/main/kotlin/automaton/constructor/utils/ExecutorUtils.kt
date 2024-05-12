@@ -12,7 +12,7 @@ data class ExecutorResult(
     val graphic: SettingGroupEditor?
 )
 
-fun getNewExecutorOrNull(automaton: Automaton): Executor? {
+fun startNewExecutorOrNull(automaton: Automaton, memory: List<MemoryUnit>? = null): Executor? {
     if (automaton.problems.isNotEmpty()) {
         tornadofx.error(
             I18N.messages.getString("ExecutorController.Error.ExecutionFailed"),
@@ -21,18 +21,19 @@ fun getNewExecutorOrNull(automaton: Automaton): Executor? {
         )
         return null
     }
-    return Executor(automaton)
+    return Executor(automaton).apply {
+        if (memory == null) {
+            start()
+        } else {
+            start(memory)
+        }
+    }
 }
 
 fun createExecutorAndRun(automaton: Automaton, memory: List<MemoryUnit>? = null): ExecutorResult? {
-    val executor = getNewExecutorOrNull(automaton)
+    val executor = startNewExecutorOrNull(automaton, memory)
     if (executor == null) {
         return null
-    }
-    if (memory == null) {
-        executor.start()
-    } else {
-        executor.start(memory)
     }
     executor.runFor()
     val executionResult = when (executor.status) {
@@ -42,6 +43,6 @@ fun createExecutorAndRun(automaton: Automaton, memory: List<MemoryUnit>? = null)
         ExecutionStatus.RUNNING -> I18N.messages.getString("ExecutorController.Executor.Status.Running")
     }
     val graphic = executor.acceptedExeStates.firstOrNull()?.let { executionLeafView(it) }
-    automaton.clearExecutionStates()
+    automaton.clearExecutionStates() // faster analog of executor.stop()
     return ExecutorResult(executionResult, graphic)
 }

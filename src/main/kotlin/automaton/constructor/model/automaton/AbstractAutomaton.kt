@@ -246,10 +246,7 @@ abstract class AbstractAutomaton(
             return false
         }
         for (index in memoryDescriptors.indices) {
-            if (memoryDescriptors[index]::class != newDescriptors[index]::class ||
-                memoryDescriptors[index] is MultiTrackTapeDescriptor &&
-                (memoryDescriptors[index] as MultiTrackTapeDescriptor).trackCount !=
-                (newDescriptors[index] as MultiTrackTapeDescriptor).trackCount) {
+            if (!memoryDescriptors[index].isCompatibleWithDescriptor(newDescriptors[index])) {
                 return false
             }
         }

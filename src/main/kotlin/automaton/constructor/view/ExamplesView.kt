@@ -2,7 +2,6 @@ package automaton.constructor.view
 
 import automaton.constructor.controller.FileController
 import automaton.constructor.utils.I18N
-import javafx.beans.property.IntegerProperty
 import javafx.beans.property.StringProperty
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
@@ -13,8 +12,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import tornadofx.*
-import java.nio.file.Files
-import kotlin.io.path.Path
+import kotlin.io.path.toPath
 
 @Serializable
 data class Example(val name: String, val description: String)
@@ -39,9 +37,16 @@ class ExamplesView: View() {
     val fileController: FileController by param()
     private val examples = mutableListOf<Example>().asObservable()
     init {
-        val examplesPath = Path("${System.getProperty("user.dir")}/src/main/resources/examples/examples.json")
-        val deserializedExamples = Json.decodeFromString<List<Example>>(examplesPath.toFile().readText())
-        deserializedExamples.forEach { examples.add(it) }
+        val examplesURL = this@ExamplesView::class.java.getResource("/examples/examples.json")
+        if (examplesURL == null) {
+            I18N.messages.getString(
+                "ExamplesFragment.UnableToFindResource") + " /examples/examples.json"
+        } else {
+            val deserializedExamples = Json.decodeFromString<List<Example>>(
+                examplesURL.readText()
+            )
+            deserializedExamples.forEach { examples.add(it) }
+        }
     }
     override val root = hbox {
         val examplesListView = listview(examples)
@@ -57,18 +62,22 @@ class ExamplesView: View() {
 
         examplesListView.selectionModel.selectedItemProperty().addListener(ChangeListener { _, _, newValue ->
             description.text = I18N.automatonExamples.getString("ExamplesFragment.${newValue.name}Description")
-            image.image = Image(
-                "file:///${System.getProperty("user.dir")}/src/main/resources/examples/images/${newValue.name}.png",
-                true)
+            val imageURL = this@ExamplesView::class.java.getResource("/examples/images/${newValue.name}.png")
+            if (imageURL == null) {
+                error(I18N.messages.getString(
+                    "ExamplesFragment.UnableToFindResource") + " /examples/images/${newValue.name}.png")
+            } else {
+                image.image = Image(imageURL.toExternalForm(), true)
+            }
         })
 
         automatonName.addListener(ChangeListener { _, _, newValue ->
-            val automatonsPath = Path("${System.getProperty("user.dir")}/src/main/resources/examples/automatons")
-            Files.walk(automatonsPath).forEach {
-                if (it.toFile().name == "$newValue.atmtn") {
-                    fileController.open(it.toFile())
-                    this@ExamplesView.close()
-                }
+            val automatonURL = this@ExamplesView::class.java.getResource("/examples/automatons/${newValue}.atmtn")
+            if (automatonURL == null) {
+                error(I18N.messages.getString("TestsController.UnableToOpen"))
+            } else {
+                fileController.open(automatonURL.toURI().toPath().toFile())
+                this@ExamplesView.close()
             }
         })
     }

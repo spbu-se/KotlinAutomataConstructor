@@ -5,7 +5,7 @@ import automaton.constructor.model.module.executor.Executor
 import automaton.constructor.model.module.executor.SteppingStrategy
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.createExecutorAndRun
-import automaton.constructor.utils.getNewExecutorOrNull
+import automaton.constructor.utils.startNewExecutorOrNull
 import tornadofx.*
 
 class ExecutorController(viewedAutomaton: Automaton, private val uiComponent: UIComponent) : Controller() {
@@ -33,6 +33,6 @@ class ExecutorController(viewedAutomaton: Automaton, private val uiComponent: UI
     }
 
     fun step(strategy: SteppingStrategy) = debuggingExecutor?.step(strategy) ?: run {
-        debuggingExecutor = getNewExecutorOrNull(selectedAutomaton)
+        debuggingExecutor = startNewExecutorOrNull(selectedAutomaton)
     }
 }

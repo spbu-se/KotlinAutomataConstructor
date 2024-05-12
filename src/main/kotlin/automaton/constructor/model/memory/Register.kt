@@ -30,6 +30,9 @@ class RegisterDescriptor() : MonospaceEditableString("0"), MemoryUnitDescriptor 
 
     override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
         Register(this, (initMemoryContent as RegisterDescriptor).value)
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean =
+        descriptor is RegisterDescriptor
 }
 
 class Register(

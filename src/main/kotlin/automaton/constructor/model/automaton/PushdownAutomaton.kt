@@ -4,7 +4,6 @@ import automaton.constructor.model.action.transition.EliminateEpsilonTransitionA
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.automaton.flavours.AutomatonWithStacks
 import automaton.constructor.model.data.PushdownAutomatonData
-import automaton.constructor.model.memory.MemoryUnitDescriptor
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N

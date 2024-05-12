@@ -45,6 +45,9 @@ class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableS
             label(messages.getString("Stack.AcceptByEmptyStack"))
         }
     }
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean =
+        descriptor is StackDescriptor
 }
 
 class Stack(

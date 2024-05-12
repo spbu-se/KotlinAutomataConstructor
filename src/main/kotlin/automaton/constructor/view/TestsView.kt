@@ -32,7 +32,7 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
 
 class TestsView: View() {
     val controller: TestsController by param()
-    private val tests = mutableListOf<Test>().asObservable()
+    val tests = mutableListOf<Test>().asObservable()
 
     override fun onDock() {
         currentWindow?.setOnCloseRequest {
@@ -81,8 +81,7 @@ class TestsView: View() {
         }
 
         loadButton.setOnAction {
-            val openedTests = controller.openTests(this@TestsView)
-            openedTests.forEach { test -> tests.add(test) }
+            controller.openTests(this@TestsView)
         }
     }
 }

@@ -16,8 +16,8 @@ import java.text.MessageFormat
 
 class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     val valueProperties = List(trackCount) { "".toProperty() }
-    constructor(newTrackCount: Int, initialValues: List<String>) : this(newTrackCount) {
-        valueProperties.zip(initialValues).forEach { (a, b) -> a.value = b }
+    constructor(trackCount: Int, initialValues: List<String>) : this(trackCount) {
+        valueProperties.zip(initialValues).forEach { (property, value) -> property.value = value }
     }
 
     val headMoveDirection =
@@ -57,6 +57,10 @@ class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
                 textProperty().bindBidirectional(valueProperty)
             }
         }
+    }
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean {
+        return !(descriptor !is MultiTrackTapeDescriptor || trackCount != descriptor.trackCount)
     }
 
     private fun getIndexSuffix(index: Int) = if (trackCount == 1) "" else " ${index + 1}"
