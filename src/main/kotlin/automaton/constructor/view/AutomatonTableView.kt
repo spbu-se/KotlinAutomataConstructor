@@ -12,6 +12,7 @@ import automaton.constructor.utils.addOnSuccess
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.SetChangeListener
+import javafx.geometry.Pos
 import javafx.scene.control.ListCell
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
@@ -173,6 +174,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                     style = "-fx-font-size:30"
                 }
             }
+            alignment = Pos.TOP_LEFT
         }
 
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
@@ -181,8 +183,8 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         table.columns.add(sourceColumn)
 
         table.style {
-            minWidth = TABLE_WIDTH.px
-            minHeight = TABLE_HEIGHT.px
+            //minWidth = TABLE_WIDTH.px
+            //minHeight = TABLE_HEIGHT.px
             fontSize = 40.0.px
         }
     }
