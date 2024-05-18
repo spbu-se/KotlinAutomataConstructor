@@ -2,7 +2,6 @@ package automaton.constructor.view
 
 import automaton.constructor.controller.AutomatonRepresentationController
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.automaton.GRAPH_PANE_INIT_SIZE
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.AutomatonVertex
@@ -179,12 +178,11 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
 
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
         sourceColumn.setCellFactory { VertexCell(this) }
-        sourceColumn.minWidth = SOURCE_COLUMN_WIDTH
         table.columns.add(sourceColumn)
 
         table.style {
-            //minWidth = TABLE_WIDTH.px
-            //minHeight = TABLE_HEIGHT.px
+            minWidth = TABLE_WIDTH.px
+            minHeight = TABLE_HEIGHT.px
             fontSize = 40.0.px
         }
     }
@@ -199,8 +197,6 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
 
     companion object {
         const val TABLE_WIDTH = 3400.0
-        const val TABLE_HEIGHT = 1300.0
-        const val SOURCE_COLUMN_WIDTH = 150.0
-        const val TRANSITIONS_COLUMNS_WIDTH = 1750.0
+        const val TABLE_HEIGHT = 1250.0
     }
 }

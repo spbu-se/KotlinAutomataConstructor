@@ -31,6 +31,7 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
         }
         transitionColumn.setCellFactory { TransitionsCell(this) }
         table.columns.addAll(targetColumn, transitionColumn)
+        table.columns.forEach { it.prefWidth = TABLE_WIDTH / 3 }
         automaton.vertices.forEach { registerVertex(it) }
         automaton.transitions.forEach { registerTransition(it) }
     }

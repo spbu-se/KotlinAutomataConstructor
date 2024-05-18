@@ -35,6 +35,8 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         sourceColumn.text = "Source"
         automaton.vertices.forEach { registerVertex(it) }
         automaton.transitions.forEach { registerTransition(it) }
+        table.columns.add(transitionsColumns)
+        table.columns.forEach { it.prefWidth = TABLE_WIDTH / 2 }
     }
 
     override fun registerVertex(vertex: AutomatonVertex) {
@@ -99,11 +101,13 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         if (transitionsColumns.columns.none { it.text == addedColumn.text }) {
             transitionsColumns.columns.add(addedColumn)
         }
-        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
+        sourceColumn.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1)
+        transitionsColumns.columns.forEach { it.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1) }
     }
 
     private fun unregisterColumn(removedColumn: TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>) {
         transitionsColumns.columns.remove(removedColumn)
-        transitionsColumns.columns.forEach { it.prefWidth = TRANSITIONS_COLUMNS_WIDTH / transitionsColumns.columns.size }
+        sourceColumn.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1)
+        transitionsColumns.columns.forEach { it.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1) }
     }
 }
