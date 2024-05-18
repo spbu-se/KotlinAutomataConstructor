@@ -4,6 +4,8 @@ import automaton.constructor.controller.FileController
 import automaton.constructor.controller.LayoutController
 import automaton.constructor.model.automaton.FiniteAutomaton
 import automaton.constructor.model.automaton.PushdownAutomaton
+import automaton.constructor.model.data.createAutomaton
+import automaton.constructor.model.data.getData
 import automaton.constructor.model.element.*
 import automaton.constructor.view.algorithms.HellingsAlgoExecutionView
 import automaton.constructor.view.algorithms.HellingsAlgoInputView
@@ -34,7 +36,8 @@ class HellingsAlgoController(
     fun execute(graph: FiniteAutomaton) {
         val m = observableListOf<HellingsTransition>()
         val r = observableListOf<HellingsTransition>()
-        val grammar = openedAutomaton.convertToCFG()
+        val automatonCopy = openedAutomaton.getData().createAutomaton() as PushdownAutomaton
+        val grammar = automatonCopy.convertToCFG()
         graph.transitions.forEach { transition ->
             val production = grammar.productions.find {
                 it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText

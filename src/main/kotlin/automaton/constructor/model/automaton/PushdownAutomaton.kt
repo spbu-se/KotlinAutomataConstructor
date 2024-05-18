@@ -181,7 +181,15 @@ class PushdownAutomaton(
         newGrammar.productions.add(Production(initialNonterminal, mutableListOf(biggestNonterminal!!)))
         newGrammar.convertToCNF()
         newGrammar.removeUselessNonterminals()
-        grammar = newGrammar
-        return newGrammar
+        grammar = if (newGrammar.initialNonterminal == null) {
+            val emptyGrammar = ContextFreeGrammar()
+            emptyGrammar.addNonterminal(initialNonterminal)
+            emptyGrammar.initialNonterminal = initialNonterminal
+            emptyGrammar.productions.add(Production(initialNonterminal, mutableListOf()))
+            emptyGrammar
+        } else {
+            newGrammar
+        }
+        return grammar as ContextFreeGrammar
     }
 }

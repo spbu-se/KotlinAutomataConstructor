@@ -1,6 +1,8 @@
 package automaton.constructor.controller.algorithms
 
 import automaton.constructor.model.automaton.PushdownAutomaton
+import automaton.constructor.model.data.createAutomaton
+import automaton.constructor.model.data.getData
 import automaton.constructor.model.element.Nonterminal
 import automaton.constructor.view.algorithms.ConversionToCFGView
 import javafx.scene.layout.HBox
@@ -10,8 +12,9 @@ import tornadofx.label
 
 class ConversionToCFGController(private val openedAutomaton: PushdownAutomaton): Controller() {
     fun convertToCFG() {
+        val automatonCopy = openedAutomaton.getData().createAutomaton() as PushdownAutomaton
         val conversionToCFGWindow = find<ConversionToCFGView>(mapOf(
-            ConversionToCFGView::grammar to openedAutomaton.convertToCFG(),
+            ConversionToCFGView::grammar to automatonCopy.convertToCFG(),
             ConversionToCFGView::controller to this
         ))
         conversionToCFGWindow.openWindow()
