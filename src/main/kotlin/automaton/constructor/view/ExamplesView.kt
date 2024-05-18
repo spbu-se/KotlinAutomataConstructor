@@ -12,8 +12,10 @@ import javafx.scene.text.Text
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.apache.commons.io.FileUtils
 import tornadofx.*
-import kotlin.io.path.toPath
+import java.io.File
+import java.text.MessageFormat
 
 @Serializable
 data class Example(val name: String, val description: String)
@@ -38,16 +40,10 @@ class ExamplesView: View() {
     val fileController: FileController by param()
     private val examples = mutableListOf<Example>().asObservable()
     init {
-        val examplesURL = this@ExamplesView::class.java.getResource("/examples/examples.json")
-        if (examplesURL == null) {
-            I18N.messages.getString(
-                "ExamplesFragment.UnableToFindResource") + " /examples/examples.json"
-        } else {
-            val deserializedExamples = Json.decodeFromString<List<Example>>(
-                examplesURL.readText()
-            )
-            deserializedExamples.forEach { examples.add(it) }
-        }
+        val deserializedExamples = Json.decodeFromString<List<Example>>(
+            this@ExamplesView::class.java.getResource("/examples/examples.json")!!.readText()
+        )
+        deserializedExamples.forEach { examples.add(it) }
     }
     override val root = hbox(5) {
         val examplesListView = listview(examples)
@@ -66,8 +62,10 @@ class ExamplesView: View() {
             description.text = I18N.automatonExamples.getString("ExamplesFragment.${newValue.name}Description")
             val imageURL = this@ExamplesView::class.java.getResource("/examples/images/${newValue.name}.png")
             if (imageURL == null) {
-                error(I18N.messages.getString(
-                    "ExamplesFragment.UnableToFindResource") + " /examples/images/${newValue.name}.png")
+                error(MessageFormat.format(
+                    I18N.messages.getString("ExamplesFragment.UnableToFindResource"),
+                    "/examples/images/${newValue.name}.png"
+                ))
             } else {
                 image.image = Image(imageURL.toExternalForm(), true)
             }
@@ -78,7 +76,10 @@ class ExamplesView: View() {
             if (automatonURL == null) {
                 error(I18N.messages.getString("TestsController.UnableToOpen"))
             } else {
-                fileController.open(automatonURL.toURI().toPath().toFile())
+                val automatonStream = this@ExamplesView::class.java.getResourceAsStream("/examples/automatons/${newValue}.atmtn")
+                val automatonFile = File.createTempFile("example", ".atmtn")
+                FileUtils.copyInputStreamToFile(automatonStream, automatonFile)
+                fileController.open(automatonFile)
                 this@ExamplesView.close()
             }
         })

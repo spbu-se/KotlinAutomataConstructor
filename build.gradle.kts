@@ -37,6 +37,7 @@ val monocleVersion: String by rootProject
 val jacocoVersion: String by rootProject
 val jvmTarget: String by rootProject
 val kotlinReflectVersion: String by rootProject
+val commonsIOVersion: String by rootProject
 val testngVersion: String by rootProject
 
 version = appVersion
@@ -64,6 +65,7 @@ dependencies {
     implementation("org.eclipse.core:org.eclipse.core.runtime:$eclipseCoreVersion")
     implementation("com.github.h0tk3y.betterParse:better-parse:$betterParseVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinReflectVersion")
+    implementation("commons-io:commons-io:$commonsIOVersion")
 
     implementation("org.openjfx:javafx-base:$javaFXVersion:$platform")
     implementation("org.openjfx:javafx-graphics:$javaFXVersion:$platform")

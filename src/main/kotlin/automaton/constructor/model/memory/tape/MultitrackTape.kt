@@ -60,7 +60,7 @@ class MultiTrackTapeDescriptor(val trackCount: Int) : MemoryUnitDescriptor {
     }
 
     override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean {
-        return !(descriptor !is MultiTrackTapeDescriptor || trackCount != descriptor.trackCount)
+        return descriptor is MultiTrackTapeDescriptor && trackCount == descriptor.trackCount
     }
 
     private fun getIndexSuffix(index: Int) = if (trackCount == 1) "" else " ${index + 1}"

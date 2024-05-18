@@ -12,6 +12,7 @@ import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.view.TestAndResult
 import automaton.constructor.view.TestsView
 import automaton.constructor.view.TestsResultsFragment
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.concurrent.Task
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
@@ -29,6 +30,13 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
     private val testsWindow = find<TestsView>(mapOf(TestsView::controller to this)).apply {
         this.title = I18N.messages.getString("TestsFragment.Title")
     }
+    val isSelectionModeOn = SimpleBooleanProperty(false).apply {
+        addListener { _, _, newValue ->
+            testsWindow.deleteButton.isVisible = newValue
+            testsWindow.cancelButton.isVisible = newValue
+        }
+    }
+    val selectedTests = mutableListOf<Test>()
 
     private val formatForSerializing = Json {
         serializersModule = SerializersModule {
@@ -116,10 +124,7 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
             val memory = automatonCopy.memoryDescriptors.zip(test.input).map {
                     (descriptor, content) -> descriptor.createMemoryUnit(content)
             }
-            val executorResult = createExecutorAndRun(automatonCopy, memory)
-            if (executorResult == null) {
-                return@runOnTests
-            }
+            val executorResult = createExecutorAndRun(automatonCopy, memory) ?: return@runOnTests
             testsAndResults.add(TestAndResult(test, executorResult.executionResult, executorResult.graphic))
         }
         val testsResultsWindow = find<TestsResultsFragment>(mapOf(TestsResultsFragment::testsAndResults to testsAndResults))

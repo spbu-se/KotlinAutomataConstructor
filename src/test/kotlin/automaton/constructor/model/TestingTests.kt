@@ -18,11 +18,11 @@ class TestingTests: ApplicationTest() {
     private lateinit var app: Application
     @BeforeEach
     fun setUpClass() {
-        app = FxToolkit.setupApplication(AutomatonConstructorApp::class.java)
         assumeFalse(
             System.getProperty("testfx.headless") == "true",
             "Tests requiring graphical UI will be skipped in headless mode"
         )
+        app = FxToolkit.setupApplication(AutomatonConstructorApp::class.java)
     }
     override fun start(stage: Stage) {
         stage.show()
