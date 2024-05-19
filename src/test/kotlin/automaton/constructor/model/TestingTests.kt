@@ -6,6 +6,7 @@ import javafx.application.Application
 import javafx.scene.Node
 import javafx.stage.Stage
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testfx.api.FxAssert.verifyThat
@@ -13,16 +14,20 @@ import org.testfx.api.FxToolkit
 import org.testfx.framework.junit5.ApplicationTest
 import org.testfx.matcher.control.TableViewMatchers.hasTableCell
 
-
 class TestingTests: ApplicationTest() {
     private lateinit var app: Application
     @BeforeEach
     fun setUpClass() {
+        assumeFalse(
+            System.getProperty("testfx.headless") == "true",
+            "Tests requiring graphical UI will be skipped in headless mode"
+        )
         app = FxToolkit.setupApplication(AutomatonConstructorApp::class.java)
     }
     override fun start(stage: Stage) {
         stage.show()
     }
+
     @AfterEach
     fun afterEachTest() {
         FxToolkit.cleanupApplication(app)
@@ -39,6 +44,7 @@ class TestingTests: ApplicationTest() {
         clickOn(from(rootNode(window("Test").scene)).lookup(".text-field").query<Node>()).write(test)
         clickOn(from(rootNode(window("Test").scene)).lookup(I18N.messages.getString(
             "TestsFragment.Run")).query<Node>())
+        clickOn(rootNode(window("Tests results").scene))
     }
 
     @Test

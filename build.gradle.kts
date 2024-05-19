@@ -36,7 +36,9 @@ val testfxVersion: String by rootProject
 val monocleVersion: String by rootProject
 val jacocoVersion: String by rootProject
 val jvmTarget: String by rootProject
-val kotlinReflect = "1.8.0"
+val kotlinReflectVersion: String by rootProject
+val commonsIOVersion: String by rootProject
+val testngVersion: String by rootProject
 
 version = appVersion
 
@@ -62,7 +64,8 @@ dependencies {
     implementation("org.eclipse.elk:org.eclipse.elk.alg.graphviz.layouter:$elkVersion")
     implementation("org.eclipse.core:org.eclipse.core.runtime:$eclipseCoreVersion")
     implementation("com.github.h0tk3y.betterParse:better-parse:$betterParseVersion")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinReflect")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinReflectVersion")
+    implementation("commons-io:commons-io:$commonsIOVersion")
 
     implementation("org.openjfx:javafx-base:$javaFXVersion:$platform")
     implementation("org.openjfx:javafx-graphics:$javaFXVersion:$platform")
@@ -73,8 +76,8 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.testfx:testfx-core:$testfxVersion")
     testImplementation("org.testfx:testfx-junit5:$testfxVersion")
-    testImplementation("org.testfx:openjfx-monocle:jdk-12.0.1+2")
-    testImplementation("org.testng:testng:7.1.0")
+    testImplementation("org.testfx:openjfx-monocle:$monocleVersion")
+    testImplementation("org.testng:testng:$testngVersion")
 }
 
 jacoco {

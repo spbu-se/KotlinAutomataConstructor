@@ -2,46 +2,54 @@ package automaton.constructor.controller
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.data.MemoryUnitDescriptorData
+import automaton.constructor.model.data.createAutomaton
+import automaton.constructor.model.data.getData
 import automaton.constructor.model.data.serializersModule
-import automaton.constructor.model.memory.MemoryUnitDescriptor
-import automaton.constructor.model.module.executor.ExecutionStatus
-import automaton.constructor.model.module.executor.Executor
-import automaton.constructor.utils.I18N
+import automaton.constructor.model.memory.Test
+import automaton.constructor.model.memory.TestsForSerializing
+import automaton.constructor.utils.*
 import automaton.constructor.utils.addOnSuccess
-import automaton.constructor.utils.runAsyncWithDialog
 import automaton.constructor.view.TestAndResult
 import automaton.constructor.view.TestsView
 import automaton.constructor.view.TestsResultsFragment
-import automaton.constructor.view.module.executor.executionLeafView
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.concurrent.Task
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.stage.FileChooser
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import tornadofx.*
 import java.io.File
-
-data class Test(val input: List<MemoryUnitDescriptor>)
-
-@Serializable
-data class TestsForSerializing(val tests: List<List<MemoryUnitDescriptorData>>, val automatonType: String)
+import java.text.MessageFormat
 
 class TestsController(val openedAutomaton: Automaton) : Controller() {
     var wereTestsModified = false
+    private val testsWindow = find<TestsView>(mapOf(TestsView::controller to this)).apply {
+        this.title = I18N.messages.getString("TestsFragment.Title")
+    }
+    val isSelectionModeOn = SimpleBooleanProperty(false).apply {
+        addListener { _, _, newValue ->
+            testsWindow.deleteButton.isVisible = newValue
+            testsWindow.cancelButton.isVisible = newValue
+        }
+    }
+    val selectedTests = mutableListOf<Test>()
+
     private val formatForSerializing = Json {
         serializersModule = SerializersModule {
             prettyPrint = true
             include(MemoryUnitDescriptorData.serializersModule)
         }
     }
+
     fun saveTests(tests: List<Test>, uiComponent: UIComponent) {
         val file = chooseFile(FileChooserMode.Save) ?: return
         saveAsync(tests, uiComponent, file)
     }
+
     private fun saveAsync(tests: List<Test>, uiComponent: UIComponent, file: File): Task<Unit> {
         return uiComponent.runAsyncWithDialog(
             I18N.messages.getString("TestsController.Saving"),
@@ -52,58 +60,76 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
             file.writeText(formatForSerializing.encodeToString(testsForSerializing))
         } addOnSuccess {
             wereTestsModified = false
+        } addOnFail {
+            throw RuntimeException(
+                MessageFormat.format(
+                    I18N.messages.getString("TestsController.UnableToSave"),
+                    file
+                ), it
+            )
         }
     }
+
     fun createTests() {
-        val testsWindow = find<TestsView>(mapOf(TestsView::controller to this))
-        testsWindow.title = "Test"
         testsWindow.openWindow()
     }
+
     private fun chooseFile(mode: FileChooserMode): File? =
         chooseFile(
             filters = arrayOf(FileChooser.ExtensionFilter("1", "*.json")),
             mode = mode
         ).firstOrNull()
-    fun openTests(uiComponent: UIComponent): List<Test> {
-        val file = chooseFile(FileChooserMode.Single) ?: return listOf()
-        return openAsync(uiComponent, file).get()
+
+    fun openTests(uiComponent: UIComponent) {
+        val file = chooseFile(FileChooserMode.Single) ?: return
+        openAsync(uiComponent, file) addOnSuccess {
+            if (it == null) {
+                error(I18N.messages.getString("TestsController.UnableToOpen"))
+            } else {
+                testsWindow.tests.addAll(it)
+            }
+        }
     }
-    private fun openAsync(uiComponent: UIComponent, file: File): Task<List<Test>> {
+
+    private fun openAsync(uiComponent: UIComponent, file: File): Task<List<Test>?> {
         return uiComponent.runAsyncWithDialog(
             I18N.messages.getString("TestsController.Opening"),
             daemon = false
         ) {
             val deserializedTests =
                 formatForSerializing.decodeFromString<TestsForSerializing>(file.readText())
-            if (deserializedTests.automatonType != openedAutomaton::class.simpleName!!) {
-                throw RuntimeException(
-                    I18N.messages.getString("TestsController.UnableToOpen")
-                )
+            val descriptors = deserializedTests.tests.map { test -> Test(test.map { it.createDescriptor() }) }
+            if (deserializedTests.automatonType != openedAutomaton::class.simpleName!! ||
+                !openedAutomaton.canUseTheseDescriptors(descriptors[0].input)) {
+                null
+            } else {
+                descriptors
             }
-            deserializedTests.tests.map { test -> Test(test.map { it.createDescriptor() }) }
         } addOnSuccess {
             wereTestsModified = false
+        } addOnFail {
+            throw RuntimeException(
+                MessageFormat.format(
+                    I18N.messages.getString("TestsController.UnableToOpen"),
+                    file
+                ), it
+            )
         }
     }
+
     fun runOnTests(tests: List<Test>) {
         val testsAndResults = mutableListOf<TestAndResult>()
         tests.forEach { test ->
-            val memory = openedAutomaton.memoryDescriptors.zip(test.input).map {
+            val automatonCopy = openedAutomaton.getData().createAutomaton()
+            val memory = automatonCopy.memoryDescriptors.zip(test.input).map {
                     (descriptor, content) -> descriptor.createMemoryUnit(content)
             }
-            val executor = Executor(openedAutomaton)
-            executor.start(memory)
-            executor.runFor()
-            val executionResult = when (executor.status) {
-                ExecutionStatus.ACCEPTED -> I18N.messages.getString("ExecutorController.Executor.Status.Accepted")
-                ExecutionStatus.REJECTED -> I18N.messages.getString("ExecutorController.Executor.Status.Rejected")
-                ExecutionStatus.FROZEN -> I18N.messages.getString("ExecutorController.Executor.Status.Frozen")
-                ExecutionStatus.RUNNING -> I18N.messages.getString("ExecutorController.Executor.Status.Running")
-            }
-            val graphic = executor.acceptedExeStates.firstOrNull()?.let { executionLeafView(it) }
-            testsAndResults.add(TestAndResult(test, executionResult, graphic))
+            val executorResult = createExecutorAndRun(automatonCopy, memory) ?: return@runOnTests
+            testsAndResults.add(TestAndResult(test, executorResult.executionResult, executorResult.graphic))
         }
-        find<TestsResultsFragment>(mapOf(TestsResultsFragment::testsAndResults to testsAndResults)).openWindow()
+        val testsResultsWindow = find<TestsResultsFragment>(mapOf(TestsResultsFragment::testsAndResults to testsAndResults))
+        testsResultsWindow.title = I18N.messages.getString("TestsResultsFragment.Title")
+        testsResultsWindow.openWindow()
     }
 
     fun suggestSavingChanges(tests: List<Test>, uiComponent: UIComponent): Boolean {

@@ -8,6 +8,7 @@ import automaton.constructor.model.action.transition.RemoveTransitionAction
 import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transformation.AutomatonTransformation
@@ -240,6 +241,17 @@ abstract class AbstractAutomaton(
 
     private val modules = mutableMapOf<(Automaton) -> AutomatonModule, AutomatonModule>()
 
+    override fun canUseTheseDescriptors(newDescriptors: List<MemoryUnitDescriptor>): Boolean {
+        if (newDescriptors.size != memoryDescriptors.size) {
+            return false
+        }
+        for (index in memoryDescriptors.indices) {
+            if (!memoryDescriptors[index].isCompatibleWithDescriptor(newDescriptors[index])) {
+                return false
+            }
+        }
+        return true
+    }
 
     companion object {
         const val STATE_NAME_PREFIX = "S"

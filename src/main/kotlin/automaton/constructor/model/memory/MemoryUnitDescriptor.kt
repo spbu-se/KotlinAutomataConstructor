@@ -42,4 +42,6 @@ interface MemoryUnitDescriptor : Editable {
     fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor = this): MemoryUnit
 
     fun copy(): MemoryUnitDescriptor = getData().createDescriptor()
+
+    fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean
 }

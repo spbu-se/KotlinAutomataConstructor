@@ -36,6 +36,9 @@ class InputTapeDescriptor() : MonospaceEditableString(), MemoryUnitDescriptor {
 
     override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
         InputTape(this, Track((initMemoryContent as InputTapeDescriptor).value))
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean =
+        descriptor is InputTapeDescriptor
 }
 
 class InputTape(

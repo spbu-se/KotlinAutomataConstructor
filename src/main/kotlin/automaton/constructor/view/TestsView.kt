@@ -1,8 +1,9 @@
 package automaton.constructor.view
 
-import automaton.constructor.controller.Test
 import automaton.constructor.controller.TestsController
+import automaton.constructor.model.memory.Test
 import automaton.constructor.utils.*
+import javafx.geometry.Insets
 import tornadofx.*
 import javafx.scene.control.Button
 import javafx.scene.control.ListCell
@@ -13,6 +14,30 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
         I18N.messages.getString("MemoryView.InputData").toProperty(),
         currentMemoryDescriptors.createSettings()
     ))
+
+    init {
+        controller.isSelectionModeOn.addListener { _, _, newValue ->
+            if (item != null) {
+                graphic = if (newValue) {
+                    borderpane {
+                        left = checkbox().apply {
+                            action {
+                                if (isSelected) {
+                                    controller.selectedTests.add(item)
+                                } else {
+                                    controller.selectedTests.remove(item)
+                                }
+                            }
+                            padding = Insets(3.0, 8.0, 0.0, 0.0)
+                        }
+                        center = inputEditor
+                    }
+                } else {
+                    inputEditor
+                }
+            }
+        }
+    }
 
     override fun updateItem(item: Test?, empty: Boolean) {
         super.updateItem(item, empty)
@@ -32,7 +57,10 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
 
 class TestsView: View() {
     val controller: TestsController by param()
-    private val tests = mutableListOf<Test>().asObservable()
+    val tests = mutableListOf<Test>().asObservable()
+    val deleteButton = Button(I18N.messages.getString("TestsFragment.Delete")).apply { isVisible = false }
+    val cancelButton = Button(I18N.messages.getString("TestsFragment.Cancel")).apply { isVisible = false }
+
     override fun onDock() {
         currentWindow?.setOnCloseRequest {
             if (!controller.suggestSavingChanges(tests, this))
@@ -41,41 +69,48 @@ class TestsView: View() {
                 tests.clear()
         }
     }
+
     override val root = vbox {
-        val addButton = Button(I18N.messages.getString("TestsFragment.Add"))
-        val deleteButton = Button(I18N.messages.getString("TestsFragment.Delete"))
-        val saveButton = Button(I18N.messages.getString("TestsFragment.Save"))
-        val loadButton = Button(I18N.messages.getString("TestsFragment.Load"))
-        minWidth = 500.0 // just for testing
-        hbox {
-            add(addButton)
+        minWidth = 500.0
+
+        hbox(5) {
+            button(I18N.messages.getString("TestsFragment.Add")).action {
+                tests.add(Test(controller.openedAutomaton.memoryDescriptors.map { it.copy() }))
+            }
+            button(I18N.messages.getString("TestsFragment.Select")).action {
+                controller.isSelectionModeOn.set(true)
+            }
+            button(I18N.messages.getString("TestsFragment.Save")).action {
+                controller.saveTests(tests, this@TestsView)
+            }
+            button(I18N.messages.getString("TestsFragment.Load")).action {
+                controller.openTests(this@TestsView)
+            }
             add(deleteButton)
-            add(saveButton)
-            add(loadButton)
+            add(cancelButton)
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
         val testsListView = listview(tests)
-        button(I18N.messages.getString("TestsFragment.Run")) {
-            action {
-                controller.runOnTests(tests)
+        hbox {
+            button(I18N.messages.getString("TestsFragment.Run")) {
+                action {
+                    controller.runOnTests(tests)
+                }
             }
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
 
         testsListView.setCellFactory { TestCell(controller) }
-        addButton.setOnAction {
-            tests.add(Test(controller.openedAutomaton.memoryDescriptors.map { it.copy() }))
-        }
+
         deleteButton.setOnAction {
-            val selectedCellIndex = testsListView.selectionModel.selectedIndex
-            if (selectedCellIndex != -1) {
-                tests.removeAt(selectedCellIndex)
-            }
+            tests.removeAll(controller.selectedTests)
+            controller.selectedTests.clear()
+            controller.isSelectionModeOn.set(false)
         }
-        saveButton.setOnAction {
-            controller.saveTests(tests, this@TestsView)
-        }
-        loadButton.setOnAction {
-            val openedTests = controller.openTests(this@TestsView)
-            openedTests.forEach { test -> tests.add(test) }
+
+        cancelButton.setOnAction {
+            controller.selectedTests.clear()
+            controller.isSelectionModeOn.set(false)
         }
     }
 }

@@ -37,6 +37,9 @@ class OutputTapeDescriptor : MemoryUnitDescriptor {
     override var displayName: String = I18N.messages.getString("OutputTape")
 
     override fun getData() = OutputTapeDescriptorData
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean =
+        descriptor is OutputTapeDescriptor
 }
 
 class OutputTape(
