@@ -10,6 +10,7 @@ import automaton.constructor.utils.SettingGroup
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import javafx.scene.paint.Color
 import tornadofx.*
 
 open class AutomatonBasicVertexView(val vertex: AutomatonVertex) : AutomatonElementView(vertex) {
@@ -18,6 +19,7 @@ open class AutomatonBasicVertexView(val vertex: AutomatonVertex) : AutomatonElem
     init {
         label {
             textProperty().bind(vertex.nameProperty)
+            textFill = Color.BLACK
         }
         if (vertex is BuildingBlock) {
             if (vertex.subAutomaton.hasProblems) {

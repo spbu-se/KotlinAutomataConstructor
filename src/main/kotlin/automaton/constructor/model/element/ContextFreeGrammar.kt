@@ -3,10 +3,10 @@ package automaton.constructor.model.element
 interface CFGSymbol {
     fun getSymbol(): String
 }
-class Terminal(val value: Char): CFGSymbol {
+class Terminal(var value: Char): CFGSymbol {
     override fun getSymbol() = value.toString()
 }
-class Nonterminal(val value: String): CFGSymbol {
+class Nonterminal(var value: String): CFGSymbol {
     override fun getSymbol() = value
 }
 class Production(val leftSide: Nonterminal, val rightSide: MutableList<CFGSymbol>)

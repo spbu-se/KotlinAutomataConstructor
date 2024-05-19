@@ -2,13 +2,13 @@ package automaton.constructor.controller.algorithms
 
 import automaton.constructor.controller.FileController
 import automaton.constructor.controller.LayoutController
+import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.FiniteAutomaton
-import automaton.constructor.model.automaton.PushdownAutomaton
-import automaton.constructor.model.data.createAutomaton
-import automaton.constructor.model.data.getData
 import automaton.constructor.model.element.*
+import automaton.constructor.view.algorithms.CFGView
 import automaton.constructor.view.algorithms.HellingsAlgoExecutionView
-import automaton.constructor.view.algorithms.HellingsAlgoInputView
+import automaton.constructor.view.algorithms.HellingsAlgoGrammarView
+import automaton.constructor.view.algorithms.HellingsAlgoGraphView
 import javafx.beans.property.SimpleBooleanProperty
 import tornadofx.*
 
@@ -20,26 +20,30 @@ class HellingsTransition(
 )
 
 class HellingsAlgoController(
-    val openedAutomaton: PushdownAutomaton,
+    val openedAutomaton: Automaton,
     val fileController: FileController,
     val layoutController: LayoutController
 ): Controller() {
+    var grammar: ContextFreeGrammar? = null
+
+    fun getGrammar() {
+        find<HellingsAlgoGrammarView>(mapOf(HellingsAlgoGrammarView::controller to this)).openWindow()
+    }
+
     fun getInputGraph() {
-        val hellingsAlgoInputWindow = find<HellingsAlgoInputView>(mapOf(
-            HellingsAlgoInputView::hellingsAlgoController to this,
-            HellingsAlgoInputView::fileController to fileController,
-            HellingsAlgoInputView::layoutController to layoutController
+        val hellingsAlgoGraphWindow = find<HellingsAlgoGraphView>(mapOf(
+            HellingsAlgoGraphView::hellingsAlgoController to this,
+            HellingsAlgoGraphView::fileController to fileController,
+            HellingsAlgoGraphView::layoutController to layoutController
         ))
-        hellingsAlgoInputWindow.openWindow()
+        hellingsAlgoGraphWindow.openWindow()
     }
 
     fun execute(graph: FiniteAutomaton) {
         val m = observableListOf<HellingsTransition>()
         val r = observableListOf<HellingsTransition>()
-        val automatonCopy = openedAutomaton.getData().createAutomaton() as PushdownAutomaton
-        val grammar = automatonCopy.convertToCFG()
         graph.transitions.forEach { transition ->
-            val production = grammar.productions.find {
+            val production = grammar!!.productions.find {
                 it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
             }
             if (production != null) {
@@ -51,7 +55,7 @@ class HellingsAlgoController(
             }
         }
 
-        ConversionToCFGController(openedAutomaton).convertToCFG()
+        find<CFGView>(mapOf(CFGView::grammar to grammar)).openWindow()
         val hellingsAlgoExecutionWindow = find<HellingsAlgoExecutionView>(mapOf(
             HellingsAlgoExecutionView::m to m,
             HellingsAlgoExecutionView::r to r
@@ -73,7 +77,7 @@ class HellingsAlgoController(
                 r.filter {
                     it.target == mTransition.source
                 }.forEach { rTransition ->
-                    grammar.productions.filter {
+                    grammar!!.productions.filter {
                         it.rightSide == mutableListOf(rTransition.nonterminal, mTransition.nonterminal)
                     }.forEach { production ->
                         if (r.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target } &&
@@ -92,7 +96,7 @@ class HellingsAlgoController(
                 r.filter {
                     it.source == mTransition.target
                 }.forEach { rTransition ->
-                    grammar.productions.filter {
+                    grammar!!.productions.filter {
                         it.rightSide == mutableListOf(mTransition.nonterminal, rTransition.nonterminal)
                     }.forEach { production ->
                         if (r.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target } &&

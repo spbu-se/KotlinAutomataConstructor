@@ -62,7 +62,8 @@ class TransitionsCell<T: TableTransitionView, M: TransitionMap>(
     }
 }
 
-class NewTransitionPopup(val automaton: Automaton): Fragment() {
+class NewTransitionPopup: Fragment() {
+    val automaton: Automaton by param()
     val source = SimpleObjectProperty<AutomatonVertex>()
     val target = SimpleObjectProperty<AutomatonVertex>()
     override val root = vbox {
@@ -168,7 +169,9 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                 }
                 button("Add transition") {
                     action {
-                        find<NewTransitionPopup>().openWindow()
+                        val test = Scope()
+                        val newTransitionWindow = find<NewTransitionPopup>(test, mapOf(NewTransitionPopup::automaton to automaton))
+                        newTransitionWindow.openWindow()
                     }
                     style = "-fx-font-size:30"
                 }

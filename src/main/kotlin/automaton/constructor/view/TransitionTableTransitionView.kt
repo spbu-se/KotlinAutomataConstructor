@@ -5,6 +5,7 @@ import automaton.constructor.utils.I18N
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.createUnmodifiableSettingControl
+import javafx.scene.paint.Color
 import tornadofx.*
 
 class TransitionTableTransitionView(transition: Transition): TableTransitionView(transition) {
@@ -16,6 +17,7 @@ class TransitionTableTransitionView(transition: Transition): TableTransitionView
                 textProperty().addListener(ChangeListener { _, oldValue, newValue ->
                     textLength = textLength - oldValue.length + newValue.length
                 })
+                textFill = Color.BLACK
             }
             if (transition.sideEffectsText.isNotEmpty()) {
                 label(";")
