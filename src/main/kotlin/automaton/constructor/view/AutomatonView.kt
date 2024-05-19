@@ -38,13 +38,13 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
         val matrixTab = customizedZoomScrollPane { add(automatonAdjacencyMatrixView) }
         tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            tab("Graph representation") {
+            tab(I18N.messages.getString("AutomatonView.Graph")) {
                 add(graphTab)
             }
-            tab("State-transition table representation") {
+            tab(I18N.messages.getString("AutomatonView.Table")) {
                 add(tableTab)
             }
-            tab("Adjacency matrix representation") {
+            tab(I18N.messages.getString("AutomatonView.Matrix")) {
                 add(matrixTab)
             }
         }

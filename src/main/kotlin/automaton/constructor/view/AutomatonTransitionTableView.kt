@@ -4,6 +4,7 @@ import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
+import automaton.constructor.utils.I18N
 import automaton.constructor.utils.hoverableTooltip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.*
@@ -19,11 +20,13 @@ class TransitionTableTransitionMap(
 
 class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: AutomatonViewContext
 ): AutomatonTableView<TransitionTableTransitionView, TransitionTableTransitionMap>(automaton, automatonViewContext) {
-    private val targetColumn = TableColumn<TransitionTableTransitionMap, AutomatonVertex>("To state")
-    private val transitionColumn = TableColumn<TransitionTableTransitionMap, List<Transition>>("Label")
+    private val targetColumn = TableColumn<TransitionTableTransitionMap, AutomatonVertex>(
+        I18N.messages.getString("AutomatonTransitionTableView.ToState"))
+    private val transitionColumn = TableColumn<TransitionTableTransitionMap, List<Transition>>(
+        I18N.messages.getString("AutomatonTransitionTableView.Label"))
 
     init {
-        sourceColumn.text = "From state"
+        sourceColumn.text = I18N.messages.getString("AutomatonTransitionTableView.FromState")
         targetColumn.cellValueFactory = PropertyValueFactory("target")
         targetColumn.setCellFactory { VertexCell(this) }
         transitionColumn.setCellValueFactory { p0 ->

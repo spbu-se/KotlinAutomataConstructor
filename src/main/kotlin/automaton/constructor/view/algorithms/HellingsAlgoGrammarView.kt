@@ -5,9 +5,12 @@ import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
 import automaton.constructor.model.element.*
+import automaton.constructor.utils.I18N
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
+import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
@@ -55,6 +58,7 @@ class HellingsRightSideCell(
                     symbol.value = newValue
                 }
             }
+            prefWidth = 73.0
         }
     }
 
@@ -62,23 +66,28 @@ class HellingsRightSideCell(
         super.updateItem(item, empty)
         graphic = if (item != null) {
             HBox().apply {
-                hbox {
+                hbox(3) {
                     item.forEachIndexed { index, _ ->
                         add(getTextField(item[index]))
                     }
+                    padding = Insets(0.0, 3.0, 0.0, 0.0)
                 }
                 add(ComboBox<String>().apply {
-                    items = observableListOf("Terminal", "Nonterminal")
-                    promptText = "Add"
+                    items = observableListOf(
+                        I18N.messages.getString("HellingsAlgorithm.Grammar.Terminal"),
+                        I18N.messages.getString("HellingsAlgorithm.Grammar.Nonterminal")
+                    )
+                    promptText = "+"
                     setOnAction {
                         val productionRightSide = productions[index].rightSide.value
-                        if (value == "Terminal") {
+                        if (value == items[0]) {
                             productions[index].rightSide.set((productionRightSide + Terminal('T')).toMutableList())
                         }
-                        if (value == "Nonterminal") {
+                        if (value == items[1]) {
                             productions[index].rightSide.set((productionRightSide + grammar.addNonterminal()).toMutableList())
                         }
                     }
+                    prefWidth = 55.0
                 })
             }
         } else {
@@ -87,51 +96,67 @@ class HellingsRightSideCell(
     }
 }
 
-class HellingsAlgoGrammarView: View() {
+class HellingsAlgoGrammarView: Fragment() {
     val controller: HellingsAlgoController by param()
     private val grammar = ContextFreeGrammar()
     private val productions = observableListOf<EditableProduction>()
     private val initialNonterminalValue = SimpleStringProperty()
-    override val root = vbox {
-        hbox {
-            label("Initial nonterminal = ")
+    override val root = borderpane {
+        top = hbox {
+            label(I18N.messages.getString("CFGView.InitialNonterminal") + " = ") {
+                padding = Insets(4.0, 0.0, 0.0, 0.0)
+            }
             textfield() {
                 promptText = "N"
                 textProperty().bindBidirectional(initialNonterminalValue)
+                prefWidth = 73.0
             }
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
 
         val grammarTableView = tableview(productions)
-        val leftSideColumn = TableColumn<EditableProduction, Nonterminal>("Left side")
-        val rightSideColumn = TableColumn<EditableProduction, MutableList<CFGSymbol>>("Right side")
+        center = grammarTableView
+        val leftSideColumn = TableColumn<EditableProduction, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
+        val rightSideColumn = TableColumn<EditableProduction, MutableList<CFGSymbol>>(I18N.messages.getString("CFGView.RightSide"))
         leftSideColumn.cellValueFactory = PropertyValueFactory("leftSide")
         leftSideColumn.setCellFactory { HellingsLeftSideCell() }
         rightSideColumn.setCellValueFactory { p0 ->
             p0!!.value.rightSide
         }
         rightSideColumn.setCellFactory { HellingsRightSideCell(grammar, productions) }
+        leftSideColumn.prefWidth = 80.0
+        rightSideColumn.prefWidth = 430.0
         grammarTableView.columns.addAll(leftSideColumn, rightSideColumn)
 
-        hbox {
-            button("Add").action {
-                productions.add(EditableProduction(grammar.addNonterminal(), SimpleObjectProperty(mutableListOf())))
-            }
-            button("OK").action {
-                controller.grammar = fixGrammar()
-                controller.getInputGraph()
-                close()
-            }
-            button("Convert automaton to CFG").action {
-                if (controller.openedAutomaton !is PushdownAutomaton || (controller.openedAutomaton as PushdownAutomaton).stacks.size > 1) {
-                    error("Algorithm is implemented only for pushdown automatons with a single stack!")
-                } else {
-                    val automatonCopy = controller.openedAutomaton.getData().createAutomaton() as PushdownAutomaton
-                    controller.grammar = automatonCopy.convertToCFG()
+        bottom = borderpane {
+            left = hbox(5) {
+                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Add")).action {
+                    productions.add(EditableProduction(grammar.addNonterminal(), SimpleObjectProperty(mutableListOf())))
+                }
+                button(I18N.messages.getString("HellingsAlgorithm.Grammar.OK")).action {
+                    controller.grammar = fixGrammar()
                     controller.getInputGraph()
                     close()
                 }
+                padding = Insets(5.0, 5.0, 5.0, 5.0)
+            }
+
+            right = hbox {
+                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Convert")).action {
+                    if (controller.openedAutomaton !is PushdownAutomaton || (controller.openedAutomaton as PushdownAutomaton).stacks.size > 1) {
+                        error(I18N.messages.getString("CFGView.Error"))
+                    } else {
+                        val automatonCopy = controller.openedAutomaton.getData().createAutomaton() as PushdownAutomaton
+                        controller.grammar = automatonCopy.convertToCFG()
+                        controller.getInputGraph()
+                        close()
+                    }
+                }
+                padding = Insets(5.0, 5.0, 5.0, 5.0)
             }
         }
+
+        prefWidth = 510.0
     }
 
     private fun fixGrammar(): ContextFreeGrammar {

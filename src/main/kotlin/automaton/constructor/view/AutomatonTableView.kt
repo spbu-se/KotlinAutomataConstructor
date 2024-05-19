@@ -130,20 +130,20 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         vbox {
             add(table)
             hbox {
-                button("Add state") {
+                button(I18N.messages.getString("AutomatonTableView.AddState")) {
                     action {
                         automaton.addState()
                     }
                     style = "-fx-font-size:30"
                 }
                 if (automaton.allowsBuildingBlocks) {
-                    button("Add empty building block") {
+                    button(I18N.messages.getString("AutomatonTableView.AddBuildingBlock")) {
                         action {
                             automaton.addBuildingBlock()
                         }
                         style = "-fx-font-size:30"
                     }
-                    button("Copy building block from file") {
+                    button(I18N.messages.getString("AutomatonTableView.CopyBuildingBlock")) {
                         action {
                             if (!automaton.allowsModificationsByUser) return@action
                             val file = automatonViewContext.fileController.chooseFile(
@@ -167,7 +167,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                         style = "-fx-font-size:30"
                     }
                 }
-                button("Add transition") {
+                button(I18N.messages.getString("AutomatonTableView.AddTransition")) {
                     action {
                         val test = Scope()
                         val newTransitionWindow = find<NewTransitionPopup>(test, mapOf(NewTransitionPopup::automaton to automaton))
@@ -176,7 +176,6 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                     style = "-fx-font-size:30"
                 }
             }
-            alignment = Pos.TOP_LEFT
         }
 
         sourceColumn.cellValueFactory = PropertyValueFactory("source")

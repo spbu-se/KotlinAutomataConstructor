@@ -4,6 +4,7 @@ import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
+import automaton.constructor.utils.I18N
 import automaton.constructor.utils.hoverableTooltip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ListChangeListener
@@ -19,7 +20,8 @@ class AdjacencyMatrixTransitionMap(
 
 class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: AutomatonViewContext
 ): AutomatonTableView<AdjacencyMatrixTransitionView, AdjacencyMatrixTransitionMap>(automaton, automatonViewContext) {
-    private val transitionsColumns = TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>("Targets")
+    private val transitionsColumns = TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>(
+        I18N.messages.getString("AutomatonAdjacencyMatrixView.Targets"))
     init {
         transitionsByVertices.addListener(ListChangeListener {
             while (it.next()) {
@@ -32,7 +34,7 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         transitionsByVertices.forEach { map ->
             automaton.vertices.forEach { map.transitions[it] = SimpleObjectProperty(listOf()) }
         }
-        sourceColumn.text = "Source"
+        sourceColumn.text = I18N.messages.getString("AutomatonAdjacencyMatrixView.State")
         automaton.vertices.forEach { registerVertex(it) }
         automaton.transitions.forEach { registerTransition(it) }
         table.columns.add(transitionsColumns)

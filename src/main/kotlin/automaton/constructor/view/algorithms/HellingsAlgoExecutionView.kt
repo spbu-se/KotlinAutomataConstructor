@@ -1,8 +1,10 @@
 package automaton.constructor.view.algorithms
 
 import automaton.constructor.controller.algorithms.HellingsTransition
+import automaton.constructor.utils.I18N
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.ObservableList
+import javafx.geometry.Insets
 import javafx.scene.control.Button
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
@@ -39,25 +41,29 @@ class HellingsAlgoExecutionView: Fragment() {
     val r: ObservableList<HellingsTransition> by param()
     private val mListView = ListView(m).apply { this.setCellFactory { HellingsTransitionCell() } }
     private val rListView = ListView(r).apply { this.setCellFactory { HellingsTransitionCell() } }
-    val nextIterationButton = Button("Next iteration")
+    val nextIterationButton = Button(I18N.messages.getString("HellingsAlgorithm.Execution.NextIteration"))
 
     override val root = vbox {
-        label ("Each triple (N, S, T) means that a word composed of symbols on the path between vertices S " +
-                "and T is output in the grammar if we take N as the initial nonterminal.")
-        label ("Once the algorithm finishes, the list r contains the solution.")
+        label (I18N.messages.getString("HellingsAlgorithm.Execution.Description")) {
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
+        }
         hbox {
             vbox {
-                label("m:")
+                label("m:") {
+                    padding = Insets(0.0, 0.0, 0.0, 5.0)
+                }
                 add(mListView)
             }
             vbox {
-                label("r:")
+                label("r:") {
+                    padding = Insets(0.0, 0.0, 0.0, 5.0)
+                }
                 add(rListView)
             }
         }
-        add(nextIterationButton)
-        style {
-            fontSize = 15.0.px
+        hbox {
+            add(nextIterationButton)
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
     }
 }

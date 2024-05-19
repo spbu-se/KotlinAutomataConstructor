@@ -5,7 +5,9 @@ import automaton.constructor.model.element.CFGSymbol
 import automaton.constructor.model.element.ContextFreeGrammar
 import automaton.constructor.model.element.Nonterminal
 import automaton.constructor.model.element.Production
+import automaton.constructor.utils.I18N
 import automaton.constructor.utils.getLabelsForNonterminal
+import javafx.geometry.Insets
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.cell.PropertyValueFactory
@@ -45,28 +47,28 @@ class RightSideCell: TableCell<Production, List<CFGSymbol>>() {
 class CFGView: Fragment() {
     val grammar: ContextFreeGrammar by param()
     private val productionsTableView = tableview(grammar.productions.toObservable())
-    private val leftSideColumn = TableColumn<Production, Nonterminal>("Left side")
-    private val rightSideColumn = TableColumn<Production, List<CFGSymbol>>("Right side")
+    private val leftSideColumn = TableColumn<Production, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
+    private val rightSideColumn = TableColumn<Production, List<CFGSymbol>>(I18N.messages.getString("CFGView.RightSide"))
 
     init {
         leftSideColumn.cellValueFactory = PropertyValueFactory("leftSide")
         leftSideColumn.setCellFactory { LeftSideCell() }
         rightSideColumn.cellValueFactory = PropertyValueFactory("rightSide")
         rightSideColumn.setCellFactory { RightSideCell() }
-        leftSideColumn.minWidth = 100.0
-        rightSideColumn.minWidth = 100.0
+        leftSideColumn.minWidth = 150.0
+        rightSideColumn.minWidth = 150.0
         productionsTableView.columns.addAll(leftSideColumn, rightSideColumn)
     }
 
     override val root = vbox {
         hbox {
-            label("Initial nonterminal = ")
-            add(getLabelsForNonterminal(grammar.initialNonterminal!!))
+            label(I18N.messages.getString("CFGView.InitialNonterminal") + " = ") {
+                padding = Insets(5.0, 0.0, 5.0, 5.0)
+            }
+            add(getLabelsForNonterminal(grammar.initialNonterminal!!).apply {
+                padding = Insets(5.0, 5.0, 5.0, 0.0)
+            })
         }
         add(productionsTableView)
-
-        style {
-            fontSize = 15.0.px
-        }
     }
 }

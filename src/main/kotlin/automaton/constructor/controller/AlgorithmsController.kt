@@ -4,6 +4,7 @@ import automaton.constructor.controller.algorithms.ConversionToCFGController
 import automaton.constructor.controller.algorithms.HellingsAlgoController
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.PushdownAutomaton
+import automaton.constructor.utils.I18N
 import tornadofx.Controller
 
 class AlgorithmsController(
@@ -13,7 +14,7 @@ class AlgorithmsController(
 ): Controller() {
     fun convertToCFG() {
         if (openedAutomaton !is PushdownAutomaton || openedAutomaton.stacks.size > 1) {
-            tornadofx.error("Conversion is done only for pushdown automatons with a single stack!")
+            tornadofx.error(I18N.messages.getString("CFGView.Error"))
             return
         }
         ConversionToCFGController(openedAutomaton).convertToCFG()

@@ -159,12 +159,12 @@ class MainWindow(
                     testsController.createTests()
                 }
             }
-            menu("Algorithms") {
-                menu("Pushdown automaton") {
-                    item("Convert into context-free grammar").action {
+            menu(I18N.messages.getString("MainView.Algorithms")) {
+                menu(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton")) {
+                    item(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton.CFG")).action {
                         algorithmsController.convertToCFG()
                     }
-                    item("Hellings algorithm").action {
+                    item(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton.Hellings")).action {
                         algorithmsController.executeHellingsAlgo()
                     }
                 }

@@ -6,6 +6,7 @@ import automaton.constructor.controller.algorithms.HellingsAlgoController
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.factory.FiniteAutomatonFactory
+import automaton.constructor.utils.I18N
 import automaton.constructor.view.AutomatonView
 import automaton.constructor.view.AutomatonViewContext
 import javafx.stage.Window
@@ -21,7 +22,7 @@ class HellingsAlgoGraphView: Fragment(), AutomatonViewContext {
         val automatonView = AutomatonView(graph, this@HellingsAlgoGraphView)
         add(automatonView)
         automatonView.fitToParentSize()
-        button("Run").action {
+        button(I18N.messages.getString("HellingsAlgorithm.Graph.Run")).action {
             hellingsAlgoController.execute(graph)
             close()
         }

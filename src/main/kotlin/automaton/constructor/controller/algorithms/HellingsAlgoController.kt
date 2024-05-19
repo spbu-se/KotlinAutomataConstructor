@@ -5,6 +5,7 @@ import automaton.constructor.controller.LayoutController
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.FiniteAutomaton
 import automaton.constructor.model.element.*
+import automaton.constructor.utils.I18N
 import automaton.constructor.view.algorithms.CFGView
 import automaton.constructor.view.algorithms.HellingsAlgoExecutionView
 import automaton.constructor.view.algorithms.HellingsAlgoGrammarView
@@ -27,16 +28,19 @@ class HellingsAlgoController(
     var grammar: ContextFreeGrammar? = null
 
     fun getGrammar() {
-        find<HellingsAlgoGrammarView>(mapOf(HellingsAlgoGrammarView::controller to this)).openWindow()
+        find<HellingsAlgoGrammarView>(mapOf(HellingsAlgoGrammarView::controller to this)).apply {
+            title = I18N.messages.getString("HellingsAlgorithm.Grammar.Title")
+        }.openWindow()
     }
 
     fun getInputGraph() {
-        val hellingsAlgoGraphWindow = find<HellingsAlgoGraphView>(mapOf(
+        find<HellingsAlgoGraphView>(mapOf(
             HellingsAlgoGraphView::hellingsAlgoController to this,
             HellingsAlgoGraphView::fileController to fileController,
             HellingsAlgoGraphView::layoutController to layoutController
-        ))
-        hellingsAlgoGraphWindow.openWindow()
+        )).apply {
+            title = I18N.messages.getString("HellingsAlgorithm.Graph.Title")
+        }.openWindow()
     }
 
     fun execute(graph: FiniteAutomaton) {
@@ -55,11 +59,13 @@ class HellingsAlgoController(
             }
         }
 
-        find<CFGView>(mapOf(CFGView::grammar to grammar)).openWindow()
+        find<CFGView>(mapOf(CFGView::grammar to grammar)).apply{
+            title = I18N.messages.getString("CFGView.Title")
+        }.openWindow()
         val hellingsAlgoExecutionWindow = find<HellingsAlgoExecutionView>(mapOf(
             HellingsAlgoExecutionView::m to m,
             HellingsAlgoExecutionView::r to r
-        ))
+        )).apply { title = I18N.messages.getString("HellingsAlgorithm.Execution.Title") }
         hellingsAlgoExecutionWindow.openWindow()
 
         hellingsAlgoExecutionWindow.nextIterationButton.action {
@@ -110,7 +116,8 @@ class HellingsAlgoController(
                 }
             } while (rToAdd.isNotEmpty())
             if (m.isEmpty()) {
-                hellingsAlgoExecutionWindow.nextIterationButton.text = "Close"
+                hellingsAlgoExecutionWindow.nextIterationButton.text = I18N.messages.getString(
+                    "HellingsAlgorithm.Execution.Close")
             }
         }
     }
