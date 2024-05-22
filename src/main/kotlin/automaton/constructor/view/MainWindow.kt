@@ -4,7 +4,6 @@ import automaton.constructor.controller.*
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.action.perform
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
 import automaton.constructor.model.factory.getAllAutomatonFactories

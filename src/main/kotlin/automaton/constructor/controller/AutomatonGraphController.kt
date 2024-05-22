@@ -1,8 +1,5 @@
 package automaton.constructor.controller
 
-import automaton.constructor.model.action.Action
-import automaton.constructor.model.action.ActionAvailability
-import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent

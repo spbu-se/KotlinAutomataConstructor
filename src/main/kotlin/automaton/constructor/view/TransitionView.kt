@@ -2,7 +2,6 @@ package automaton.constructor.view
 
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.*
-import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Binding
 import javafx.beans.property.DoubleProperty
 import javafx.scene.paint.Color

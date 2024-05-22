@@ -11,7 +11,6 @@ import automaton.constructor.utils.addOnSuccess
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.SetChangeListener
-import javafx.geometry.Pos
 import javafx.scene.control.ListCell
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
@@ -199,6 +198,6 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
 
     companion object {
         const val TABLE_WIDTH = 3400.0
-        const val TABLE_HEIGHT = 1250.0
+        const val TABLE_HEIGHT = 1000.0
     }
 }

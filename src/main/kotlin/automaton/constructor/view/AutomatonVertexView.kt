@@ -7,15 +7,12 @@ import automaton.constructor.model.element.State
 import automaton.constructor.model.module.hasProblems
 import automaton.constructor.model.module.hasProblemsBinding
 import automaton.constructor.utils.*
-import automaton.constructor.utils.I18N.messages
 import automaton.constructor.view.AutomatonVertexView.ShapeType.CIRCLE
 import automaton.constructor.view.AutomatonVertexView.ShapeType.SQUARE
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
 import javafx.geometry.VPos
 import javafx.scene.Node
-import javafx.scene.control.CheckBox
-import javafx.scene.control.TextField
 import javafx.scene.paint.Color
 import javafx.scene.shape.Shape
 import javafx.scene.text.Font.font

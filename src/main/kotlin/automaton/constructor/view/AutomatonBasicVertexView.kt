@@ -17,9 +17,25 @@ open class AutomatonBasicVertexView(val vertex: AutomatonVertex) : AutomatonElem
     val colourProperty = SimpleStringProperty("white")
     var colour by colourProperty
     init {
-        label {
-            textProperty().bind(vertex.nameProperty)
-            textFill = Color.BLACK
+        hbox {
+            label {
+                textProperty().bind(vertex.nameProperty)
+                textFill = Color.BLACK
+            }
+            vertex.isInitialProperty.addListener { _, _, newValue ->
+                if (newValue) {
+                    label(" (start)") {
+                        textFill = Color.BLACK
+                    }
+                }
+            }
+            vertex.isFinalProperty.addListener { _, _, newValue ->
+                if (newValue) {
+                    label(" (final)") {
+                        textFill = Color.BLACK
+                    }
+                }
+            }
         }
         if (vertex is BuildingBlock) {
             if (vertex.subAutomaton.hasProblems) {
