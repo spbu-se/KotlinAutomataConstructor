@@ -1,6 +1,5 @@
 package automaton.constructor.view.algorithms
 
-import automaton.constructor.controller.algorithms.ConversionToCFGController
 import automaton.constructor.model.element.CFGSymbol
 import automaton.constructor.model.element.ContextFreeGrammar
 import automaton.constructor.model.element.Nonterminal
@@ -37,6 +36,9 @@ class RightSideCell: TableCell<Production, List<CFGSymbol>>() {
                         add(label(it.getSymbol()))
                     }
                 }
+                if (item.isEmpty()) {
+                    add(label("ε"))
+                }
             }
         } else {
             null
@@ -58,6 +60,9 @@ class CFGView: Fragment() {
         leftSideColumn.minWidth = 150.0
         rightSideColumn.minWidth = 150.0
         productionsTableView.columns.addAll(leftSideColumn, rightSideColumn)
+        if (productionsTableView.items.isEmpty()) {
+            productionsTableView.items.add(Production(grammar.initialNonterminal, mutableListOf()))
+        }
     }
 
     override val root = vbox {
@@ -65,7 +70,7 @@ class CFGView: Fragment() {
             label(I18N.messages.getString("CFGView.InitialNonterminal") + " = ") {
                 padding = Insets(5.0, 0.0, 5.0, 5.0)
             }
-            add(getLabelsForNonterminal(grammar.initialNonterminal!!).apply {
+            add(getLabelsForNonterminal(grammar.initialNonterminal).apply {
                 padding = Insets(5.0, 5.0, 5.0, 0.0)
             })
         }

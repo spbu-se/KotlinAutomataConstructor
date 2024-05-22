@@ -4,10 +4,13 @@ import automaton.constructor.model.action.transition.EliminateEpsilonTransitionA
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.automaton.flavours.AutomatonWithStacks
 import automaton.constructor.model.data.PushdownAutomatonData
+import automaton.constructor.model.data.createAutomaton
+import automaton.constructor.model.data.getData
 import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.module.finalVertices
+import automaton.constructor.model.module.initialVertices
 import automaton.constructor.utils.I18N
 
 /**
@@ -72,7 +75,7 @@ class PushdownAutomaton(
     }
 
     private fun makeTheOnlyOneFinalState() {
-        if (finalVertices.size < 2) {
+        if (finalVertices.size < 2 || stacks.first().acceptsByEmptyStack) {
             return
         }
         val newFinalState = addState()
@@ -114,24 +117,78 @@ class PushdownAutomaton(
         } }
     }
 
-    private fun simplify() {
+    private fun prepareForConversionToCFG() {
         pushOnlyOneSymbol()
         makeTheOnlyOneFinalState()
         pushOrPopOnEachTransition()
         clearTheStackAtTheEnd()
     }
 
+    private fun prepareForConversionToAcceptingByFinalState() {
+        if (!stacks.first().acceptsByEmptyStack) {
+            return
+        }
+        val newInitialState = addState()
+        initialVertices.first().isInitial = false
+        newInitialState.isInitial = true
+        val newFinalState = addState()
+        finalVertices.toList().forEach {
+            it.isFinal = false
+        }
+        newFinalState.isFinal = true
+    }
+
+    private fun makeTheOnlyOneInitialState() {
+        if (initialVertices.size < 2) {
+            return
+        }
+        val newInitialState = addState()
+        initialVertices.toList().forEach {
+            addTransition(newInitialState, it)
+            it.isInitial = false
+        }
+        newInitialState.isInitial = true
+    }
+
+    private fun startWithEmptyStack() {
+        if (stacks.first().value.isEmpty()) {
+            return
+        }
+        val newInitialState = addState()
+        val oldInitialState = initialVertices.first()
+        oldInitialState.isInitial = false
+        val transition = addTransition(newInitialState, oldInitialState)
+        transition.writeProperties(transition.readProperties().toMutableList().apply {
+            this[2] = stacks.first().value
+        })
+    }
+
     fun convertToCFG(): ContextFreeGrammar {
         if (grammar != null) {
             return grammar as ContextFreeGrammar
         }
-        simplify()
-        val newGrammar = ContextFreeGrammar()
+        val initialNonterminal = Nonterminal("S")
+        val newGrammar = ContextFreeGrammar(initialNonterminal)
         val nonterminals = mutableListOf<MutableList<Nonterminal>>()
         var biggestNonterminal: Nonterminal? = null
-        vertices.forEach { vertice1 ->
+        val automatonCopy = getData().createAutomaton() as PushdownAutomaton
+
+        if (automatonCopy.initialVertices.isEmpty()) {
+            grammar = newGrammar
+            return newGrammar
+        }
+        automatonCopy.makeTheOnlyOneInitialState()
+        automatonCopy.startWithEmptyStack()
+        val oldInitialState = automatonCopy.initialVertices.first()
+        automatonCopy.prepareForConversionToAcceptingByFinalState()
+        if (automatonCopy.finalVertices.isEmpty()) {
+            grammar = newGrammar
+            return newGrammar
+        }
+        automatonCopy.prepareForConversionToCFG()
+        automatonCopy.vertices.forEach { vertice1 ->
             val list = mutableListOf<Nonterminal>()
-            vertices.forEach { vertice2 ->
+            automatonCopy.vertices.forEach { vertice2 ->
                 val newNonterminal = newGrammar.addNonterminal()
                 list.add(newNonterminal)
                 if (vertice1.isInitial && vertice2.isFinal) {
@@ -153,14 +210,14 @@ class PushdownAutomaton(
                 }
             }
         }
-        transitions.forEach { transition1 ->
-            transitions.forEach { transition2 ->
+        automatonCopy.transitions.forEach { transition1 ->
+            automatonCopy.transitions.forEach { transition2 ->
                 if (transition1.readProperties()[2] == transition2.readProperties()[1] &&
                     transition1.readProperties()[2] != "ε") {
-                    val indexOfSource1 = vertices.indexOf(transition1.source)
-                    val indexOfSource2 = vertices.indexOf(transition2.source)
-                    val indexOfTarget1 = vertices.indexOf(transition1.target)
-                    val indexOfTarget2 = vertices.indexOf(transition2.target)
+                    val indexOfSource1 = automatonCopy.vertices.indexOf(transition1.source)
+                    val indexOfSource2 = automatonCopy.vertices.indexOf(transition2.source)
+                    val indexOfTarget1 = automatonCopy.vertices.indexOf(transition1.target)
+                    val indexOfTarget2 = automatonCopy.vertices.indexOf(transition2.target)
 
                     val rightSideOfNewProduction = mutableListOf<CFGSymbol>()
                     if (transition1.readProperties()[0] != "ε") {
@@ -175,21 +232,25 @@ class PushdownAutomaton(
                 }
             }
         }
-        val initialNonterminal = Nonterminal("S")
-        newGrammar.addNonterminal(initialNonterminal)
-        newGrammar.initialNonterminal = initialNonterminal
-        newGrammar.productions.add(Production(initialNonterminal, mutableListOf(biggestNonterminal!!)))
+        if (automatonCopy.stacks.first().acceptsByEmptyStack) {
+            automatonCopy.vertices.forEach {
+                if (!it.isInitial && !it.isFinal) {
+                    val indexOfSource1 = automatonCopy.vertices.indexOf(automatonCopy.initialVertices.first())
+                    val indexOfSource2 = automatonCopy.vertices.indexOf(it)
+                    val indexOfTarget1 = automatonCopy.vertices.indexOf(oldInitialState)
+                    val indexOfTarget2 = automatonCopy.vertices.indexOf(automatonCopy.finalVertices.first())
+                    newGrammar.productions.add(Production(nonterminals[indexOfSource1][indexOfTarget2],
+                        mutableListOf(nonterminals[indexOfTarget1][indexOfSource2])))
+                }
+            }
+        }
+
+        if (biggestNonterminal != null) {
+            newGrammar.productions.add(Production(initialNonterminal, mutableListOf(biggestNonterminal!!)))
+        }
         newGrammar.convertToCNF()
         newGrammar.removeUselessNonterminals()
-        grammar = if (newGrammar.initialNonterminal == null) {
-            val emptyGrammar = ContextFreeGrammar()
-            emptyGrammar.addNonterminal(initialNonterminal)
-            emptyGrammar.initialNonterminal = initialNonterminal
-            emptyGrammar.productions.add(Production(initialNonterminal, mutableListOf()))
-            emptyGrammar
-        } else {
-            newGrammar
-        }
-        return grammar as ContextFreeGrammar
+        grammar = newGrammar
+        return newGrammar
     }
 }

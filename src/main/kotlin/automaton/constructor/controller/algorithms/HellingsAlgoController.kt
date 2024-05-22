@@ -25,7 +25,7 @@ class HellingsAlgoController(
     val fileController: FileController,
     val layoutController: LayoutController
 ): Controller() {
-    var grammar: ContextFreeGrammar? = null
+    lateinit var grammar: ContextFreeGrammar
 
     fun getGrammar() {
         find<HellingsAlgoGrammarView>(mapOf(HellingsAlgoGrammarView::controller to this)).apply {
@@ -47,7 +47,7 @@ class HellingsAlgoController(
         val m = observableListOf<HellingsTransition>()
         val r = observableListOf<HellingsTransition>()
         graph.transitions.forEach { transition ->
-            val production = grammar!!.productions.find {
+            val production = grammar.productions.find {
                 it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
             }
             if (production != null) {
@@ -83,7 +83,7 @@ class HellingsAlgoController(
                 r.filter {
                     it.target == mTransition.source
                 }.forEach { rTransition ->
-                    grammar!!.productions.filter {
+                    grammar.productions.filter {
                         it.rightSide == mutableListOf(rTransition.nonterminal, mTransition.nonterminal)
                     }.forEach { production ->
                         if (r.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target } &&
@@ -102,7 +102,7 @@ class HellingsAlgoController(
                 r.filter {
                     it.source == mTransition.target
                 }.forEach { rTransition ->
-                    grammar!!.productions.filter {
+                    grammar.productions.filter {
                         it.rightSide == mutableListOf(mTransition.nonterminal, rTransition.nonterminal)
                     }.forEach { production ->
                         if (r.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target } &&

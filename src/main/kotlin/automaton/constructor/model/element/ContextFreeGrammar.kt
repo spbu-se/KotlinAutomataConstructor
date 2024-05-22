@@ -11,12 +11,21 @@ class Nonterminal(var value: String): CFGSymbol {
 }
 class Production(val leftSide: Nonterminal, val rightSide: MutableList<CFGSymbol>)
 
-class ContextFreeGrammar {
+class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
     val nonterminals = mutableListOf<Nonterminal>()
     val productions = mutableListOf<Production>()
     private var nonterminalsCount = 0
     private val nonterminalsValues = mutableSetOf<String>()
-    var initialNonterminal: Nonterminal? = null
+    var initialNonterminal: Nonterminal
+
+    init {
+        initialNonterminal = if (newInitialNonterminal == null) {
+            addNonterminal("S")
+        } else {
+            addNonterminal(newInitialNonterminal)
+            newInitialNonterminal
+        }
+    }
 
     fun addNonterminal(value: String = "A"): Nonterminal {
         val newNonterminal = if (nonterminalsValues.contains(value)) {
@@ -40,11 +49,11 @@ class ContextFreeGrammar {
     }
 
     fun removeNonterminal(nonterminal: Nonterminal) {
+        if (nonterminal == initialNonterminal) {
+            return
+        }
         nonterminals.remove(nonterminal)
         nonterminalsValues.remove(nonterminal.value)
-        if (nonterminal == initialNonterminal) {
-            initialNonterminal = null
-        }
     }
 
     private fun removeEpsilonProductions() {
@@ -52,11 +61,11 @@ class ContextFreeGrammar {
         while (areThereNullableNonterminals) {
             val nullableNonterminals = mutableSetOf<Nonterminal>()
             productions.forEach {
-                if (it.rightSide.isEmpty() && it.leftSide.value != "S") {
+                if (it.rightSide.isEmpty() && it.leftSide != initialNonterminal) {
                     nullableNonterminals.add(it.leftSide)
                 }
             }
-            productions.removeAll { it.rightSide.isEmpty() && it.leftSide.value != "S" }
+            productions.removeAll { it.rightSide.isEmpty() && it.leftSide != initialNonterminal }
             nullableNonterminals.forEach { nonterminal ->
                 val productionsToAdd = mutableListOf<Production>()
                 productions.forEach {
@@ -162,7 +171,7 @@ class ContextFreeGrammar {
         productions.addAll(productionsToAdd)
     }
 
-    fun convertToCNF() { // conversion is done for CFG of pushdown automatons, can be not applicable for every other
+    fun convertToCNF() {
         removeEpsilonProductions()
         removeUnitProductions()
         removeMixOfTerminalsAndNonterminals()
@@ -170,8 +179,6 @@ class ContextFreeGrammar {
     }
 
     private fun removeUnreachableNonterminals() {
-        if (initialNonterminal == null)
-            return
         val productionsByNonterminals = mutableMapOf<Nonterminal, MutableList<List<CFGSymbol>>>()
         productions.forEach {
             if (!productionsByNonterminals.containsKey(it.leftSide)) {
@@ -180,8 +187,8 @@ class ContextFreeGrammar {
             productionsByNonterminals[it.leftSide]!!.add(it.rightSide)
         }
         val queue = ArrayDeque<Nonterminal>()
-        queue.add(initialNonterminal!!)
-        val reachableNonterminals = mutableSetOf(initialNonterminal!!)
+        queue.add(initialNonterminal)
+        val reachableNonterminals = mutableSetOf(initialNonterminal)
         while (queue.isNotEmpty()) {
             val currentNonterminal = queue.removeFirst()
             productionsByNonterminals[currentNonterminal]?.forEach { rightSide ->

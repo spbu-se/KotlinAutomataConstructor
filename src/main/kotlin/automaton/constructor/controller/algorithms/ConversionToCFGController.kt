@@ -9,9 +9,8 @@ import tornadofx.Controller
 
 class ConversionToCFGController(private val openedAutomaton: PushdownAutomaton): Controller() {
     fun convertToCFG() {
-        val automatonCopy = openedAutomaton.getData().createAutomaton() as PushdownAutomaton
         val conversionToCFGWindow = find<CFGView>(mapOf(
-            CFGView::grammar to automatonCopy.convertToCFG()
+            CFGView::grammar to openedAutomaton.convertToCFG()
         ))
         conversionToCFGWindow.title = I18N.messages.getString("CFGView.Title")
         conversionToCFGWindow.openWindow()
