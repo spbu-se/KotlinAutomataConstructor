@@ -12,6 +12,7 @@ import javafx.scene.control.TableColumn
 import javafx.scene.layout.Pane
 import tornadofx.add
 import tornadofx.fitToParentSize
+import kotlin.math.max
 
 class AdjacencyMatrixTransitionMap(
     val source: AutomatonVertex,
@@ -35,10 +36,13 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
             automaton.vertices.forEach { map.transitions[it] = SimpleObjectProperty(listOf()) }
         }
         sourceColumn.text = I18N.messages.getString("AutomatonAdjacencyMatrixView.State")
+        sourceColumn.minWidth = 200.0
         automaton.vertices.forEach { registerVertex(it) }
         automaton.transitions.forEach { registerTransition(it) }
+        table.prefWidthProperty().addListener { _, _, _ ->
+            resizeColumns()
+        }
         table.columns.add(transitionsColumns)
-        table.columns.forEach { it.prefWidth = TABLE_WIDTH / 2 }
     }
 
     override fun registerVertex(vertex: AutomatonVertex) {
@@ -100,16 +104,26 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
             p0!!.value.transitions[vertex]!!
         }
         addedColumn.setCellFactory { TransitionsCell(this) }
+        addedColumn.minWidth = 200.0
         if (transitionsColumns.columns.none { it.text == addedColumn.text }) {
             transitionsColumns.columns.add(addedColumn)
         }
-        sourceColumn.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1)
-        transitionsColumns.columns.forEach { it.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1) }
+        resizeColumns()
     }
 
     private fun unregisterColumn(removedColumn: TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>) {
         transitionsColumns.columns.remove(removedColumn)
-        sourceColumn.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1)
-        transitionsColumns.columns.forEach { it.prefWidth = TABLE_WIDTH / (transitionsColumns.columns.size + 1) }
+        resizeColumns()
+    }
+
+    private fun resizeColumns() {
+        if (transitionsColumns.columns.isEmpty()) {
+            table.columns.forEach { it.prefWidth = table.prefWidth / 2 }
+        } else {
+            sourceColumn.prefWidth = max(sourceColumn.minWidth, table.prefWidth / (transitionsColumns.columns.size + 1))
+            transitionsColumns.columns.forEach {
+                it.prefWidth = max(it.minWidth, table.prefWidth / (transitionsColumns.columns.size + 1))
+            }
+        }
     }
 }

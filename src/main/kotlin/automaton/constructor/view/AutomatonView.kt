@@ -32,19 +32,27 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             }
             event.consume()
         }
-        val graphTab = customizedZoomScrollPane { add(automatonGraphView) }
-        val tableTab = customizedZoomScrollPane { add(automatonTransitionTableView) }
-        val matrixTab = customizedZoomScrollPane { add(automatonAdjacencyMatrixView) }
+        val graphPane = customizedZoomScrollPane { add(automatonGraphView) }
+        val tablePane = customizedZoomScrollPane { add(automatonTransitionTableView) }
+        val matrixPane = customizedZoomScrollPane { add(automatonAdjacencyMatrixView) }
         tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab(I18N.messages.getString("AutomatonView.Graph")) {
-                add(graphTab)
+                add(graphPane)
             }
-            tab(I18N.messages.getString("AutomatonView.Table")) {
-                add(tableTab)
+            val tableTab = tab(I18N.messages.getString("AutomatonView.Table")) {
+                add(tablePane)
             }
-            tab(I18N.messages.getString("AutomatonView.Matrix")) {
-                add(matrixTab)
+            val matrixTab = tab(I18N.messages.getString("AutomatonView.Matrix")) {
+                add(matrixPane)
+            }
+            selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+                if (newValue == tableTab) {
+                    automatonTransitionTableView.enableProperResizing()
+                }
+                if (newValue == matrixTab) {
+                    automatonAdjacencyMatrixView.enableProperResizing()
+                }
             }
         }
         val settingsEditor = SettingsEditor().apply {

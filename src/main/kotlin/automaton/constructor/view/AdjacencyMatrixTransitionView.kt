@@ -8,10 +8,6 @@ class AdjacencyMatrixTransitionView(transition: Transition): TableTransitionView
     init {
         label {
             textProperty().bind(transition.propertiesTextBinding)
-            textLength = text.length
-            textProperty().addListener(ChangeListener { _, oldValue, newValue ->
-                textLength = textLength - oldValue.length + newValue.length
-            })
         }
     }
 }

@@ -8,8 +8,6 @@ import automaton.constructor.utils.createUnmodifiableSettingControl
 import tornadofx.toProperty
 
 open class TableTransitionView(val transition: Transition): AutomatonElementView(transition) {
-    var textLength = 0
-
     override fun getSettings() = listOf(
         SettingGroup(
             I18N.messages.getString("TransitionView.Transition").toProperty(), listOf(

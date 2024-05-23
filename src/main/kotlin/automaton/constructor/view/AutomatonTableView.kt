@@ -168,8 +168,8 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                 }
                 button(I18N.messages.getString("AutomatonTableView.AddTransition")) {
                     action {
-                        val test = Scope()
-                        val newTransitionWindow = find<NewTransitionPopup>(test, mapOf(NewTransitionPopup::automaton to automaton))
+                        val scope = Scope()
+                        val newTransitionWindow = find<NewTransitionPopup>(scope, mapOf(NewTransitionPopup::automaton to automaton))
                         newTransitionWindow.openWindow()
                     }
                     style = "-fx-font-size:30"
@@ -182,8 +182,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         table.columns.add(sourceColumn)
 
         table.style {
-            minWidth = TABLE_WIDTH.px
-            minHeight = TABLE_HEIGHT.px
+            minWidth = TABLE_INIT_WIDTH.px
             fontSize = 40.0.px
         }
     }
@@ -196,8 +195,12 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
 
     abstract fun unregisterTransition(transition: Transition)
 
+    fun enableProperResizing() {
+        table.prefWidthProperty().bind(automatonViewContext.tablePrefWidth * 2.5)
+        table.prefHeightProperty().bind(automatonViewContext.tablePrefHeight * 2.5 - 245.0)
+    }
+
     companion object {
-        const val TABLE_WIDTH = 3400.0
-        const val TABLE_HEIGHT = 1000.0
+        const val TABLE_INIT_WIDTH = 1000.0
     }
 }
