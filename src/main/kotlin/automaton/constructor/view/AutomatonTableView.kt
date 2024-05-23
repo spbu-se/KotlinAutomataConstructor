@@ -20,6 +20,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import tornadofx.*
+import kotlin.random.Random
 
 interface TransitionMap
 
@@ -131,7 +132,10 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
             hbox {
                 button(I18N.messages.getString("AutomatonTableView.AddState")) {
                     action {
-                        automaton.addState()
+                        automaton.addState(position = javafx.geometry.Point2D(
+                            500_000.0 + Random.nextDouble(-500.0, 500.0),
+                            500_000.0 + Random.nextDouble(-500.0, 500.0)
+                        ))
                     }
                     style = "-fx-font-size:30"
                 }

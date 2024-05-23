@@ -6,6 +6,7 @@ import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.FiniteAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.utils.I18N
+import automaton.constructor.utils.doNextIterationOfHellingsAlgo
 import automaton.constructor.view.algorithms.CFGView
 import automaton.constructor.view.algorithms.HellingsAlgoExecutionView
 import automaton.constructor.view.algorithms.HellingsAlgoGrammarView
@@ -59,65 +60,19 @@ class HellingsAlgoController(
             }
         }
 
-        find<CFGView>(mapOf(CFGView::grammar to grammar)).apply{
-            title = I18N.messages.getString("CFGView.Title")
-        }.openWindow()
         val hellingsAlgoExecutionWindow = find<HellingsAlgoExecutionView>(mapOf(
             HellingsAlgoExecutionView::m to m,
             HellingsAlgoExecutionView::r to r
         )).apply { title = I18N.messages.getString("HellingsAlgorithm.Execution.Title") }
         hellingsAlgoExecutionWindow.openWindow()
+        find<CFGView>(mapOf(CFGView::grammar to grammar)).apply{
+            title = I18N.messages.getString("CFGView.Title")
+        }.openWindow()
 
         hellingsAlgoExecutionWindow.nextIterationButton.action {
+            doNextIterationOfHellingsAlgo(m, r, grammar)
             if (m.isEmpty()) {
-                hellingsAlgoExecutionWindow.close()
-                return@action
-            }
-            m.forEach { it.isNew.set(false) }
-            r.forEach { it.isNew.set(false) }
-            val mTransition = m.removeFirst()
-            val rToAdd = mutableListOf<HellingsTransition>()
-            do {
-                r.addAll(rToAdd)
-                rToAdd.clear()
-                r.filter {
-                    it.target == mTransition.source
-                }.forEach { rTransition ->
-                    grammar.productions.filter {
-                        it.rightSide == mutableListOf(rTransition.nonterminal, mTransition.nonterminal)
-                    }.forEach { production ->
-                        if (r.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target } &&
-                            rToAdd.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target }) {
-                            val newTransition = HellingsTransition(production.leftSide, rTransition.source,
-                                mTransition.target, SimpleBooleanProperty(true))
-                            m.add(newTransition)
-                            rToAdd.add(newTransition)
-                        }
-                    }
-                }
-            } while (rToAdd.isNotEmpty())
-            do {
-                r.addAll(rToAdd)
-                rToAdd.clear()
-                r.filter {
-                    it.source == mTransition.target
-                }.forEach { rTransition ->
-                    grammar.productions.filter {
-                        it.rightSide == mutableListOf(mTransition.nonterminal, rTransition.nonterminal)
-                    }.forEach { production ->
-                        if (r.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target } &&
-                            rToAdd.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target }) {
-                            val newTransition = HellingsTransition(production.leftSide, mTransition.source,
-                                rTransition.target, SimpleBooleanProperty(true))
-                            m.add(newTransition)
-                            rToAdd.add(newTransition)
-                        }
-                    }
-                }
-            } while (rToAdd.isNotEmpty())
-            if (m.isEmpty()) {
-                hellingsAlgoExecutionWindow.nextIterationButton.text = I18N.messages.getString(
-                    "HellingsAlgorithm.Execution.Close")
+                hellingsAlgoExecutionWindow.nextIterationButton.isVisible = false
             }
         }
     }
