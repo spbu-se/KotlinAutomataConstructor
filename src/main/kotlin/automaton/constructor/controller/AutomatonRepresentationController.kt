@@ -19,7 +19,13 @@ open class AutomatonRepresentationController(
     val automaton: Automaton,
     val automatonViewContext: AutomatonViewContext
 ): Controller() {
-    val lastSelectedElementProperty = objectProperty<AutomatonElementView?>(null)
+    val lastSelectedElementProperty = objectProperty<AutomatonElementView?>(null).also {
+        it.addListener { _, _, newValue ->
+            if (newValue == null) {
+                clearSelection()
+            }
+        }
+    }
     var lastSelectedElement by lastSelectedElementProperty
     val selectedElementsViews = mutableSetOf<AutomatonElementView>()
 

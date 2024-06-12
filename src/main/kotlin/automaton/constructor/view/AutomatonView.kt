@@ -32,6 +32,19 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             }
             event.consume()
         }
+
+        automatonGraphView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+            automatonTransitionTableView.controller.lastSelectedElement = newValue
+            automatonAdjacencyMatrixView.controller.lastSelectedElement = newValue
+        })
+        automatonTransitionTableView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+            automatonGraphView.controller.lastSelectedElement = newValue
+            automatonAdjacencyMatrixView.controller.lastSelectedElement = newValue
+        })
+        automatonAdjacencyMatrixView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+            automatonGraphView.controller.lastSelectedElement = newValue
+            automatonTransitionTableView.controller.lastSelectedElement = newValue
+        })
         val graphPane = customizedZoomScrollPane { add(automatonGraphView) }
         val tablePane = customizedZoomScrollPane { add(automatonTransitionTableView) }
         val matrixPane = customizedZoomScrollPane { add(automatonAdjacencyMatrixView) }

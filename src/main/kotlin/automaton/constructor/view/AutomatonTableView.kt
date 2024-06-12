@@ -16,6 +16,7 @@ import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
@@ -184,6 +185,9 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
         sourceColumn.setCellFactory { VertexCell(vertexToViewMap) }
         table.columns.add(sourceColumn)
+        table.setOnMouseClicked {
+            if (it.button == MouseButton.PRIMARY) controller.clearSelection()
+        }
 
         table.style {
             minWidth = TABLE_INIT_WIDTH.px
