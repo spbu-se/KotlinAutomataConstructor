@@ -52,7 +52,7 @@ class MainWindow(
     }
     private val testsController: TestsController by testsControllerBinding
     private val algorithmsControllerBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
-        AlgorithmsController(it, fileController, layoutController)
+        AlgorithmsController(it)
     }
     private val algorithmsController by algorithmsControllerBinding
 
@@ -159,12 +159,14 @@ class MainWindow(
                 }
             }
             menu(I18N.messages.getString("MainView.Algorithms")) {
+                menu(I18N.messages.getString("MainView.Algorithms.FiniteAutomaton")) {
+                    item(I18N.messages.getString("MainView.Algorithms.FiniteAutomaton.Hellings")).action {
+                        algorithmsController.executeHellingsAlgo()
+                    }
+                }
                 menu(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton")) {
                     item(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton.CFG")).action {
                         algorithmsController.convertToCFG()
-                    }
-                    item(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton.Hellings")).action {
-                        algorithmsController.executeHellingsAlgo()
                     }
                 }
             }

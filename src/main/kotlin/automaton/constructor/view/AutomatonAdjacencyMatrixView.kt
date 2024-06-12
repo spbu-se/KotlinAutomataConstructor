@@ -103,7 +103,7 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         addedColumn.setCellValueFactory { p0 ->
             p0!!.value.transitions[vertex]!!
         }
-        addedColumn.setCellFactory { TransitionsCell(this) }
+        addedColumn.setCellFactory { TransitionsCell(transitionToViewMap) }
         addedColumn.minWidth = 200.0
         if (transitionsColumns.columns.none { it.text == addedColumn.text }) {
             transitionsColumns.columns.add(addedColumn)

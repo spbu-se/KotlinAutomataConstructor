@@ -24,20 +24,20 @@ import kotlin.random.Random
 
 interface TransitionMap
 
-class VertexCell<T: TableTransitionView, M: TransitionMap>(
-    private val table: AutomatonTableView<T, M>
+class VertexCell<M: TransitionMap>(
+    private val vertexToViewMap: MutableMap<AutomatonVertex, AutomatonBasicVertexView>
 ): TableCell<M, AutomatonVertex>() {
     private val colourProperty = SimpleStringProperty("")
     private var colour by colourProperty
     override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
         super.updateItem(item, empty)
         if (item != null) {
-            colourProperty.bind(table.vertexToViewMap[item]!!.colourProperty)
+            colourProperty.bind(vertexToViewMap[item]!!.colourProperty)
             this.style = "-fx-background-color: ${colour};"
             colourProperty.addListener(ChangeListener { _, _, newValue ->
                 this.style = "-fx-background-color: ${newValue};"
             })
-            graphic = table.vertexToViewMap[item]
+            graphic = vertexToViewMap[item]
         } else {
             this.style = "-fx-background-color: white;"
             graphic = null
@@ -46,14 +46,14 @@ class VertexCell<T: TableTransitionView, M: TransitionMap>(
 }
 
 class TransitionsCell<T: TableTransitionView, M: TransitionMap>(
-    private val table: AutomatonTableView<T, M>
+    private val transitionToViewMap: MutableMap<Transition, T>
 ): TableCell<M, List<Transition>>() {
     override fun updateItem(item: List<Transition>?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
             VBox().apply {
                 item.forEach {
-                    add(table.transitionToViewMap[it]!!)
+                    add(transitionToViewMap[it]!!)
                 }
             }
         } else {
@@ -182,7 +182,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         }
 
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
-        sourceColumn.setCellFactory { VertexCell(this) }
+        sourceColumn.setCellFactory { VertexCell(vertexToViewMap) }
         table.columns.add(sourceColumn)
 
         table.style {

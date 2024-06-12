@@ -10,7 +10,6 @@ import automaton.constructor.utils.doNextIterationOfHellingsAlgo
 import automaton.constructor.view.algorithms.CFGView
 import automaton.constructor.view.algorithms.HellingsAlgoExecutionView
 import automaton.constructor.view.algorithms.HellingsAlgoGrammarView
-import automaton.constructor.view.algorithms.HellingsAlgoGraphView
 import javafx.beans.property.SimpleBooleanProperty
 import tornadofx.*
 
@@ -22,9 +21,7 @@ class HellingsTransition(
 )
 
 class HellingsAlgoController(
-    val openedAutomaton: Automaton,
-    val fileController: FileController,
-    val layoutController: LayoutController
+    private val openedAutomaton: Automaton
 ): Controller() {
     lateinit var grammar: ContextFreeGrammar
 
@@ -34,20 +31,10 @@ class HellingsAlgoController(
         }.openWindow()
     }
 
-    fun getInputGraph() {
-        find<HellingsAlgoGraphView>(mapOf(
-            HellingsAlgoGraphView::hellingsAlgoController to this,
-            HellingsAlgoGraphView::fileController to fileController,
-            HellingsAlgoGraphView::layoutController to layoutController
-        )).apply {
-            title = I18N.messages.getString("HellingsAlgorithm.Graph.Title")
-        }.openWindow()
-    }
-
-    fun execute(graph: FiniteAutomaton) {
+    fun execute() {
         val m = observableListOf<HellingsTransition>()
         val r = observableListOf<HellingsTransition>()
-        graph.transitions.forEach { transition ->
+        openedAutomaton.transitions.forEach { transition ->
             val production = grammar.productions.find {
                 it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
             }

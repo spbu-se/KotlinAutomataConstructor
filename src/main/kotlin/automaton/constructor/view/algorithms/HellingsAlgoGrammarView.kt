@@ -1,7 +1,6 @@
 package automaton.constructor.view.algorithms
 
 import automaton.constructor.controller.algorithms.HellingsAlgoController
-import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.utils.I18N
 import javafx.beans.property.SimpleIntegerProperty
@@ -174,20 +173,7 @@ class HellingsAlgoGrammarView: Fragment() {
                         error(I18N.messages.getString("HellingsAlgorithm.Grammar.Error"))
                     } else {
                         controller.grammar = fixGrammar()
-                        controller.getInputGraph()
-                        close()
-                    }
-                }
-                padding = Insets(5.0, 5.0, 5.0, 5.0)
-            }
-
-            right = hbox {
-                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Convert")).action {
-                    if (controller.openedAutomaton !is PushdownAutomaton || (controller.openedAutomaton as PushdownAutomaton).stacks.size > 1) {
-                        error(I18N.messages.getString("CFGView.Error"))
-                    } else {
-                        controller.grammar = (controller.openedAutomaton as PushdownAutomaton).convertToCFG()
-                        controller.getInputGraph()
+                        controller.execute()
                         close()
                     }
                 }

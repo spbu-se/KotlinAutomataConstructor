@@ -28,11 +28,11 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
     init {
         sourceColumn.text = I18N.messages.getString("AutomatonTransitionTableView.FromState")
         targetColumn.cellValueFactory = PropertyValueFactory("target")
-        targetColumn.setCellFactory { VertexCell(this) }
+        targetColumn.setCellFactory { VertexCell(vertexToViewMap) }
         transitionColumn.setCellValueFactory { p0 ->
             p0!!.value.transitions
         }
-        transitionColumn.setCellFactory { TransitionsCell(this) }
+        transitionColumn.setCellFactory { TransitionsCell(transitionToViewMap) }
         table.columns.addAll(targetColumn, transitionColumn)
         table.prefWidthProperty().addListener { _, _, newValue ->
             table.columns.forEach { it.prefWidth = (newValue as Double) / 3 }
