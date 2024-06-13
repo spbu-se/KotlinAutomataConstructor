@@ -171,7 +171,19 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
         productions.addAll(productionsToAdd)
     }
 
+    fun removeInitialNonterminalFromRightSides() {
+        val isThereInitialNonterminalInRightSide = productions.any { production ->
+            production.rightSide.any { it == initialNonterminal }
+        }
+        if (isThereInitialNonterminalInRightSide) {
+            val newInitialNonterminal = addNonterminal("S")
+            productions.add(Production(newInitialNonterminal, mutableListOf(initialNonterminal)))
+            initialNonterminal = newInitialNonterminal
+        }
+    }
+
     fun convertToCNF() {
+        removeInitialNonterminalFromRightSides()
         removeEpsilonProductions()
         removeUnitProductions()
         removeMixOfTerminalsAndNonterminals()

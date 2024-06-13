@@ -130,21 +130,24 @@ class HellingsAlgoGrammarView: Fragment() {
     private val initialNonterminalValue = SimpleStringProperty()
     private var blankFieldsCount = SimpleIntegerProperty(1)
     override val root = borderpane {
-        top = hbox {
-            label(I18N.messages.getString("CFGView.InitialNonterminal") + " = ") {
-                padding = Insets(4.0, 0.0, 0.0, 0.0)
-            }
-            textfield() {
-                promptText = "N"
-                textProperty().bindBidirectional(initialNonterminalValue)
-                textProperty().addListener { _, _, newValue ->
-                    if (newValue.isEmpty()) {
-                        blankFieldsCount.set(blankFieldsCount.value + 1)
-                    } else {
-                        blankFieldsCount.set(blankFieldsCount.value - 1)
-                    }
+        top = vbox(5.0) {
+            label(I18N.messages.getString("HellingsAlgorithm.Grammar.Info"))
+            hbox {
+                label(I18N.messages.getString("CFGView.InitialNonterminal") + " = ") {
+                    padding = Insets(4.0, 0.0, 0.0, 0.0)
                 }
-                prefWidth = 73.0
+                textfield() {
+                    promptText = "N"
+                    textProperty().bindBidirectional(initialNonterminalValue)
+                    textProperty().addListener { _, _, newValue ->
+                        if (newValue.isEmpty()) {
+                            blankFieldsCount.set(blankFieldsCount.value + 1)
+                        } else {
+                            blankFieldsCount.set(blankFieldsCount.value - 1)
+                        }
+                    }
+                    prefWidth = 73.0
+                }
             }
             padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
