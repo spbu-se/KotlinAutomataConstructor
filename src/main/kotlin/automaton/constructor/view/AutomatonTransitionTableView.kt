@@ -2,15 +2,11 @@ package automaton.constructor.view
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
-import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
-import automaton.constructor.utils.hoverableTooltip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
-import javafx.scene.layout.Pane
-import tornadofx.*
 
 class TransitionTableTransitionMap(
     val source: AutomatonVertex,
@@ -28,7 +24,7 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
     init {
         sourceColumn.text = I18N.messages.getString("AutomatonTransitionTableView.FromState")
         targetColumn.cellValueFactory = PropertyValueFactory("target")
-        targetColumn.setCellFactory { VertexCell(vertexToViewMap) }
+        targetColumn.setCellFactory { VertexCell(this) }
         transitionColumn.setCellValueFactory { p0 ->
             p0!!.value.transitions
         }
@@ -37,32 +33,11 @@ class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: A
         table.prefWidthProperty().addListener { _, _, newValue ->
             table.columns.forEach { it.prefWidth = (newValue as Double) / 3 }
         }
-        automaton.vertices.forEach { registerVertex(it) }
         automaton.transitions.forEach { registerTransition(it) }
-    }
-
-    override fun registerVertex(vertex: AutomatonVertex) {
-        val vertexView = AutomatonBasicVertexView(vertex)
-        controller.registerAutomatonElementView(vertexView)
-        if (vertex is BuildingBlock) {
-            vertexView.hoverableTooltip(stopManagingOnInteraction = true) {
-                Pane().apply {
-                    minWidth = this@AutomatonTransitionTableView.scene.window.width / 1.5
-                    minHeight = this@AutomatonTransitionTableView.scene.window.height / 1.5
-                    maxWidth = this@AutomatonTransitionTableView.scene.window.width / 1.5
-                    maxHeight = this@AutomatonTransitionTableView.scene.window.height / 1.5
-                    val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
-                    add(subAutomatonView)
-                    subAutomatonView.fitToParentSize()
-                }
-            }
-        }
-        vertexToViewMap[vertex] = vertexView
     }
 
     override fun unregisterVertex(vertex: AutomatonVertex) {
         transitionsByVertices.removeAll { it.source == vertex }
-        vertexToViewMap.remove(vertex)
     }
 
     override fun registerTransition(transition: Transition) {

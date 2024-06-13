@@ -19,8 +19,8 @@ import tornadofx.*
 // TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
 class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonViewContext) : Pane() {
     val automatonGraphView = AutomatonGraphView(automaton, automatonViewContext)
-    val automatonTransitionTableView = AutomatonTransitionTableView(automaton, automatonViewContext)
-    val automatonAdjacencyMatrixView = AutomatonAdjacencyMatrixView(automaton, automatonViewContext)
+    private val automatonTransitionTableView = AutomatonTransitionTableView(automaton, automatonViewContext)
+    private val automatonAdjacencyMatrixView = AutomatonAdjacencyMatrixView(automaton, automatonViewContext)
     val undoRedoController = UndoRedoController(this)
 
     init {

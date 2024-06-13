@@ -2,16 +2,12 @@ package automaton.constructor.view
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
-import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
-import automaton.constructor.utils.hoverableTooltip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ListChangeListener
+import javafx.collections.SetChangeListener
 import javafx.scene.control.TableColumn
-import javafx.scene.layout.Pane
-import tornadofx.add
-import tornadofx.fitToParentSize
 import kotlin.math.max
 
 class AdjacencyMatrixTransitionMap(
@@ -24,6 +20,11 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
     private val transitionsColumns = TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>(
         I18N.messages.getString("AutomatonAdjacencyMatrixView.Targets"))
     init {
+        automaton.vertices.addListener(SetChangeListener {
+            if (it.wasAdded()) {
+                registerVertex(it.elementAdded)
+            }
+        })
         transitionsByVertices.addListener(ListChangeListener {
             while (it.next()) {
                 if (it.wasAdded()) {
@@ -45,23 +46,7 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         table.columns.add(transitionsColumns)
     }
 
-    override fun registerVertex(vertex: AutomatonVertex) {
-        val vertexView = AutomatonBasicVertexView(vertex)
-        controller.registerAutomatonElementView(vertexView)
-        if (vertex is BuildingBlock) {
-            vertexView.hoverableTooltip(stopManagingOnInteraction = true) {
-                Pane().apply {
-                    minWidth = this@AutomatonAdjacencyMatrixView.scene.window.width / 1.5
-                    minHeight = this@AutomatonAdjacencyMatrixView.scene.window.height / 1.5
-                    maxWidth = this@AutomatonAdjacencyMatrixView.scene.window.width / 1.5
-                    maxHeight = this@AutomatonAdjacencyMatrixView.scene.window.height / 1.5
-                    val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
-                    add(subAutomatonView)
-                    subAutomatonView.fitToParentSize()
-                }
-            }
-        }
-        vertexToViewMap[vertex] = vertexView
+    private fun registerVertex(vertex: AutomatonVertex) {
         if (transitionsByVertices.none { it.source == vertex }) {
             transitionsByVertices.add(AdjacencyMatrixTransitionMap(vertex))
             val newColumn = TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>(vertex.name)
@@ -74,7 +59,6 @@ class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: A
         transitionsByVertices.removeAll { it.source == vertex }
         unregisterColumn(
             transitionsColumns.columns.find { it.text == vertex.name } as TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>)
-        vertexToViewMap.remove(vertex)
     }
 
     override fun registerTransition(transition: Transition) {

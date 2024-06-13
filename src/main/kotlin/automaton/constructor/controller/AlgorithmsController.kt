@@ -9,7 +9,7 @@ import automaton.constructor.utils.I18N
 import tornadofx.Controller
 
 class AlgorithmsController(
-    val openedAutomaton: Automaton
+    private val openedAutomaton: Automaton
 ): Controller() {
     fun convertToCFG() {
         if (openedAutomaton !is PushdownAutomaton || openedAutomaton.stacks.size > 1) {

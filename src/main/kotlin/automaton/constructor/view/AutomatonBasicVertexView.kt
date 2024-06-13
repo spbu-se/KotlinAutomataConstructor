@@ -14,8 +14,8 @@ import javafx.scene.paint.Color
 import tornadofx.*
 
 open class AutomatonBasicVertexView(val vertex: AutomatonVertex) : AutomatonElementView(vertex) {
-    val colourProperty = SimpleStringProperty("white")
-    var colour by colourProperty
+    val colourProperty = SimpleStringProperty("none")
+    private var colour by colourProperty
     init {
         hbox {
             label {
@@ -45,7 +45,7 @@ open class AutomatonBasicVertexView(val vertex: AutomatonVertex) : AutomatonElem
                 colour = if (newValue) {
                     "red"
                 } else {
-                    "white"
+                    "none"
                 }
             })
         }

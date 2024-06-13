@@ -5,12 +5,15 @@ import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.AutomatonVertex
+import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
+import automaton.constructor.utils.hoverableTooltip
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.SetChangeListener
+import javafx.geometry.Insets
 import javafx.scene.control.ListCell
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
@@ -25,22 +28,43 @@ import kotlin.random.Random
 
 interface TransitionMap
 
-class VertexCell<M: TransitionMap>(
-    private val vertexToViewMap: MutableMap<AutomatonVertex, AutomatonBasicVertexView>
+class VertexCell<T: TableTransitionView, M: TransitionMap>(
+    private val table: AutomatonTableView<T, M>
 ): TableCell<M, AutomatonVertex>() {
     private val colourProperty = SimpleStringProperty("")
     private var colour by colourProperty
+
+    private fun registerVertex(vertex: AutomatonVertex): AutomatonBasicVertexView {
+        val vertexView = AutomatonBasicVertexView(vertex)
+        table.controller.registerAutomatonElementView(vertexView)
+        if (vertex is BuildingBlock) {
+            vertexView.hoverableTooltip(stopManagingOnInteraction = true) {
+                Pane().apply {
+                    minWidth = table.scene.window.width / 1.5
+                    minHeight = table.scene.window.height / 1.5
+                    maxWidth = table.scene.window.width / 1.5
+                    maxHeight = table.scene.window.height / 1.5
+                    val subAutomatonView = table.automatonViewContext.getAutomatonView(vertex.subAutomaton)
+                    add(subAutomatonView)
+                    subAutomatonView.fitToParentSize()
+                }
+            }
+        }
+        return vertexView
+    }
+
     override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
         super.updateItem(item, empty)
         if (item != null) {
-            colourProperty.bind(vertexToViewMap[item]!!.colourProperty)
+            val vertexView = registerVertex(item)
+            colourProperty.bind(vertexView.colourProperty)
             this.style = "-fx-background-color: ${colour};"
             colourProperty.addListener(ChangeListener { _, _, newValue ->
                 this.style = "-fx-background-color: ${newValue};"
             })
-            graphic = vertexToViewMap[item]
+            graphic = vertexView
         } else {
-            this.style = "-fx-background-color: white;"
+            this.style = "-fx-background-color: none;"
             graphic = null
         }
     }
@@ -67,13 +91,11 @@ class NewTransitionPopup: Fragment() {
     val automaton: Automaton by param()
     val source = SimpleObjectProperty<AutomatonVertex>()
     val target = SimpleObjectProperty<AutomatonVertex>()
-    override val root = vbox {
-        label("What transition would you like to add?")
-        hbox {
-            label("Source vertex")
-            val sourceBox = combobox(source, automaton.vertices.toList())
 
-            class VertexCell : ListCell<AutomatonVertex>() {
+    override val root = vbox(5.0) {
+        label(I18N.messages.getString("NewTransitionPopup.Question"))
+        borderpane {
+            class VertexCell: ListCell<AutomatonVertex>() {
                 override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
                     super.updateItem(item, empty)
                     graphic = if (item != null) {
@@ -85,18 +107,26 @@ class NewTransitionPopup: Fragment() {
                     }
                 }
             }
-            sourceBox.setCellFactory { VertexCell() }
-            sourceBox.buttonCell = VertexCell()
-            label("Target vertex")
-            val targetBox = combobox(target, automaton.vertices.toList())
-            targetBox.setCellFactory { VertexCell() }
-            targetBox.buttonCell = VertexCell()
+            left = hbox(5.0) {
+                label(I18N.messages.getString("NewTransitionPopup.Source"))
+                val sourceBox = combobox(source, automaton.vertices.toList())
+                sourceBox.setCellFactory { VertexCell() }
+                sourceBox.buttonCell = VertexCell()
+            }
+            right = hbox(2.0) {
+                label(I18N.messages.getString("NewTransitionPopup.Target"))
+                val targetBox = combobox(target, automaton.vertices.toList())
+                targetBox.setCellFactory { VertexCell() }
+                targetBox.buttonCell = VertexCell()
+            }
         }
-        button("Add") {
+        button(I18N.messages.getString("NewTransitionPopup.Add")) {
             action {
                 automaton.addTransition(source.value, target.value)
             }
         }
+        padding = Insets(5.0, 5.0, 5.0, 5.0)
+        minWidth = 280.0
     }
 }
 
@@ -108,13 +138,9 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     val table = TableView(transitionsByVertices)
     val sourceColumn = TableColumn<M, AutomatonVertex>()
     val controller = AutomatonRepresentationController(automaton, automatonViewContext)
-    val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonBasicVertexView>()
     val transitionToViewMap = mutableMapOf<Transition, T>()
     init {
         automaton.vertices.addListener(SetChangeListener {
-            if (it.wasAdded()) {
-                registerVertex(it.elementAdded)
-            }
             if (it.wasRemoved()) {
                 unregisterVertex(it.elementRemoved)
             }
@@ -175,6 +201,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                     action {
                         val scope = Scope()
                         val newTransitionWindow = find<NewTransitionPopup>(scope, mapOf(NewTransitionPopup::automaton to automaton))
+                        newTransitionWindow.title = I18N.messages.getString("NewTransitionPopup.Title")
                         newTransitionWindow.openWindow()
                     }
                     style = "-fx-font-size:30"
@@ -183,7 +210,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         }
 
         sourceColumn.cellValueFactory = PropertyValueFactory("source")
-        sourceColumn.setCellFactory { VertexCell(vertexToViewMap) }
+        sourceColumn.setCellFactory { VertexCell(this) }
         table.columns.add(sourceColumn)
         table.setOnMouseClicked {
             if (it.button == MouseButton.PRIMARY) controller.clearSelection()
@@ -194,8 +221,6 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
             fontSize = 40.0.px
         }
     }
-
-    abstract fun registerVertex(vertex: AutomatonVertex)
 
     abstract fun unregisterVertex(vertex: AutomatonVertex)
 

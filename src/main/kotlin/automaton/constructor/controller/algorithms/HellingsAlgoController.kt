@@ -1,9 +1,6 @@
 package automaton.constructor.controller.algorithms
 
-import automaton.constructor.controller.FileController
-import automaton.constructor.controller.LayoutController
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.automaton.FiniteAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.doNextIterationOfHellingsAlgo
