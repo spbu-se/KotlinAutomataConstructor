@@ -37,10 +37,10 @@ class HellingsTransitionCell: ListCell<HellingsTransition>() {
 }
 
 class HellingsAlgoExecutionView: Fragment() {
-    val m: ObservableList<HellingsTransition> by param()
-    val r: ObservableList<HellingsTransition> by param()
-    private val mListView = ListView(m).apply { this.setCellFactory { HellingsTransitionCell() } }
-    private val rListView = ListView(r).apply { this.setCellFactory { HellingsTransitionCell() } }
+    val currentTransitions: ObservableList<HellingsTransition> by param()
+    val allTransitions: ObservableList<HellingsTransition> by param()
+    private val currentTransitionsListView = ListView(currentTransitions).apply { this.setCellFactory { HellingsTransitionCell() } }
+    private val allTransitionsListView = ListView(allTransitions).apply { this.setCellFactory { HellingsTransitionCell() } }
     val nextIterationButton = Button(I18N.messages.getString("HellingsAlgorithm.Execution.NextIteration"))
 
     override val root = vbox {
@@ -49,16 +49,16 @@ class HellingsAlgoExecutionView: Fragment() {
         }
         hbox {
             vbox {
-                label("m:") {
+                label(I18N.messages.getString("HellingsAlgorithm.Execution.CurrentTransitions")) {
                     padding = Insets(0.0, 0.0, 0.0, 5.0)
                 }
-                add(mListView)
+                add(currentTransitionsListView)
             }
             vbox {
-                label("r:") {
+                label(I18N.messages.getString("HellingsAlgorithm.Execution.AllTransitions")) {
                     padding = Insets(0.0, 0.0, 0.0, 5.0)
                 }
-                add(rListView)
+                add(allTransitionsListView)
             }
         }
         hbox {

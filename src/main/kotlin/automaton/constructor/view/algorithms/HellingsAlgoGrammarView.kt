@@ -212,6 +212,8 @@ class HellingsAlgoGrammarView: Fragment() {
             }
             fixedGrammar.productions.add(Production(newLeftSide, newRightSide))
         }
+        fixedGrammar.convertToCNF()
+        //fixedGrammar.removeUselessNonterminals()
         return fixedGrammar
     }
 }

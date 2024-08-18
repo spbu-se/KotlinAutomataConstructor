@@ -7,6 +7,9 @@ import automaton.constructor.model.module.problems
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.SettingsEditor
 import automaton.constructor.utils.customizedZoomScrollPane
+import automaton.constructor.view.automaton.AutomatonAdjacencyMatrixView
+import automaton.constructor.view.automaton.AutomatonGraphView
+import automaton.constructor.view.automaton.AutomatonTransitionTableView
 import javafx.beans.binding.Bindings.not
 import javafx.scene.control.TabPane
 import javafx.scene.input.KeyEvent

@@ -8,7 +8,7 @@ import tornadofx.*
  * Transition or vertex
  */
 sealed class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDescriptorGroup>) {
-    private val properties = mutableMapOf<DynamicPropertyDescriptor<*>, DynamicProperty<*>>()
+    val properties = mutableMapOf<DynamicPropertyDescriptor<*>, DynamicProperty<*>>()
     val propertyGroups = propertyDescriptorGroups.map { (displayName, filters, sideEffects) ->
         DynamicPropertyGroup(
             displayName,

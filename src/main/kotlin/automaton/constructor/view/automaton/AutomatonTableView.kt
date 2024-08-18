@@ -1,4 +1,4 @@
-package automaton.constructor.view
+package automaton.constructor.view.automaton
 
 import automaton.constructor.controller.AutomatonRepresentationController
 import automaton.constructor.model.automaton.Automaton
@@ -10,6 +10,9 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.hoverableTooltip
+import automaton.constructor.view.AutomatonBasicVertexView
+import automaton.constructor.view.AutomatonViewContext
+import automaton.constructor.view.TableTransitionView
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.SetChangeListener

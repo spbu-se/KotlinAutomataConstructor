@@ -5,19 +5,19 @@ import automaton.constructor.model.element.ContextFreeGrammar
 import automaton.constructor.model.element.Nonterminal
 import automaton.constructor.model.element.Production
 import automaton.constructor.utils.I18N
-import automaton.constructor.utils.getLabelsForNonterminal
 import javafx.geometry.Insets
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
+import javafx.scene.text.Font
 import tornadofx.*
 
 class LeftSideCell: TableCell<Production, Nonterminal>() {
     override fun updateItem(item: Nonterminal?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
-            getLabelsForNonterminal(item)
+            CFGView.getLabelsForNonterminal(item)
         } else {
             null
         }
@@ -31,7 +31,7 @@ class RightSideCell: TableCell<Production, List<CFGSymbol>>() {
             HBox().apply {
                 item.forEach {
                     if (it is Nonterminal) {
-                        add(getLabelsForNonterminal(it))
+                        add(CFGView.getLabelsForNonterminal(it))
                     } else {
                         add(label(it.getSymbol()))
                     }
@@ -75,5 +75,16 @@ class CFGView: Fragment() {
             })
         }
         add(productionsTableView)
+    }
+
+    companion object {
+        fun getLabelsForNonterminal(nonterminal: Nonterminal): HBox {
+            return HBox().apply {
+                this.label(nonterminal.value[0].toString())
+                this.label(nonterminal.value.subSequence(1, nonterminal.value.length).toString()) {
+                    font = Font(9.0)
+                }
+            }
+        }
     }
 }

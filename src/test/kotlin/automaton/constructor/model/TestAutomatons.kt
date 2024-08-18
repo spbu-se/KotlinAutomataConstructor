@@ -67,6 +67,7 @@ object TestAutomatons {
     val TRANSITION_FROM_FINAL_STATE get() = getAutomatonFromJson("/transition-from-final-state.atmtn") as TuringMachine
     val UNREACH_STATE get() = getAutomatonFromJson("/unreach-state.atmtn") as FiniteAutomaton
     val USELESS_STATE_REMOVED get() = getAutomatonFromJson("/useless-state-removed.atmtn") as FiniteAutomaton
+    val FROM_REFERENCE_COURSE get() = getAutomatonFromJson("/from-reference-course.atmtn") as FiniteAutomaton
 
     private fun getAutomatonFromJson(path: String): Automaton {
         val file = File(requireNotNull(javaClass.getResource(path)) { "Missing resource $path" }.file)
@@ -128,5 +129,6 @@ object TestAutomatons {
         TRANSITION_FROM_FINAL_STATE,
         UNREACH_STATE,
         USELESS_STATE_REMOVED,
+        FROM_REFERENCE_COURSE
     )
 }

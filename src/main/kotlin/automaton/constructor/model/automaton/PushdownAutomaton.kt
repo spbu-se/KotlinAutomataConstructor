@@ -11,6 +11,8 @@ import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.module.finalVertices
 import automaton.constructor.model.module.initialVertices
+import automaton.constructor.model.property.EPSILON_VALUE
+import automaton.constructor.model.property.FormalRegex
 import automaton.constructor.utils.I18N
 
 /**
@@ -50,22 +52,19 @@ class PushdownAutomaton(
 
     private fun pushOnlyOneSymbol() {
         transitions.toList().forEach { transition ->
-            if (transition.sideEffectsText.length > 1) {
+            val pushedValue = transition[stacks.first().pushedValue]
+            if (pushedValue != EPSILON_VALUE && pushedValue.length > 1) {
                 var previousState = transition.source
-                for (i in transition.sideEffectsText.indices) {
-                    val nextState = if (i == transition.sideEffectsText.lastIndex) {
+                for (i in pushedValue.indices) {
+                    val nextState = if (i == pushedValue.lastIndex) {
                         transition.target
                     } else
                         addState()
                     val newTransition = addTransition(previousState, nextState)
                     if (i == 0) {
-                        newTransition.writeProperties(transition.readProperties().toMutableList().apply { this[2] =
-                            transition.sideEffectsText[0].toString()
-                        })
+                        newTransition[stacks.first().pushedValue] = pushedValue[0].toString()
                     } else {
-                        newTransition.writeProperties(newTransition.readProperties().toMutableList().apply { this[2] =
-                            transition.sideEffectsText[i].toString()
-                        })
+                        newTransition[stacks.first().pushedValue] = pushedValue[i].toString()
                     }
                     previousState = nextState
                 }
@@ -88,21 +87,22 @@ class PushdownAutomaton(
 
     private fun pushOrPopOnEachTransition() {
         transitions.toList().forEach { transition ->
-            val list = transition.readProperties().toMutableList()
-            if (list[1] == "ε" && list[2] == "ε") {
+            if (transition[stacks.first().expectedChar] == EPSILON_VALUE &&
+                transition[stacks.first().pushedValue] == EPSILON_VALUE) {
                 val newState = addState()
                 val firstTransition = addTransition(transition.source, newState)
-                firstTransition.writeProperties(firstTransition.readProperties().toMutableList().apply { this[2] = "a" })
+                firstTransition[stacks.first().pushedValue] = "a"
                 val secondTransition = addTransition(newState, transition.target)
-                secondTransition.writeProperties(secondTransition.readProperties().toMutableList().apply { this[1] = "a" })
+                secondTransition[stacks.first().expectedChar] = 'a'
                 removeTransition(transition)
             }
-            if (list[1] != "ε" && list[2] != "ε") {
+            if (transition[stacks.first().expectedChar] != EPSILON_VALUE &&
+                transition[stacks.first().pushedValue] != EPSILON_VALUE) {
                 val newState = addState()
                 val firstTransition = addTransition(transition.source, newState)
-                firstTransition.writeProperties(transition.readProperties().toMutableList().apply { this[2] = "ε" })
+                firstTransition[stacks.first().pushedValue] = EPSILON_VALUE
                 val secondTransition = addTransition(newState, transition.target)
-                secondTransition.writeProperties(transition.readProperties().toMutableList().apply { this[1] = "ε" })
+                secondTransition[stacks.first().expectedChar] = EPSILON_VALUE
                 removeTransition(transition)
             }
         }
@@ -110,10 +110,9 @@ class PushdownAutomaton(
 
     private fun clearTheStackAtTheEnd() {
         val pushedSymbols = mutableSetOf<String>()
-        transitions.forEach { pushedSymbols.add(it.readProperties()[2]) }
-        pushedSymbols.remove("ε")
+        transitions.forEach { it[stacks.first().pushedValue]?.let { symbol -> pushedSymbols.add(symbol) } }
         pushedSymbols.forEach { addTransition(finalVertices.first(), finalVertices.first()).apply {
-            this.writeProperties(this.readProperties().toMutableList().apply { this[1] = it })
+            this[stacks.first().expectedChar] = it[0]
         } }
     }
 
@@ -158,9 +157,7 @@ class PushdownAutomaton(
         val oldInitialState = initialVertices.first()
         oldInitialState.isInitial = false
         val transition = addTransition(newInitialState, oldInitialState)
-        transition.writeProperties(transition.readProperties().toMutableList().apply {
-            this[2] = stacks.first().value
-        })
+        transition[stacks.first().pushedValue] = stacks.first().value
     }
 
     fun convertToCFG(): ContextFreeGrammar {
@@ -212,20 +209,22 @@ class PushdownAutomaton(
         }
         automatonCopy.transitions.forEach { transition1 ->
             automatonCopy.transitions.forEach { transition2 ->
-                if (transition1.readProperties()[2] == transition2.readProperties()[1] &&
-                    transition1.readProperties()[2] != "ε") {
+                if (transition1[stacks.first().pushedValue] != EPSILON_VALUE &&
+                    transition1[stacks.first().pushedValue]!![0] == transition2[stacks.first().expectedChar]) {
                     val indexOfSource1 = automatonCopy.vertices.indexOf(transition1.source)
                     val indexOfSource2 = automatonCopy.vertices.indexOf(transition2.source)
                     val indexOfTarget1 = automatonCopy.vertices.indexOf(transition1.target)
                     val indexOfTarget2 = automatonCopy.vertices.indexOf(transition2.target)
 
                     val rightSideOfNewProduction = mutableListOf<CFGSymbol>()
-                    if (transition1.readProperties()[0] != "ε") {
-                        rightSideOfNewProduction.add(Terminal(transition1.readProperties()[0][0]))
+                    val transitionTapeChar1 = transition1[inputTape.expectedChar]
+                    if (transitionTapeChar1 != EPSILON_VALUE && transitionTapeChar1 is FormalRegex.Singleton) {
+                        rightSideOfNewProduction.add(Terminal(transitionTapeChar1.char))
                     }
                     rightSideOfNewProduction.add(nonterminals[indexOfTarget1][indexOfSource2])
-                    if (transition2.readProperties()[0] != "ε") {
-                        rightSideOfNewProduction.add(Terminal(transition2.readProperties()[0][0]))
+                    val transitionTapeChar2 = transition2[inputTape.expectedChar]
+                    if (transitionTapeChar2 != EPSILON_VALUE && transitionTapeChar2 is FormalRegex.Singleton) {
+                        rightSideOfNewProduction.add(Terminal(transitionTapeChar2.char))
                     }
                     newGrammar.productions.add(
                         Production(nonterminals[indexOfSource1][indexOfTarget2], rightSideOfNewProduction))

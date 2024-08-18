@@ -6,6 +6,7 @@ import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.*
 import automaton.constructor.utils.*
 import automaton.constructor.view.*
+import automaton.constructor.view.automaton.AutomatonGraphView
 import javafx.geometry.Point2D
 import javafx.scene.control.ContextMenu
 import javafx.scene.input.KeyCode

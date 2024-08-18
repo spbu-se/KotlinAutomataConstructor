@@ -14,7 +14,7 @@ class Production(val leftSide: Nonterminal, val rightSide: MutableList<CFGSymbol
 class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
     val nonterminals = mutableListOf<Nonterminal>()
     val productions = mutableListOf<Production>()
-    private var nonterminalsCount = 0
+    private var nonterminalsCount = 0 // count of all ever used nonterminals, used for naming to avoid collisions
     private val nonterminalsValues = mutableSetOf<String>()
     var initialNonterminal: Nonterminal
 
@@ -58,8 +58,8 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
 
     private fun removeEpsilonProductions() {
         var areThereNullableNonterminals = true
+        val nullableNonterminals = mutableSetOf<Nonterminal>()
         while (areThereNullableNonterminals) {
-            val nullableNonterminals = mutableSetOf<Nonterminal>()
             productions.forEach {
                 if (it.rightSide.isEmpty() && it.leftSide != initialNonterminal) {
                     nullableNonterminals.add(it.leftSide)

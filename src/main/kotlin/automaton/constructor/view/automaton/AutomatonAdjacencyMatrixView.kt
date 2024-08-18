@@ -1,9 +1,11 @@
-package automaton.constructor.view
+package automaton.constructor.view.automaton
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
+import automaton.constructor.view.AdjacencyMatrixTransitionView
+import automaton.constructor.view.AutomatonViewContext
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ListChangeListener
 import javafx.collections.SetChangeListener

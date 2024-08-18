@@ -1,9 +1,11 @@
-package automaton.constructor.view
+package automaton.constructor.view.automaton
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
+import automaton.constructor.view.AutomatonViewContext
+import automaton.constructor.view.TransitionTableTransitionView
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
