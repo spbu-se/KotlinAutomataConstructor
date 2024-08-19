@@ -188,10 +188,8 @@ class HellingsAlgoGrammarView: Fragment() {
     }
 
     private fun fixGrammar(): ContextFreeGrammar {
-        val fixedGrammar = ContextFreeGrammar()
         val initialNonterminal = Nonterminal(initialNonterminalValue.value)
-        fixedGrammar.addNonterminal(initialNonterminal)
-        fixedGrammar.initialNonterminal = initialNonterminal
+        val fixedGrammar = ContextFreeGrammar(initialNonterminal)
         productions.forEach { production ->
             fixedGrammar.addNonterminal(production.leftSide)
             production.rightSide.value.forEach {
@@ -213,7 +211,6 @@ class HellingsAlgoGrammarView: Fragment() {
             fixedGrammar.productions.add(Production(newLeftSide, newRightSide))
         }
         fixedGrammar.convertToCNF()
-        //fixedGrammar.removeUselessNonterminals()
         return fixedGrammar
     }
 }

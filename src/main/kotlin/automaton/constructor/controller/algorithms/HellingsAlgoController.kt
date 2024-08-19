@@ -15,11 +15,12 @@ class HellingsTransition(
     val nonterminal: Nonterminal,
     val source: AutomatonVertex,
     val target: AutomatonVertex,
-    var isNew: SimpleBooleanProperty
+    var isNew: SimpleBooleanProperty = SimpleBooleanProperty(true)
 ) {
-    override fun toString(): String {
-        return "${nonterminal.value}, ${source.name}, ${target.name}"
-    }
+    override fun toString() = "${nonterminal.value}, ${source.name}, ${target.name}"
+
+    fun isEqual(transition: HellingsTransition) =
+        nonterminal == transition.nonterminal && source == transition.source && target == transition.target
 }
 
 class HellingsAlgoController(
@@ -36,14 +37,23 @@ class HellingsAlgoController(
     fun prepareForExecution(
         currentTransitions: ObservableList<HellingsTransition>,
         allTransitions: ObservableList<HellingsTransition>
-        ) {
+    ) {
         openedAutomaton.transitions.forEach { transition ->
-            val production = grammar.productions.find {
+            val productions = grammar.productions.filter {
                 it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
             }
-            if (production != null) {
-                val newHellingsTransition = HellingsTransition(production.leftSide, transition.source,
+            productions.forEach {
+                val newHellingsTransition = HellingsTransition(it.leftSide, transition.source,
                     transition.target, SimpleBooleanProperty(false)
+                )
+                currentTransitions.add(newHellingsTransition)
+                allTransitions.add(newHellingsTransition)
+            }
+        }
+        if (grammar.productions.any { it.leftSide == grammar.initialNonterminal && it.rightSide.isEmpty() }) {
+            openedAutomaton.vertices.forEach {
+                val newHellingsTransition = HellingsTransition(grammar.initialNonterminal, it, it,
+                    SimpleBooleanProperty(false)
                 )
                 currentTransitions.add(newHellingsTransition)
                 allTransitions.add(newHellingsTransition)

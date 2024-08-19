@@ -2,7 +2,6 @@ package automaton.constructor.utils
 
 import automaton.constructor.controller.algorithms.HellingsTransition
 import automaton.constructor.model.element.ContextFreeGrammar
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.ObservableList
 
 fun doNextIterationOfHellingsAlgo(
@@ -12,6 +11,9 @@ fun doNextIterationOfHellingsAlgo(
 ) {
     currentTransitions.forEach { it.isNew.set(false) }
     allTransitions.forEach { it.isNew.set(false) }
+    if (currentTransitions.isEmpty()) {
+        return
+    }
     val mTransition = currentTransitions.removeFirst()
     val rToAdd = mutableListOf<HellingsTransition>()
     do {
@@ -23,11 +25,9 @@ fun doNextIterationOfHellingsAlgo(
             grammar.productions.filter {
                 it.rightSide == mutableListOf(rTransition.nonterminal, mTransition.nonterminal)
             }.forEach { production ->
-                if (allTransitions.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target } &&
-                    rToAdd.none { it.nonterminal == production.leftSide && it.source == rTransition.source && it.target == mTransition.target }) {
-                    val newTransition = HellingsTransition(production.leftSide, rTransition.source,
-                        mTransition.target, SimpleBooleanProperty(true)
-                    )
+                if (allTransitions.none { it.isEqual(HellingsTransition(production.leftSide, rTransition.source, mTransition.target)) } &&
+                    rToAdd.none { it.isEqual(HellingsTransition(production.leftSide, rTransition.source, mTransition.target)) }) {
+                    val newTransition = HellingsTransition(production.leftSide, rTransition.source, mTransition.target)
                     currentTransitions.add(newTransition)
                     rToAdd.add(newTransition)
                 }
@@ -43,11 +43,9 @@ fun doNextIterationOfHellingsAlgo(
             grammar.productions.filter {
                 it.rightSide == mutableListOf(mTransition.nonterminal, rTransition.nonterminal)
             }.forEach { production ->
-                if (allTransitions.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target } &&
-                    rToAdd.none { it.nonterminal == production.leftSide && it.source == mTransition.source && it.target == rTransition.target }) {
-                    val newTransition = HellingsTransition(production.leftSide, mTransition.source,
-                        rTransition.target, SimpleBooleanProperty(true)
-                    )
+                if (allTransitions.none { it.isEqual(HellingsTransition(production.leftSide, mTransition.source, rTransition.target)) } &&
+                    rToAdd.none { it.isEqual(HellingsTransition(production.leftSide, mTransition.source, rTransition.target)) }) {
+                    val newTransition = HellingsTransition(production.leftSide, mTransition.source, rTransition.target)
                     currentTransitions.add(newTransition)
                     rToAdd.add(newTransition)
                 }
