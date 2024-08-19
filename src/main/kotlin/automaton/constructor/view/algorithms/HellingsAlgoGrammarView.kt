@@ -113,6 +113,7 @@ class HellingsRightSideCell(
                             productions[index].rightSide.set((
                                     productionRightSide + EditableCFGSymbol(grammar.addNonterminal())).toMutableList())
                         }
+                        blankFieldsCount.set(blankFieldsCount.value + 1)
                     }
                     prefWidth = 55.0
                 })
@@ -170,6 +171,7 @@ class HellingsAlgoGrammarView: Fragment() {
             left = hbox(5) {
                 button(I18N.messages.getString("HellingsAlgorithm.Grammar.Add")).action {
                     productions.add(EditableProduction(grammar.addNonterminal(), SimpleObjectProperty(mutableListOf())))
+                    blankFieldsCount.set(blankFieldsCount.value + 1)
                 }
                 button(I18N.messages.getString("HellingsAlgorithm.Grammar.OK")).action {
                     if (blankFieldsCount.value > 0 || productions.isEmpty()) {
