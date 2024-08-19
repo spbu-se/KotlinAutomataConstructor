@@ -12,7 +12,6 @@ import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.view.tests.TestAndResult
 import automaton.constructor.view.tests.TestsView
 import automaton.constructor.view.tests.TestsResultsFragment
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.concurrent.Task
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
@@ -30,12 +29,6 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
     private val testsWindow = find<TestsView>(mapOf(TestsView::controller to this)).apply {
         this.title = I18N.messages.getString("TestsFragment.Title")
     }
-    val isSelectionModeOn = SimpleBooleanProperty(false).apply {
-        addListener { _, _, newValue ->
-            testsWindow.deleteButton.isVisible = newValue
-            testsWindow.cancelButton.isVisible = newValue
-        }
-    }
     val selectedTests = mutableListOf<Test>()
 
     private val formatForSerializing = Json {
@@ -46,7 +39,7 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
     }
 
     fun saveTests(tests: List<Test>, uiComponent: UIComponent) {
-        val file = chooseFile(FileChooserMode.Save) ?: return
+        val file = chooseFile(I18N.messages.getString("TestsController.Save"), FileChooserMode.Save) ?: return
         saveAsync(tests, uiComponent, file)
     }
 
@@ -74,14 +67,23 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
         testsWindow.openWindow()
     }
 
-    private fun chooseFile(mode: FileChooserMode): File? =
+    private fun chooseFile(title: String, mode: FileChooserMode): File? =
         chooseFile(
-            filters = arrayOf(FileChooser.ExtensionFilter("1", "*.json")),
-            mode = mode
+            title = title,
+            filters = arrayOf(FileChooser.ExtensionFilter(I18N.messages.getString("TestsController.Description"),
+                "*.json")),
+            initialDirectory = defaultDirectory(),
+            mode = mode,
+            owner = testsWindow.currentWindow,
+            initialFileName = openedAutomaton.name + "_tests"
         ).firstOrNull()
 
+    private fun defaultDirectory() = runCatching {
+        File("${System.getProperty("user.home")}/Documents/automaton-constructor").takeIf { it.isDirectory || it.mkdirs() }
+    }.getOrNull()
+
     fun openTests(uiComponent: UIComponent) {
-        val file = chooseFile(FileChooserMode.Single) ?: return
+        val file = chooseFile(I18N.messages.getString("TestsController.Open"), FileChooserMode.Single) ?: return
         openAsync(uiComponent, file) addOnSuccess {
             if (it == null) {
                 error(I18N.messages.getString("TestsController.UnableToOpen"))
@@ -100,7 +102,8 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
                 formatForSerializing.decodeFromString<TestsForSerializing>(file.readText())
             val descriptors = deserializedTests.tests.map { test -> Test(test.map { it.createDescriptor() }) }
             if (deserializedTests.automatonType != openedAutomaton::class.simpleName!! ||
-                !openedAutomaton.canUseTheseDescriptors(descriptors[0].input)) {
+                (deserializedTests.tests.isNotEmpty() &&
+                !openedAutomaton.canUseTheseDescriptors(descriptors[0].input))) {
                 null
             } else {
                 descriptors

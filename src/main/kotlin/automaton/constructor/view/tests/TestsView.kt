@@ -15,30 +15,6 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
         currentMemoryDescriptors.createSettings()
     ))
 
-    init {
-        controller.isSelectionModeOn.addListener { _, _, newValue ->
-            if (item != null) {
-                graphic = if (newValue) {
-                    borderpane {
-                        left = checkbox().apply {
-                            action {
-                                if (isSelected) {
-                                    controller.selectedTests.add(item)
-                                } else {
-                                    controller.selectedTests.remove(item)
-                                }
-                            }
-                            padding = Insets(3.0, 8.0, 0.0, 0.0)
-                        }
-                        center = inputEditor
-                    }
-                } else {
-                    inputEditor
-                }
-            }
-        }
-    }
-
     override fun updateItem(item: Test?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -48,7 +24,19 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
                 currentMemoryDescriptors.createSettings()
             ))
             controller.wereTestsModified = true
-            inputEditor
+            borderpane {
+                left = checkbox().apply {
+                    action {
+                        if (isSelected) {
+                            controller.selectedTests.add(item)
+                        } else {
+                            controller.selectedTests.remove(item)
+                        }
+                    }
+                    padding = Insets(3.0, 8.0, 0.0, 0.0)
+                }
+                center = inputEditor
+            }
         } else {
             null
         }
@@ -58,8 +46,6 @@ class TestCell(val controller: TestsController): ListCell<Test>() {
 class TestsView: View() {
     val controller: TestsController by param()
     val tests = mutableListOf<Test>().asObservable()
-    val deleteButton = Button(I18N.messages.getString("TestsFragment.Delete")).apply { isVisible = false }
-    val cancelButton = Button(I18N.messages.getString("TestsFragment.Cancel")).apply { isVisible = false }
 
     override fun onDock() {
         currentWindow?.setOnCloseRequest {
@@ -77,8 +63,9 @@ class TestsView: View() {
             button(I18N.messages.getString("TestsFragment.Add")).action {
                 tests.add(Test(controller.openedAutomaton.memoryDescriptors.map { it.copy() }))
             }
-            button(I18N.messages.getString("TestsFragment.Select")).action {
-                controller.isSelectionModeOn.set(true)
+            button(I18N.messages.getString("TestsFragment.Delete")).action {
+                tests.removeAll(controller.selectedTests)
+                controller.selectedTests.clear()
             }
             button(I18N.messages.getString("TestsFragment.Save")).action {
                 controller.saveTests(tests, this@TestsView)
@@ -86,8 +73,6 @@ class TestsView: View() {
             button(I18N.messages.getString("TestsFragment.Load")).action {
                 controller.openTests(this@TestsView)
             }
-            add(deleteButton)
-            add(cancelButton)
             padding = Insets(5.0, 5.0, 5.0, 5.0)
         }
         val testsListView = listview(tests)
@@ -101,16 +86,5 @@ class TestsView: View() {
         }
 
         testsListView.setCellFactory { TestCell(controller) }
-
-        deleteButton.setOnAction {
-            tests.removeAll(controller.selectedTests)
-            controller.selectedTests.clear()
-            controller.isSelectionModeOn.set(false)
-        }
-
-        cancelButton.setOnAction {
-            controller.selectedTests.clear()
-            controller.isSelectionModeOn.set(false)
-        }
     }
 }
