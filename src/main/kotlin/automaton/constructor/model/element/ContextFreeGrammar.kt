@@ -9,7 +9,9 @@ class Terminal(var value: Char): CFGSymbol {
 class Nonterminal(var value: String): CFGSymbol {
     override fun getSymbol() = value
 }
-class Production(val leftSide: Nonterminal, val rightSide: MutableList<CFGSymbol>)
+class Production(val leftSide: Nonterminal, val rightSide: MutableList<CFGSymbol>) {
+    override fun toString() = leftSide.value + ";" + rightSide.joinToString(separator = ",") { it.getSymbol() }
+}
 
 class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
     val nonterminals = mutableListOf<Nonterminal>()
@@ -58,11 +60,13 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
 
     private fun removeEpsilonProductions() {
         var areThereNullableNonterminals = true
+        val nulledNonterminals = mutableSetOf<Nonterminal>()
         while (areThereNullableNonterminals) {
             val nullableNonterminals = mutableSetOf<Nonterminal>()
             productions.forEach {
-                if (it.rightSide.isEmpty() && it.leftSide != initialNonterminal) {
+                if (it.rightSide.isEmpty() && it.leftSide != initialNonterminal && !nulledNonterminals.contains(it.leftSide)) {
                     nullableNonterminals.add(it.leftSide)
+                    nulledNonterminals.add(it.leftSide)
                 }
             }
             productions.removeAll { it.rightSide.isEmpty() && it.leftSide != initialNonterminal }
@@ -70,19 +74,17 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
                 val productionsToAdd = mutableListOf<Production>()
                 productions.forEach {
                     fun addProductions(production: Production, start: Int) {
-                        if (production.rightSide.isEmpty()) {
-                            if (production.leftSide != nonterminal) {
-                                productionsToAdd.add(Production(production.leftSide, mutableListOf()))
-                            }
-                            return
-                        }
                         for (i in start..production.rightSide.lastIndex) {
                             if (production.rightSide[i] == nonterminal) {
                                 val newRightSide = production.rightSide.toMutableList()
                                 newRightSide.removeAt(i)
                                 val newProduction = Production(production.leftSide, newRightSide)
-                                productionsToAdd.add(newProduction)
-                                addProductions(newProduction, i)
+                                if (newRightSide.isNotEmpty()) {
+                                    productionsToAdd.add(newProduction)
+                                    addProductions(newProduction, i)
+                                } else if (newProduction.leftSide != nonterminal) {
+                                    productionsToAdd.add(newProduction)
+                                }
                             }
                         }
                     }
@@ -262,7 +264,7 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
     }
 
     fun removeUselessNonterminals() {
-        removeUnreachableNonterminals()
         removeNonconvertibleNonterminals()
+        removeUnreachableNonterminals()
     }
 }

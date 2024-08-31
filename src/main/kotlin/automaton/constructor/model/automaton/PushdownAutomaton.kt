@@ -62,10 +62,10 @@ class PushdownAutomaton(
                         addState()
                     val newTransition = addTransition(previousState, nextState)
                     if (i == 0) {
-                        newTransition[stacks.first().pushedValue] = pushedValue[0].toString()
-                    } else {
-                        newTransition[stacks.first().pushedValue] = pushedValue[i].toString()
+                        newTransition[inputTape.expectedChar] = transition[inputTape.expectedChar]
+                        newTransition[stacks.first().expectedChar] = transition[stacks.first().expectedChar]
                     }
+                    newTransition[stacks.first().pushedValue] = pushedValue[pushedValue.lastIndex - i].toString()
                     previousState = nextState
                 }
                 removeTransition(transition)
@@ -91,6 +91,7 @@ class PushdownAutomaton(
                 transition[stacks.first().pushedValue] == EPSILON_VALUE) {
                 val newState = addState()
                 val firstTransition = addTransition(transition.source, newState)
+                firstTransition[inputTape.expectedChar] = transition[inputTape.expectedChar]
                 firstTransition[stacks.first().pushedValue] = "a"
                 val secondTransition = addTransition(newState, transition.target)
                 secondTransition[stacks.first().expectedChar] = 'a'
@@ -100,9 +101,10 @@ class PushdownAutomaton(
                 transition[stacks.first().pushedValue] != EPSILON_VALUE) {
                 val newState = addState()
                 val firstTransition = addTransition(transition.source, newState)
-                firstTransition[stacks.first().pushedValue] = EPSILON_VALUE
+                firstTransition[inputTape.expectedChar] = transition[inputTape.expectedChar]
+                firstTransition[stacks.first().expectedChar] = transition[stacks.first().expectedChar]
                 val secondTransition = addTransition(newState, transition.target)
-                secondTransition[stacks.first().expectedChar] = EPSILON_VALUE
+                secondTransition[stacks.first().pushedValue] = transition[stacks.first().pushedValue]
                 removeTransition(transition)
             }
         }
@@ -156,6 +158,7 @@ class PushdownAutomaton(
         val newInitialState = addState()
         val oldInitialState = initialVertices.first()
         oldInitialState.isInitial = false
+        newInitialState.isInitial = true
         val transition = addTransition(newInitialState, oldInitialState)
         transition[stacks.first().pushedValue] = stacks.first().value
     }
@@ -183,12 +186,12 @@ class PushdownAutomaton(
             return newGrammar
         }
         automatonCopy.prepareForConversionToCFG()
-        automatonCopy.vertices.forEach { vertice1 ->
+        automatonCopy.vertices.forEach { vertex1 ->
             val list = mutableListOf<Nonterminal>()
-            automatonCopy.vertices.forEach { vertice2 ->
+            automatonCopy.vertices.forEach { vertex2 ->
                 val newNonterminal = newGrammar.addNonterminal()
                 list.add(newNonterminal)
-                if (vertice1.isInitial && vertice2.isFinal) {
+                if (vertex1.isInitial && vertex2.isFinal) {
                     biggestNonterminal = newNonterminal
                 }
             }
@@ -209,20 +212,20 @@ class PushdownAutomaton(
         }
         automatonCopy.transitions.forEach { transition1 ->
             automatonCopy.transitions.forEach { transition2 ->
-                if (transition1[stacks.first().pushedValue] != EPSILON_VALUE &&
-                    transition1[stacks.first().pushedValue]!![0] == transition2[stacks.first().expectedChar]) {
+                if (transition1[automatonCopy.stacks.first().pushedValue] != EPSILON_VALUE &&
+                    transition1[automatonCopy.stacks.first().pushedValue]!![0] == transition2[automatonCopy.stacks.first().expectedChar]) {
                     val indexOfSource1 = automatonCopy.vertices.indexOf(transition1.source)
                     val indexOfSource2 = automatonCopy.vertices.indexOf(transition2.source)
                     val indexOfTarget1 = automatonCopy.vertices.indexOf(transition1.target)
                     val indexOfTarget2 = automatonCopy.vertices.indexOf(transition2.target)
 
                     val rightSideOfNewProduction = mutableListOf<CFGSymbol>()
-                    val transitionTapeChar1 = transition1[inputTape.expectedChar]
+                    val transitionTapeChar1 = transition1[automatonCopy.inputTape.expectedChar]
                     if (transitionTapeChar1 != EPSILON_VALUE && transitionTapeChar1 is FormalRegex.Singleton) {
                         rightSideOfNewProduction.add(Terminal(transitionTapeChar1.char))
                     }
                     rightSideOfNewProduction.add(nonterminals[indexOfTarget1][indexOfSource2])
-                    val transitionTapeChar2 = transition2[inputTape.expectedChar]
+                    val transitionTapeChar2 = transition2[automatonCopy.inputTape.expectedChar]
                     if (transitionTapeChar2 != EPSILON_VALUE && transitionTapeChar2 is FormalRegex.Singleton) {
                         rightSideOfNewProduction.add(Terminal(transitionTapeChar2.char))
                     }
@@ -232,15 +235,13 @@ class PushdownAutomaton(
             }
         }
         if (automatonCopy.stacks.first().acceptsByEmptyStack) {
-            automatonCopy.vertices.forEach {
-                if (!it.isInitial && !it.isFinal) {
-                    val indexOfSource1 = automatonCopy.vertices.indexOf(automatonCopy.initialVertices.first())
-                    val indexOfSource2 = automatonCopy.vertices.indexOf(it)
-                    val indexOfTarget1 = automatonCopy.vertices.indexOf(oldInitialState)
-                    val indexOfTarget2 = automatonCopy.vertices.indexOf(automatonCopy.finalVertices.first())
-                    newGrammar.productions.add(Production(nonterminals[indexOfSource1][indexOfTarget2],
-                        mutableListOf(nonterminals[indexOfTarget1][indexOfSource2])))
-                }
+            vertices.forEach { vertex ->
+                val indexOfSource1 = automatonCopy.vertices.indexOf(automatonCopy.initialVertices.first())
+                val indexOfSource2 = automatonCopy.vertices.indexOf(automatonCopy.vertices.find { it.name == vertex.name })
+                val indexOfTarget1 = automatonCopy.vertices.indexOf(oldInitialState)
+                val indexOfTarget2 = automatonCopy.vertices.indexOf(automatonCopy.finalVertices.first())
+                newGrammar.productions.add(Production(nonterminals[indexOfSource1][indexOfTarget2],
+                    mutableListOf(nonterminals[indexOfTarget1][indexOfSource2])))
             }
         }
 
