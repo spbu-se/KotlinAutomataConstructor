@@ -164,9 +164,6 @@ class PushdownAutomaton(
     }
 
     fun convertToCFG(): ContextFreeGrammar {
-        if (grammar != null) {
-            return grammar as ContextFreeGrammar
-        }
         val initialNonterminal = Nonterminal("S")
         val newGrammar = ContextFreeGrammar(initialNonterminal)
         val nonterminals = mutableListOf<MutableList<Nonterminal>>()

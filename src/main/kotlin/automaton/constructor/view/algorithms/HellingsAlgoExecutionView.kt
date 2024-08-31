@@ -8,6 +8,7 @@ import javafx.geometry.Insets
 import javafx.scene.control.Button
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
+import javafx.scene.paint.Color
 import tornadofx.*
 
 class HellingsTransitionCell: ListCell<HellingsTransition>() {
@@ -28,7 +29,9 @@ class HellingsTransitionCell: ListCell<HellingsTransition>() {
                     "-fx-background-color: white;"
                 }
             })
-            graphic = label(item.nonterminal.value + ", " + item.source.name + ", " + item.target.name)
+            graphic = label(item.nonterminal.value + ", " + item.source.name + ", " + item.target.name) {
+                textFill = Color.BLACK
+            }
         } else {
             this.style = "-fx-background-color: white;"
             graphic = null

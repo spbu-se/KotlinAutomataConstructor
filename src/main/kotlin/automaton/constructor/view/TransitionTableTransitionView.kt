@@ -12,9 +12,12 @@ class TransitionTableTransitionView(transition: Transition): TableTransitionView
                 textFill = Color.BLACK
             }
             if (transition.sideEffectsText.isNotEmpty()) {
-                label("→")
+                label("→") {
+                    textFill = Color.BLACK
+                }
                 label {
                     textProperty().bind(transition.sideEffectsTextBinding)
+                    textFill = Color.BLACK
                 }
             }
         }
