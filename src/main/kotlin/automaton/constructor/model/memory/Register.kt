@@ -9,7 +9,11 @@ import automaton.constructor.utils.I18N.messages
 import automaton.constructor.utils.MonospaceEditableString
 import tornadofx.*
 
-class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
+class RegisterDescriptor() : MonospaceEditableString("0"), MemoryUnitDescriptor {
+    constructor(initValue: String): this() {
+        value = initValue
+    }
+
     val expectedValue = DynamicPropertyDescriptors.stringOrEps(
         messages.getString("Register.ExpectedValue"),
         canBeDeemedEpsilon = false
@@ -22,9 +26,13 @@ class RegisterDescriptor : MonospaceEditableString("0"), MemoryUnitDescriptor {
     override val transitionSideEffects = listOf(newValue)
     override var displayName: String = messages.getString("Register")
 
-    override fun getData() = RegisterDescriptorData
+    override fun getData() = RegisterDescriptorData(value)
 
-    override fun createMemoryUnit() = Register(this, value)
+    override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
+        Register(this, (initMemoryContent as RegisterDescriptor).value)
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean =
+        descriptor is RegisterDescriptor
 }
 
 class Register(
