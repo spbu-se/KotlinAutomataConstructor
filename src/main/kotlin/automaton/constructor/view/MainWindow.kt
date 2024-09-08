@@ -47,6 +47,10 @@ class MainWindow(
         it.selectedUndoRedoControllerBinding
     }
     private val undoRedoController: UndoRedoController by undoRedoControllerProperty
+    private val testsControllerBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
+        TestsController(it)
+    }
+    private val testsController: TestsController by testsControllerBinding
 
     override val root = borderpane {
         top = menubar {
@@ -56,6 +60,9 @@ class MainWindow(
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.Open"), "Shortcut+O") {
                     fileController.onOpen()
+                }
+                item(I18N.messages.getString("MainView.Examples")).action {
+                    find<ExamplesView>(mapOf(ExamplesView::fileController to fileController)).openModal()
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.Save"), "Shortcut+S") {
                     fileController.onSave()
@@ -140,6 +147,11 @@ class MainWindow(
                         } else
                             selectedAutomatonView.automatonGraphView.selectVertices(selected)
                     }
+                }
+            }
+            menu(I18N.messages.getString("MainView.Tests")) {
+                item(I18N.messages.getString("MainView.Tests.Create")).action {
+                    testsController.createTests()
                 }
             }
             menu(I18N.messages.getString("MainView.Settings")) {

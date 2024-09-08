@@ -1,0 +1,111 @@
+{
+    "base": {
+        "type": "pushdown-automaton",
+        "inputTape": {
+        },
+        "stacks": [
+            {
+                "acceptsByEmptyStack": false
+            }
+        ]
+    },
+    "vertices": [
+        {
+            "type": "state",
+            "id": 1,
+            "name": "S1",
+            "x": 499154.9762463273,
+            "y": 500132.4762463273
+        },
+        {
+            "type": "state",
+            "id": 2,
+            "name": "S2",
+            "x": 499837.47535379225,
+            "y": 500127.47535379225,
+            "isFinal": true
+        },
+        {
+            "type": "state",
+            "id": 0,
+            "name": "S0",
+            "x": 498464.990869239,
+            "y": 500139.990869239,
+            "isInitial": true
+        }
+    ],
+    "transitions": [
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "[",
+                "ε",
+                "["
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                ")",
+                "(",
+                "ε"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "]",
+                "[",
+                "ε"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "{",
+                "ε",
+                "{"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 2,
+            "properties": [
+                "ε",
+                "$",
+                "ε"
+            ]
+        },
+        {
+            "source": 0,
+            "target": 1,
+            "properties": [
+                "ε",
+                "ε",
+                "$"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "}",
+                "{",
+                "ε"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "(",
+                "ε",
+                "("
+            ]
+        }
+    ]
+}

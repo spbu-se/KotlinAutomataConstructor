@@ -143,6 +143,8 @@ interface Automaton {
      * it's not invoked again and cached result of the previous invocation is returned
      */
     fun <T : AutomatonModule> getModule(moduleFactory: (Automaton) -> T): T
+
+    fun canUseTheseDescriptors(newDescriptors: List<MemoryUnitDescriptor>): Boolean
 }
 
 // Get automaton characteristics

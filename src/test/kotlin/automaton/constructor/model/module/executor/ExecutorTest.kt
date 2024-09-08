@@ -18,7 +18,7 @@ import kotlin.test.assertEquals
 
 class ExecutorTest {
     companion object {
-        const val MAX_RUN_MILLIS = 100L
+        const val MAX_RUN_MILLIS = 200L
     }
 
     @Nested

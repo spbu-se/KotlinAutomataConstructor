@@ -13,6 +13,7 @@ import automaton.constructor.model.module.hasRegexes
 import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers
 import automaton.constructor.utils.*
+import automaton.constructor.view.TestsView
 import javafx.beans.binding.Binding
 import javafx.concurrent.Task
 import javafx.geometry.Pos
@@ -50,6 +51,7 @@ class FileController(openedAutomaton: Automaton, private val uiComponent: UIComp
     val openedAutomatonTitle: String by openedAutomatonTitleBinding
 
     fun onNew() {
+        find<TestsView>().close()
         if (!suggestSavingChanges()) return
         uiComponent.dialog(
             I18N.messages.getString("OpenedAutomatonController.NewAutomaton"),

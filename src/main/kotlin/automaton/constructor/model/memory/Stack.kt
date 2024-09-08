@@ -13,6 +13,10 @@ import javafx.scene.layout.VBox
 import tornadofx.*
 
 class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableString("z"), MemoryUnitDescriptor {
+    constructor(acceptsByEmptyStack: Boolean, initValue: String): this(acceptsByEmptyStack) {
+        value = initValue
+    }
+
     val expectedChar = DynamicPropertyDescriptors.charOrEps(
         messages.getString("Stack.ExpectedChar"),
         canBeDeemedEpsilon = false
@@ -29,9 +33,10 @@ class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableS
     val acceptsByEmptyStackProperty = acceptsByEmptyStack.toProperty()
     var acceptsByEmptyStack by acceptsByEmptyStackProperty
 
-    override fun getData() = StackDescriptorData(acceptsByEmptyStack)
+    override fun getData() = StackDescriptorData(acceptsByEmptyStack, value)
 
-    override fun createMemoryUnit() = Stack(this, value)
+    override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
+        Stack(this, (initMemoryContent as StackDescriptor).value)
 
     override fun createEditor() = VBox().apply {
         add(super.createTextFieldEditor())
@@ -40,6 +45,9 @@ class StackDescriptor(acceptsByEmptyStack: Boolean = false) : MonospaceEditableS
             label(messages.getString("Stack.AcceptByEmptyStack"))
         }
     }
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean =
+        descriptor is StackDescriptor
 }
 
 class Stack(

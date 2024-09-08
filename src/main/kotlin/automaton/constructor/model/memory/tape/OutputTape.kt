@@ -29,13 +29,17 @@ class OutputTapeDescriptor : MemoryUnitDescriptor {
 
     override val acceptanceRequiringPolicy get() = AcceptanceRequiringPolicy.ALWAYS
 
-    override fun createMemoryUnit() = OutputTape(descriptor = this, initValue = "")
+    override fun createMemoryUnit(initMemoryContent: MemoryUnitDescriptor) =
+        OutputTape(descriptor = this, initValue = "")
 
     override fun createEditor(): Node? = null
 
     override var displayName: String = I18N.messages.getString("OutputTape")
 
     override fun getData() = OutputTapeDescriptorData
+
+    override fun isCompatibleWithDescriptor(descriptor: MemoryUnitDescriptor): Boolean =
+        descriptor is OutputTapeDescriptor
 }
 
 class OutputTape(
