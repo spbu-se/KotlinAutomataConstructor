@@ -245,6 +245,7 @@ class PushdownAutomaton(
         if (biggestNonterminal != null) {
             newGrammar.productions.add(Production(initialNonterminal, mutableListOf(biggestNonterminal!!)))
         }
+        newGrammar.removeUselessNonterminals()
         newGrammar.convertToCNF()
         newGrammar.removeUselessNonterminals()
         grammar = newGrammar

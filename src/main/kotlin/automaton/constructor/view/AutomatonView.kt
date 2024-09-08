@@ -11,6 +11,8 @@ import automaton.constructor.view.automaton.AutomatonAdjacencyMatrixView
 import automaton.constructor.view.automaton.AutomatonGraphView
 import automaton.constructor.view.automaton.AutomatonTransitionTableView
 import javafx.beans.binding.Bindings.not
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.TabPane
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Pane
@@ -22,8 +24,12 @@ import tornadofx.*
 // TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
 class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonViewContext) : Pane() {
     val automatonGraphView = AutomatonGraphView(automaton, automatonViewContext)
-    private val automatonTransitionTableView = AutomatonTransitionTableView(automaton, automatonViewContext)
-    private val automatonAdjacencyMatrixView = AutomatonAdjacencyMatrixView(automaton, automatonViewContext)
+    val tablePrefWidth = SimpleDoubleProperty()
+    val tablePrefHeight = SimpleDoubleProperty()
+    private val automatonTransitionTableView = AutomatonTransitionTableView(
+        automaton, automatonViewContext, tablePrefWidth, tablePrefHeight)
+    private val automatonAdjacencyMatrixView = AutomatonAdjacencyMatrixView(
+        automaton, automatonViewContext, tablePrefWidth, tablePrefHeight)
     val undoRedoController = UndoRedoController(this)
 
     init {
@@ -49,8 +55,8 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             automatonTransitionTableView.controller.lastSelectedElement = newValue
         })
         val graphPane = customizedZoomScrollPane { add(automatonGraphView) }
-        val tablePane = customizedZoomScrollPane { add(automatonTransitionTableView) }
-        val matrixPane = customizedZoomScrollPane { add(automatonAdjacencyMatrixView) }
+        val tablePane = ScrollPane(automatonTransitionTableView)
+        val matrixPane = ScrollPane(automatonAdjacencyMatrixView)
         tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab(I18N.messages.getString("AutomatonView.Graph")) {
@@ -63,6 +69,10 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
                 add(matrixPane)
             }
             selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+                if (!tablePrefWidth.isBound || !tablePrefHeight.isBound) {
+                    tablePrefWidth.bind(automatonViewContext.tablePrefWidthByContext)
+                    tablePrefHeight.bind(automatonViewContext.tablePrefHeightByContext)
+                }
                 if (newValue == tableTab) {
                     automatonTransitionTableView.enableProperResizing()
                 }

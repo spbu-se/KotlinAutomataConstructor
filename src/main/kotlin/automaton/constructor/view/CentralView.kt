@@ -42,8 +42,8 @@ class CentralView(
     val executorController = ExecutorController(automaton, uiComponent).also {
         it.selectedAutomatonProperty.bind(selectedAutomatonProperty)
     }
-    override val tablePrefWidth = SimpleDoubleProperty()
-    override val tablePrefHeight = SimpleDoubleProperty()
+    override val tablePrefWidthByContext = SimpleDoubleProperty()
+    override val tablePrefHeightByContext = SimpleDoubleProperty()
 
     init {
         pane {
@@ -66,8 +66,8 @@ class CentralView(
             executorView.layoutYProperty().bind(this@pane.heightProperty() - executorView.heightProperty())
             tabPane.prefWidthProperty().bind(this@pane.widthProperty())
             tabPane.prefHeightProperty().bind(this@pane.heightProperty() - executorView.heightProperty())
-            tablePrefWidth.bind(tabPane.prefWidthProperty())
-            tablePrefHeight.bind(tabPane.prefHeightProperty())
+            tablePrefWidthByContext.bind(tabPane.prefWidthProperty())
+            tablePrefHeightByContext.bind(tabPane.prefHeightProperty())
         }
         executorController.debuggingExecutorProperty.onChange { executor ->
             if (items.size > 1) items.removeLast()

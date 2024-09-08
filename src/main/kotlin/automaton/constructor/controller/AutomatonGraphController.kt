@@ -2,7 +2,6 @@ package automaton.constructor.controller
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
-import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.*
 import automaton.constructor.utils.*
 import automaton.constructor.view.*
@@ -59,24 +58,7 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
                         }
                         item(I18N.messages.getString("AutomatonGraphController.CopyBuildingBlockFromFile")) {
                             action {
-                                if (!automaton.allowsModificationsByUser) return@action
-                                val file = automatonViewContext.fileController.chooseFile(
-                                    I18N.messages.getString("MainView.File.Open"),
-                                    FileChooserMode.Single
-                                ) ?: return@action
-                                automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
-                                    if (type != automaton.getTypeData()) error(
-                                        I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
-                                        I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType"),
-                                        owner = automatonViewContext.uiComponent.currentWindow
-                                    )
-                                    else {
-                                        automaton.addBuildingBlock(position = Point2D(it.x, it.y)).apply {
-                                            subAutomaton.addContent(vertices, transitions, edges)
-                                            name = file.nameWithoutExtension
-                                        }
-                                    }
-                                }
+                                copyBuildingBlock(automaton, automatonViewContext, Point2D(it.x, it.y))
                             }
                         }
                     }

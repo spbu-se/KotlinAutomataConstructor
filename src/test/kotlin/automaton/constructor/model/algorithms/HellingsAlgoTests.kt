@@ -273,7 +273,7 @@ class HellingsAlgoTests {
         val actualWithSAsNonterminal = execute(automaton, grammar).filter {
             it.nonterminal == S
         }.map { it.toString() }.toSet()
-        assertTrue(actualWithSAsNonterminal.equals(expectedWithSAsNonterminal))
+        assertEquals(expectedWithSAsNonterminal, actualWithSAsNonterminal)
     }
 
     @Test
@@ -369,6 +369,6 @@ class HellingsAlgoTests {
         val actualWithSAsNonterminal = execute(automaton, grammar).filter {
             it.nonterminal == S
         }.map { it.toString() }.toSet()
-        assertTrue(actualWithSAsNonterminal.equals(expectedWithSAsNonterminal))
+        assertEquals(expectedWithSAsNonterminal, actualWithSAsNonterminal)
     }
 }
