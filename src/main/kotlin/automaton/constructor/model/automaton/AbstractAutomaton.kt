@@ -8,6 +8,7 @@ import automaton.constructor.model.action.transition.RemoveTransitionAction
 import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
+import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transformation.AutomatonTransformation
