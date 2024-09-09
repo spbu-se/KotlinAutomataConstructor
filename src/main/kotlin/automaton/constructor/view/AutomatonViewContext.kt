@@ -12,8 +12,8 @@ interface AutomatonViewContext {
     val uiComponent: UIComponent
     val fileController: FileController
     val layoutController: LayoutController
-    val tablePrefWidthByContext: SimpleDoubleProperty
-    val tablePrefHeightByContext: SimpleDoubleProperty
+    val tablePrefWidth: SimpleDoubleProperty
+    val tablePrefHeight: SimpleDoubleProperty
     fun getAutomatonView(automaton: Automaton): AutomatonView
     fun onBuildingBlockDoubleClicked(buildingBlock: BuildingBlock)
     fun openInNewWindow(automaton: Automaton): Window?

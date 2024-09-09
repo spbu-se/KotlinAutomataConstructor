@@ -6,7 +6,6 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.AdjacencyMatrixTransitionView
 import automaton.constructor.view.AutomatonViewContext
-import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ListChangeListener
 import javafx.collections.SetChangeListener
@@ -18,13 +17,8 @@ class AdjacencyMatrixTransitionMap(
     val transitions: MutableMap<AutomatonVertex, SimpleObjectProperty<List<Transition>>> = mutableMapOf()
 ): TransitionMap
 
-class AutomatonAdjacencyMatrixView(
-    automaton: Automaton,
-    automatonViewContext: AutomatonViewContext,
-    tablePrefWidth: SimpleDoubleProperty,
-    tablePrefHeight: SimpleDoubleProperty
-): AutomatonTableView<AdjacencyMatrixTransitionView, AdjacencyMatrixTransitionMap>(
-    automaton, automatonViewContext, tablePrefWidth, tablePrefHeight) {
+class AutomatonAdjacencyMatrixView(automaton: Automaton, automatonViewContext: AutomatonViewContext
+): AutomatonTableView<AdjacencyMatrixTransitionView, AdjacencyMatrixTransitionMap>(automaton, automatonViewContext) {
     private val transitionsColumns = TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>(
         I18N.messages.getString("AutomatonAdjacencyMatrixView.Targets"))
     init {

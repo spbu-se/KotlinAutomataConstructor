@@ -6,7 +6,6 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.TransitionTableTransitionView
-import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
@@ -17,13 +16,8 @@ class TransitionTableTransitionMap(
     val transitions: SimpleObjectProperty<List<Transition>> = SimpleObjectProperty(listOf())
 ): TransitionMap
 
-class AutomatonTransitionTableView(
-    automaton: Automaton,
-    automatonViewContext: AutomatonViewContext,
-    tablePrefWidth: SimpleDoubleProperty,
-    tablePrefHeight: SimpleDoubleProperty
-): AutomatonTableView<TransitionTableTransitionView, TransitionTableTransitionMap>(
-    automaton, automatonViewContext, tablePrefWidth, tablePrefHeight) {
+class AutomatonTransitionTableView(automaton: Automaton, automatonViewContext: AutomatonViewContext
+): AutomatonTableView<TransitionTableTransitionView, TransitionTableTransitionMap>(automaton, automatonViewContext) {
     private val targetColumn = TableColumn<TransitionTableTransitionMap, AutomatonVertex>(
         I18N.messages.getString("AutomatonTransitionTableView.ToState"))
     private val transitionColumn = TableColumn<TransitionTableTransitionMap, List<Transition>>(
@@ -59,7 +53,7 @@ class AutomatonTransitionTableView(
         deleteTransitionFromTable(transition)
         transitionToViewMap.remove(transition)
     }
-
+    
     private fun addTransitionToTable(transition: Transition) {
         var transitionMap = transitionsByVertices.find {
             it.source == transition.source && it.target == transition.target
@@ -71,7 +65,7 @@ class AutomatonTransitionTableView(
         val list = transitionMap.transitions.get()
         transitionMap.transitions.set(list + transition)
     }
-
+    
     private fun deleteTransitionFromTable(transition: Transition) {
         transitionsByVertices.find { map ->
             map.source == transition.source && map.target == transition.target

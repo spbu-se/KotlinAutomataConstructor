@@ -8,7 +8,6 @@ import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.State
 import automaton.constructor.utils.hoverableTooltip
-import automaton.constructor.utils.setBuildingBlockToolTip
 import automaton.constructor.utils.subPane
 import automaton.constructor.view.AutomatonEdgeView
 import automaton.constructor.view.AutomatonVertexView
@@ -18,6 +17,7 @@ import javafx.collections.MapChangeListener
 import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
 import tornadofx.add
+import tornadofx.fitToParentSize
 import kotlin.collections.set
 
 class AutomatonGraphView(val automaton: Automaton, private val automatonViewContext: AutomatonViewContext) : Pane() {
@@ -50,9 +50,17 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
         when (vertex) {
             is State -> automatonVertexView.hoverableTooltip { executionStatesTooltip(vertex) }
             is BuildingBlock -> {
-                width = this@AutomatonGraphView.scene.window.width / 1.5
-                height = this@AutomatonGraphView.scene.window.height / 1.5
-                setBuildingBlockToolTip(vertex, automatonVertexView, automatonViewContext, width, height)
+                automatonVertexView.hoverableTooltip(stopManagingOnInteraction = true) {
+                    Pane().apply {
+                        minWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                        minHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                        maxWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                        maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                        val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
+                        add(subAutomatonView)
+                        subAutomatonView.fitToParentSize()
+                    }
+                }
             }
         }
         add(automatonVertexView)
@@ -84,7 +92,7 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
         edgeView.oppositeEdge?.oppositeEdge = null
     }
 
-    fun transitionLayoutBounds() = edgeViews.values.flatMap { it.transitionViews }.associate {
+    fun transitionLayoutBounds() = edgeViews.values.flatMap { it.transitionViews }.associate { 
         it.transition to it.layoutBounds
     }
 
