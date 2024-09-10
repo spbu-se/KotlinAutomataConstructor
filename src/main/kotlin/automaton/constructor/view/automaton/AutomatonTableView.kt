@@ -13,6 +13,7 @@ import automaton.constructor.utils.hoverableTooltip
 import automaton.constructor.view.AutomatonBasicVertexView
 import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.TableTransitionView
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.SetChangeListener
@@ -49,6 +50,8 @@ class VertexCell<T: TableTransitionView, M: TransitionMap>(
                     maxHeight = table.scene.window.height / 1.5
                     val subAutomatonView = table.automatonViewContext.getAutomatonView(vertex.subAutomaton)
                     add(subAutomatonView)
+                    subAutomatonView.tablePrefWidth.bind(table.automatonViewContext.tablePrefWidthByContext / 1.4)
+                    subAutomatonView.tablePrefHeight.bind(table.automatonViewContext.tablePrefHeightByContext)
                     subAutomatonView.fitToParentSize()
                 }
             }
@@ -135,7 +138,9 @@ class NewTransitionPopup: Fragment() {
 
 abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     val automaton: Automaton,
-    val automatonViewContext: AutomatonViewContext
+    val automatonViewContext: AutomatonViewContext,
+    val tablePrefWidth: SimpleDoubleProperty,
+    val tablePrefHeight: SimpleDoubleProperty
 ): Pane() {
     val transitionsByVertices = observableListOf<M>()
     val table = TableView(transitionsByVertices)
@@ -162,19 +167,23 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
             hbox {
                 button(I18N.messages.getString("AutomatonTableView.AddState")) {
                     action {
-                        automaton.addState(position = javafx.geometry.Point2D(
-                            500_000.0 + Random.nextDouble(-500.0, 500.0),
-                            500_000.0 + Random.nextDouble(-500.0, 500.0)
-                        ))
+                        if (automaton.allowsModificationsByUser) {
+                            automaton.addState(
+                                position = javafx.geometry.Point2D(
+                                    500_000.0 + Random.nextDouble(-500.0, 500.0),
+                                    500_000.0 + Random.nextDouble(-500.0, 500.0)
+                                )
+                            )
+                        }
                     }
-                    style = "-fx-font-size:30"
                 }
                 if (automaton.allowsBuildingBlocks) {
                     button(I18N.messages.getString("AutomatonTableView.AddBuildingBlock")) {
                         action {
-                            automaton.addBuildingBlock()
+                            if (automaton.allowsModificationsByUser) {
+                                automaton.addBuildingBlock()
+                            }
                         }
-                        style = "-fx-font-size:30"
                     }
                     button(I18N.messages.getString("AutomatonTableView.CopyBuildingBlock")) {
                         action {
@@ -197,17 +206,18 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                                 }
                             }
                         }
-                        style = "-fx-font-size:30"
                     }
                 }
                 button(I18N.messages.getString("AutomatonTableView.AddTransition")) {
                     action {
-                        val scope = Scope()
-                        val newTransitionWindow = find<NewTransitionPopup>(scope, mapOf(NewTransitionPopup::automaton to automaton))
-                        newTransitionWindow.title = I18N.messages.getString("NewTransitionPopup.Title")
-                        newTransitionWindow.openWindow()
+                        if (automaton.allowsModificationsByUser) {
+                            val scope = Scope()
+                            val newTransitionWindow =
+                                find<NewTransitionPopup>(scope, mapOf(NewTransitionPopup::automaton to automaton))
+                            newTransitionWindow.title = I18N.messages.getString("NewTransitionPopup.Title")
+                            newTransitionWindow.openWindow()
+                        }
                     }
-                    style = "-fx-font-size:30"
                 }
             }
         }
@@ -221,7 +231,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
 
         table.style {
             minWidth = TABLE_INIT_WIDTH.px
-            fontSize = 40.0.px
+            fontSize = 16.0.px
         }
     }
 
@@ -232,8 +242,8 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     abstract fun unregisterTransition(transition: Transition)
 
     fun enableProperResizing() {
-        table.prefWidthProperty().bind(automatonViewContext.tablePrefWidth * 2.5)
-        table.prefHeightProperty().bind(automatonViewContext.tablePrefHeight * 2.5 - 245.0)
+        table.prefWidthProperty().bind(tablePrefWidth)
+        table.prefHeightProperty().bind(tablePrefHeight - 73.0)
     }
 
     companion object {
