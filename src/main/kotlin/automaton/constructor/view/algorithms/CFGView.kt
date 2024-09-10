@@ -57,8 +57,8 @@ class CFGView: Fragment() {
         leftSideColumn.setCellFactory { LeftSideCell() }
         rightSideColumn.cellValueFactory = PropertyValueFactory("rightSide")
         rightSideColumn.setCellFactory { RightSideCell() }
-        leftSideColumn.minWidth = 150.0
-        rightSideColumn.minWidth = 150.0
+        leftSideColumn.minWidth = 190.0
+        rightSideColumn.minWidth = 190.0
         productionsTableView.columns.addAll(leftSideColumn, rightSideColumn)
         if (productionsTableView.items.isEmpty()) {
             productionsTableView.items.add(Production(grammar.initialNonterminal, mutableListOf()))
@@ -66,6 +66,9 @@ class CFGView: Fragment() {
     }
 
     override val root = vbox {
+        label(I18N.messages.getString("CFGView.Note")) {
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
+        }
         hbox {
             label(I18N.messages.getString("CFGView.InitialNonterminal") + " = ") {
                 padding = Insets(5.0, 0.0, 5.0, 5.0)

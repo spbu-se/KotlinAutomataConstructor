@@ -13,25 +13,49 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
 import tornadofx.*
 
-class EditableCFGSymbol(val cfgSymbol: CFGSymbol, var wasEdited: Boolean = false)
-class EditableProduction(val leftSide: Nonterminal, val rightSide: SimpleObjectProperty<MutableList<EditableCFGSymbol>>)
+open class EditableCFGSymbol(open val cfgSymbol: CFGSymbol, var wasEdited: Boolean = false)
+
+class EditableNonterminal(
+    nonterminal: Nonterminal, wasEdited: Boolean = false
+): EditableCFGSymbol(nonterminal, wasEdited) {
+    override val cfgSymbol: Nonterminal = nonterminal
+}
+
+class EditableProduction(val leftSide: EditableNonterminal, val rightSide: SimpleObjectProperty<MutableList<EditableCFGSymbol>>)
 
 class HellingsLeftSideCell(
-    private val blankFieldsCount: SimpleIntegerProperty
-): TableCell<EditableProduction, Nonterminal>() {
-    override fun updateItem(item: Nonterminal?, empty: Boolean) {
+    private val blankFieldsCount: SimpleIntegerProperty,
+    private val indexesOfSelectedProductions: MutableSet<Int>
+): TableCell<EditableProduction, EditableNonterminal>() {
+    override fun updateItem(item: EditableNonterminal?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
-            TextField().apply {
-                promptText = "N"
-                textProperty().addListener { _, _, newValue ->
-                    item.value = newValue
-                    if (newValue.isEmpty()) {
-                        blankFieldsCount.set(blankFieldsCount.value + 1)
-                    } else {
-                        blankFieldsCount.set(blankFieldsCount.value - 1)
+            HBox().apply {
+                checkbox().apply {
+                    action {
+                        if (isSelected) {
+                            indexesOfSelectedProductions.add(index)
+                        } else {
+                            indexesOfSelectedProductions.remove(index)
+                        }
                     }
                 }
+                textfield {
+                    promptText = "N"
+                    if (item.wasEdited) {
+                        text = item.cfgSymbol.value
+                    }
+                    textProperty().addListener { _, _, newValue ->
+                        item.cfgSymbol.value = newValue
+                        item.wasEdited = true
+                        if (newValue.isEmpty()) {
+                            blankFieldsCount.set(blankFieldsCount.value + 1)
+                        } else {
+                            blankFieldsCount.set(blankFieldsCount.value - 1)
+                        }
+                    }
+                }
+                spacing = 3.0
             }
         } else {
             null
@@ -56,14 +80,14 @@ class HellingsRightSideCell(
                         this.textProperty().set(newValue[0].toString())
                     }
                     if (newValue.isNotEmpty()) {
-                        symbol.cfgSymbol.value = newValue[0]
+                        (symbol.cfgSymbol as Terminal).value = newValue[0]
                     }
                 }
             }
             if (symbol.cfgSymbol is Nonterminal) {
                 promptText = "N"
                 textProperty().addListener { _, _, newValue ->
-                    symbol.cfgSymbol.value = newValue
+                    (symbol.cfgSymbol as Nonterminal).value = newValue
                 }
             }
             prefWidth = 73.0
@@ -137,7 +161,7 @@ class HellingsAlgoGrammarView: Fragment() {
                 label(I18N.messages.getString("CFGView.InitialNonterminal") + " = ") {
                     padding = Insets(4.0, 0.0, 0.0, 0.0)
                 }
-                textfield() {
+                textfield {
                     promptText = "N"
                     textProperty().bindBidirectional(initialNonterminalValue)
                     textProperty().addListener { _, _, newValue ->
@@ -154,11 +178,12 @@ class HellingsAlgoGrammarView: Fragment() {
         }
 
         val grammarTableView = tableview(productions)
+        val indexesOfSelectedProductions = mutableSetOf<Int>()
         center = grammarTableView
-        val leftSideColumn = TableColumn<EditableProduction, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
+        val leftSideColumn = TableColumn<EditableProduction, EditableNonterminal>(I18N.messages.getString("CFGView.LeftSide"))
         val rightSideColumn = TableColumn<EditableProduction, MutableList<EditableCFGSymbol>>(I18N.messages.getString("CFGView.RightSide"))
         leftSideColumn.cellValueFactory = PropertyValueFactory("leftSide")
-        leftSideColumn.setCellFactory { HellingsLeftSideCell(blankFieldsCount) }
+        leftSideColumn.setCellFactory { HellingsLeftSideCell(blankFieldsCount, indexesOfSelectedProductions) }
         rightSideColumn.setCellValueFactory { p0 ->
             p0!!.value.rightSide
         }
@@ -170,8 +195,20 @@ class HellingsAlgoGrammarView: Fragment() {
         bottom = borderpane {
             left = hbox(5) {
                 button(I18N.messages.getString("HellingsAlgorithm.Grammar.Add")).action {
-                    productions.add(EditableProduction(grammar.addNonterminal(), SimpleObjectProperty(mutableListOf())))
+                    productions.add(EditableProduction(EditableNonterminal(
+                        grammar.addNonterminal()), SimpleObjectProperty(mutableListOf())))
                     blankFieldsCount.set(blankFieldsCount.value + 1)
+                }
+                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Delete")).action {
+                    val productionsToDelete = indexesOfSelectedProductions.map { productions[it] }
+                    productionsToDelete.forEach { production ->
+                        val productionBlankFieldsCount = (production.rightSide.value + production.leftSide).count {
+                            !it.wasEdited || it.cfgSymbol.getSymbol().isEmpty()
+                        }
+                        blankFieldsCount -= productionBlankFieldsCount
+                    }
+                    productions.removeAll(productionsToDelete)
+                    indexesOfSelectedProductions.clear()
                 }
                 button(I18N.messages.getString("HellingsAlgorithm.Grammar.OK")).action {
                     if (blankFieldsCount.value > 0 || productions.isEmpty()) {
@@ -193,19 +230,19 @@ class HellingsAlgoGrammarView: Fragment() {
         val initialNonterminal = Nonterminal(initialNonterminalValue.value)
         val fixedGrammar = ContextFreeGrammar(initialNonterminal)
         productions.forEach { production ->
-            fixedGrammar.addNonterminal(production.leftSide)
+            fixedGrammar.addNonterminal(production.leftSide.cfgSymbol)
             production.rightSide.value.forEach {
                 if (it.cfgSymbol is Nonterminal) {
-                    fixedGrammar.addNonterminal(it.cfgSymbol)
+                    fixedGrammar.addNonterminal(it.cfgSymbol as Nonterminal)
                 }
             }
         }
         productions.forEach { production ->
-            val newLeftSide = fixedGrammar.nonterminals.find { it.value == production.leftSide.value }!!
+            val newLeftSide = fixedGrammar.nonterminals.find { it.value == production.leftSide.cfgSymbol.value }!!
             val newRightSide = mutableListOf<CFGSymbol>()
             production.rightSide.value.forEach { symbol ->
                 if (symbol.cfgSymbol is Nonterminal) {
-                    newRightSide.add(fixedGrammar.nonterminals.find { it.value == symbol.cfgSymbol.value }!!)
+                    newRightSide.add(fixedGrammar.nonterminals.find { it.value == (symbol.cfgSymbol as Nonterminal).value }!!)
                 } else {
                     newRightSide.add(symbol.cfgSymbol)
                 }

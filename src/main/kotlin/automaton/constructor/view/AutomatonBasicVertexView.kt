@@ -7,6 +7,7 @@ import automaton.constructor.model.module.hasProblemsBinding
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.Setting
 import automaton.constructor.utils.SettingGroup
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
@@ -22,17 +23,60 @@ open class AutomatonBasicVertexView(val vertex: AutomatonVertex) : AutomatonElem
                 textProperty().bind(vertex.nameProperty)
                 textFill = Color.BLACK
             }
+            val startFinalCount = SimpleIntegerProperty(0)
+            if (vertex.isInitial) {
+                startFinalCount.set(1)
+            }
+            if (vertex.isFinal) {
+                startFinalCount.set(startFinalCount.value + 1)
+            }
+            val startFinalLabel = label {
+                if (startFinalCount.value == 1) {
+                    if (vertex.isInitial) {
+                        text = " (start)"
+                    } else {
+                        text = " (final)"
+                    }
+                    text = if (vertex.isInitial) {
+                        " (start)"
+                    } else {
+                        " (final)"
+                    }
+                }
+                if (startFinalCount.value == 2) {
+                    text = " (start, final)"
+                }
+                textFill = Color.BLACK
+                isVisible = vertex.isInitial || vertex.isFinal
+            }
             vertex.isInitialProperty.addListener { _, _, newValue ->
                 if (newValue) {
-                    label(" (start)") {
-                        textFill = Color.BLACK
-                    }
+                    startFinalCount.set(startFinalCount.value + 1)
+                } else {
+                    startFinalCount.set(startFinalCount.value - 1)
                 }
             }
             vertex.isFinalProperty.addListener { _, _, newValue ->
                 if (newValue) {
-                    label(" (final)") {
-                        textFill = Color.BLACK
+                    startFinalCount.set(startFinalCount.value + 1)
+                } else {
+                    startFinalCount.set(startFinalCount.value - 1)
+                }
+            }
+            startFinalCount.addListener { _, _, newValue ->
+                when (newValue) {
+                    0 -> startFinalLabel.isVisible = false
+                    1 -> {
+                        startFinalLabel.text = if (vertex.isInitial) {
+                            " (start)"
+                        } else {
+                            " (final)"
+                        }
+                        startFinalLabel.isVisible = true
+                    }
+                    else -> {
+                        startFinalLabel.text = " (start, final)"
+                        startFinalLabel.isVisible = true
                     }
                 }
             }
