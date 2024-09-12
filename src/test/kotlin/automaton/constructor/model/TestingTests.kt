@@ -19,11 +19,11 @@ class TestingTests: ApplicationTest() {
     private lateinit var app: Application
     @BeforeEach
     fun setUpClass() {
-        app = FxToolkit.setupApplication(AutomatonConstructorApp::class.java)
-        assumeFalse( // crucial to put this check here because otherwise app won't be initialized and tests will fail
+        assumeFalse(
             System.getProperty("testfx.headless") == "true",
             "Tests requiring graphical UI will be skipped in headless mode"
         )
+        app = FxToolkit.setupApplication(AutomatonConstructorApp::class.java)
     }
     override fun start(stage: Stage) {
         stage.show()
@@ -31,7 +31,9 @@ class TestingTests: ApplicationTest() {
 
     @AfterEach
     fun afterEachTest() {
-        FxToolkit.cleanupApplication(app)
+        if (::app.isInitialized) {
+            FxToolkit.cleanupApplication(app)
+        }
     }
 
     private fun openExampleAndRunTest(automaton: String, test: String): String {
