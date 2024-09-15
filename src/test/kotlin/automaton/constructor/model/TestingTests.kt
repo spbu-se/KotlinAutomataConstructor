@@ -31,7 +31,9 @@ class TestingTests: ApplicationTest() {
 
     @AfterEach
     fun afterEachTest() {
-        FxToolkit.cleanupApplication(app)
+        if (::app.isInitialized) {
+            FxToolkit.cleanupApplication(app)
+        }
     }
 
     private fun openExampleAndRunTest(automaton: String, test: String): String {

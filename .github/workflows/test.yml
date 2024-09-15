@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-gradle
       - name: Test
         run: ./gradlew :clean :test -Pheadless=true
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: ${{ success() || failure() }}
         with:
           name: reports
