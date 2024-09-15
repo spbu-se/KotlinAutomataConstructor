@@ -9,7 +9,6 @@ import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.view.module.executor.ExecutorView
 import automaton.constructor.view.module.executor.tree.ExecutionTreeView
-import javafx.beans.property.SimpleDoubleProperty
 import javafx.scene.control.SplitPane
 import javafx.scene.control.TabPane
 import javafx.stage.Window
@@ -42,8 +41,6 @@ class CentralView(
     val executorController = ExecutorController(automaton, uiComponent).also {
         it.selectedAutomatonProperty.bind(selectedAutomatonProperty)
     }
-    override val tablePrefWidthByContext = SimpleDoubleProperty()
-    override val tablePrefHeightByContext = SimpleDoubleProperty()
 
     init {
         pane {
@@ -66,8 +63,6 @@ class CentralView(
             executorView.layoutYProperty().bind(this@pane.heightProperty() - executorView.heightProperty())
             tabPane.prefWidthProperty().bind(this@pane.widthProperty())
             tabPane.prefHeightProperty().bind(this@pane.heightProperty() - executorView.heightProperty())
-            tablePrefWidthByContext.bind(tabPane.prefWidthProperty())
-            tablePrefHeightByContext.bind(tabPane.prefHeightProperty())
         }
         executorController.debuggingExecutorProperty.onChange { executor ->
             if (items.size > 1) items.removeLast()

@@ -6,7 +6,7 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.AdjacencyMatrixTransitionView
 import automaton.constructor.view.AutomatonViewContext
-import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ListChangeListener
 import javafx.collections.SetChangeListener
@@ -20,7 +20,7 @@ class AdjacencyMatrixTransitionMap(
 
 class AutomatonAdjacencyMatrixView(
     automaton: Automaton, automatonViewContext: AutomatonViewContext,
-    tablePrefWidth: SimpleDoubleProperty, tablePrefHeight: SimpleDoubleProperty
+    tablePrefWidth: ReadOnlyDoubleProperty, tablePrefHeight: ReadOnlyDoubleProperty
 ): AutomatonTableView<AdjacencyMatrixTransitionView, AdjacencyMatrixTransitionMap>(
     automaton, automatonViewContext, tablePrefWidth, tablePrefHeight
 ) {

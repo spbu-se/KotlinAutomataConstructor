@@ -13,7 +13,7 @@ import automaton.constructor.utils.hoverableTooltip
 import automaton.constructor.view.AutomatonBasicVertexView
 import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.TableTransitionView
-import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.SetChangeListener
@@ -50,8 +50,6 @@ class VertexCell<T: TableTransitionView, M: TransitionMap>(
                     maxHeight = table.scene.window.height / 1.5
                     val subAutomatonView = table.automatonViewContext.getAutomatonView(vertex.subAutomaton)
                     add(subAutomatonView)
-                    subAutomatonView.tablePrefWidth.bind(table.automatonViewContext.tablePrefWidthByContext / 1.4)
-                    subAutomatonView.tablePrefHeight.bind(table.automatonViewContext.tablePrefHeightByContext)
                     subAutomatonView.fitToParentSize()
                 }
             }
@@ -139,8 +137,8 @@ class NewTransitionPopup: Fragment() {
 abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     val automaton: Automaton,
     val automatonViewContext: AutomatonViewContext,
-    val tablePrefWidth: SimpleDoubleProperty,
-    val tablePrefHeight: SimpleDoubleProperty
+    private val tablePrefWidth: ReadOnlyDoubleProperty,
+    private val tablePrefHeight: ReadOnlyDoubleProperty
 ): Pane() {
     val transitionsByVertices = observableListOf<M>()
     val table = TableView(transitionsByVertices)
@@ -230,7 +228,6 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         }
 
         table.style {
-            minWidth = TABLE_INIT_WIDTH.px
             fontSize = 16.0.px
         }
     }
@@ -243,10 +240,6 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
 
     fun enableProperResizing() {
         table.prefWidthProperty().bind(tablePrefWidth)
-        table.prefHeightProperty().bind(tablePrefHeight - 73.0)
-    }
-
-    companion object {
-        const val TABLE_INIT_WIDTH = 1000.0
+        table.prefHeightProperty().bind(tablePrefHeight)
     }
 }

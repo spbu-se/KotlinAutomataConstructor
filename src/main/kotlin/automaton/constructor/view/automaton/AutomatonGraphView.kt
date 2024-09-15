@@ -17,7 +17,6 @@ import javafx.collections.MapChangeListener
 import javafx.collections.SetChangeListener
 import javafx.scene.layout.Pane
 import tornadofx.add
-import tornadofx.div
 import tornadofx.fitToParentSize
 import kotlin.collections.set
 
@@ -59,8 +58,7 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
                         maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
                         val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
                         add(subAutomatonView)
-                        subAutomatonView.tablePrefWidth.bind(automatonViewContext.tablePrefWidthByContext / 1.4)
-                        subAutomatonView.tablePrefHeight.bind(automatonViewContext.tablePrefHeightByContext)
+                        subAutomatonView.tablePrefHeight.bind(subAutomatonView.heightProperty())
                         subAutomatonView.fitToParentSize()
                     }
                 }

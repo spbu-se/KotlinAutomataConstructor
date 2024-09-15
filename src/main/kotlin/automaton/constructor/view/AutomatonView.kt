@@ -24,8 +24,8 @@ import tornadofx.*
 // TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
 class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonViewContext) : Pane() {
     val automatonGraphView = AutomatonGraphView(automaton, automatonViewContext)
-    val tablePrefWidth = SimpleDoubleProperty()
-    val tablePrefHeight = SimpleDoubleProperty()
+    private val tablePrefWidth = SimpleDoubleProperty().also { it.bind(this.widthProperty()) }
+    val tablePrefHeight = SimpleDoubleProperty().also { it.bind(this.heightProperty() - 48.0) }
     private val automatonTransitionTableView = AutomatonTransitionTableView(
         automaton, automatonViewContext, tablePrefWidth, tablePrefHeight)
     private val automatonAdjacencyMatrixView = AutomatonAdjacencyMatrixView(
@@ -69,10 +69,6 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
                 add(matrixPane)
             }
             selectionModel.selectedItemProperty().addListener { _, _, newValue ->
-                if (!tablePrefWidth.isBound && !tablePrefHeight.isBound) {
-                    tablePrefWidth.bind(automatonViewContext.tablePrefWidthByContext)
-                    tablePrefHeight.bind(automatonViewContext.tablePrefHeightByContext)
-                }
                 if (newValue == tableTab) {
                     automatonTransitionTableView.enableProperResizing()
                 }
