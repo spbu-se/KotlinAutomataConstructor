@@ -89,7 +89,7 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             })
             editingDisabledProperty.bind(not(automaton.allowsModificationsByUserProperty))
             visibleWhen(automaton.isOutputOfTransformationProperty.booleanBinding { it == null })
-            layoutY = 23.5
+            layoutY = 23.8
         }
         add(settingsEditor)
         label {

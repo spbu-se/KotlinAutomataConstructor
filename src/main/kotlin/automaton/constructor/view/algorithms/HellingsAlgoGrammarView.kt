@@ -121,12 +121,12 @@ class HellingsRightSideCell(
                     }
                     padding = Insets(0.0, 3.0, 0.0, 0.0)
                 }
-                add(ComboBox<String>().apply {
+                add(ChoiceBox<String>().apply {
                     items = observableListOf(
                         I18N.messages.getString("HellingsAlgorithm.Grammar.Terminal"),
                         I18N.messages.getString("HellingsAlgorithm.Grammar.Nonterminal")
                     )
-                    promptText = "+"
+                    value = "+"
                     setOnAction {
                         val productionRightSide = productions[index].rightSide.value
                         if (value == items[0]) {
