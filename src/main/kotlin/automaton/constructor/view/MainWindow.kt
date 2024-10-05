@@ -66,7 +66,9 @@ class MainWindow(
                     fileController.onOpen()
                 }
                 item(I18N.messages.getString("MainView.Examples")).action {
-                    find<ExamplesView>(mapOf(ExamplesView::fileController to fileController)).openModal()
+                    find<ExamplesView>(mapOf(ExamplesView::fileController to fileController)).apply {
+                        title = I18N.automatonExamples.getString("ExamplesFragment.Title")
+                    }.openModal()
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.Save"), "Shortcut+S") {
                     fileController.onSave()
