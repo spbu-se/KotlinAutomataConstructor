@@ -10,7 +10,7 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.hoverableTooltip
-import automaton.constructor.view.AutomatonBasicVertexView
+import automaton.constructor.view.AutomatonTableVertexView
 import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.TableTransitionView
 import javafx.beans.property.ReadOnlyDoubleProperty
@@ -38,8 +38,8 @@ class VertexCell<T: TableTransitionView, M: TransitionMap>(
     private val colourProperty = SimpleStringProperty("")
     private var colour by colourProperty
 
-    private fun registerVertex(vertex: AutomatonVertex): AutomatonBasicVertexView {
-        val vertexView = AutomatonBasicVertexView(vertex)
+    private fun registerVertex(vertex: AutomatonVertex): AutomatonTableVertexView {
+        val vertexView = AutomatonTableVertexView(vertex)
         table.controller.registerAutomatonElementView(vertexView)
         if (vertex is BuildingBlock) {
             vertexView.hoverableTooltip(stopManagingOnInteraction = true) {
