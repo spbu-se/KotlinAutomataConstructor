@@ -51,6 +51,10 @@ class MainWindow(
         TestsController(it)
     }
     private val testsController: TestsController by testsControllerBinding
+    private val algorithmsControllerBinding = fileController.openedAutomatonProperty.nonNullObjectBinding {
+        AlgorithmsController(it)
+    }
+    private val algorithmsController by algorithmsControllerBinding
 
     override val root = borderpane {
         top = menubar {
@@ -62,7 +66,9 @@ class MainWindow(
                     fileController.onOpen()
                 }
                 item(I18N.messages.getString("MainView.Examples")).action {
-                    find<ExamplesView>(mapOf(ExamplesView::fileController to fileController)).openModal()
+                    find<ExamplesView>(mapOf(ExamplesView::fileController to fileController)).apply {
+                        title = I18N.automatonExamples.getString("ExamplesFragment.Title")
+                    }.openModal()
                 }
                 shortcutItem(I18N.messages.getString("MainView.File.Save"), "Shortcut+S") {
                     fileController.onSave()
@@ -152,6 +158,18 @@ class MainWindow(
             menu(I18N.messages.getString("MainView.Tests")) {
                 item(I18N.messages.getString("MainView.Tests.Create")).action {
                     testsController.createTests()
+                }
+            }
+            menu(I18N.messages.getString("MainView.Algorithms")) {
+                menu(I18N.messages.getString("MainView.Algorithms.FiniteAutomaton")) {
+                    item(I18N.messages.getString("MainView.Algorithms.FiniteAutomaton.Hellings")).action {
+                        algorithmsController.executeHellingsAlgo()
+                    }
+                }
+                menu(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton")) {
+                    item(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton.CFG")).action {
+                        algorithmsController.convertToCFG()
+                    }
                 }
             }
             menu(I18N.messages.getString("MainView.Settings")) {

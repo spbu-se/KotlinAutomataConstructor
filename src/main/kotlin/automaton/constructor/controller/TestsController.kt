@@ -9,9 +9,9 @@ import automaton.constructor.model.memory.Test
 import automaton.constructor.model.memory.TestsForSerializing
 import automaton.constructor.utils.*
 import automaton.constructor.utils.addOnSuccess
-import automaton.constructor.view.TestAndResult
-import automaton.constructor.view.TestsView
-import automaton.constructor.view.TestsResultsFragment
+import automaton.constructor.view.tests.TestAndResult
+import automaton.constructor.view.tests.TestsView
+import automaton.constructor.view.tests.TestsResultsFragment
 import javafx.concurrent.Task
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType

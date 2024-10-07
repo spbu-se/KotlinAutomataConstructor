@@ -2,7 +2,7 @@ package automaton.constructor.model
 
 import automaton.constructor.AutomatonConstructorApp
 import automaton.constructor.utils.I18N
-import automaton.constructor.view.TestAndResult
+import automaton.constructor.view.tests.TestAndResult
 import javafx.application.Application
 import javafx.scene.Node
 import javafx.scene.control.TableView

@@ -1,0 +1,119 @@
+{
+    "base": {
+        "type": "finite-automaton",
+        "inputTape": {
+        }
+    },
+    "vertices": [
+        {
+            "type": "state",
+            "id": 0,
+            "name": "S0",
+            "x": 499109.97452972835,
+            "y": 500092.47452972835,
+            "isInitial": true
+        },
+        {
+            "type": "state",
+            "id": 1,
+            "name": "S1",
+            "x": 499387.490869239,
+            "y": 500094.990869239
+        },
+        {
+            "type": "state",
+            "id": 2,
+            "name": "S2",
+            "x": 499657.47452972835,
+            "y": 500094.97452972835
+        },
+        {
+            "type": "state",
+            "id": 4,
+            "name": "S4",
+            "x": 500169.97452972835,
+            "y": 500092.47452972835
+        },
+        {
+            "type": "state",
+            "id": 6,
+            "name": "S6",
+            "x": 500642.47452972835,
+            "y": 500089.97452972835,
+            "isInitial": true
+        },
+        {
+            "type": "state",
+            "id": 5,
+            "name": "S5",
+            "x": 500404.97452972835,
+            "y": 500089.97452972835
+        },
+        {
+            "type": "state",
+            "id": 7,
+            "name": "S7",
+            "x": 500867.47452972835,
+            "y": 500087.47452972835,
+            "isFinal": true
+        },
+        {
+            "type": "state",
+            "id": 3,
+            "name": "S3",
+            "x": 499909.97452972835,
+            "y": 500094.97452972835
+        }
+    ],
+    "transitions": [
+        {
+            "source": 2,
+            "target": 3,
+            "properties": [
+                "1"
+            ]
+        },
+        {
+            "source": 6,
+            "target": 7,
+            "properties": [
+                "1"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 2,
+            "properties": [
+                "1"
+            ]
+        },
+        {
+            "source": 5,
+            "target": 6,
+            "properties": [
+                "1"
+            ]
+        },
+        {
+            "source": 4,
+            "target": 5,
+            "properties": [
+                "0"
+            ]
+        },
+        {
+            "source": 0,
+            "target": 1,
+            "properties": [
+                "0"
+            ]
+        },
+        {
+            "source": 3,
+            "target": 4,
+            "properties": [
+                "0"
+            ]
+        }
+    ]
+}

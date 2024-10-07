@@ -13,7 +13,7 @@ import automaton.constructor.model.module.hasRegexes
 import automaton.constructor.model.serializers.AutomatonSerializer
 import automaton.constructor.model.serializers.automatonSerializers
 import automaton.constructor.utils.*
-import automaton.constructor.view.TestsView
+import automaton.constructor.view.tests.TestsView
 import javafx.beans.binding.Binding
 import javafx.concurrent.Task
 import javafx.geometry.Pos

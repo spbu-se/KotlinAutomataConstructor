@@ -1,4 +1,4 @@
-package automaton.constructor.view
+package automaton.constructor.view.automaton
 
 import automaton.constructor.controller.AutomatonGraphController
 import automaton.constructor.model.automaton.Automaton
@@ -9,6 +9,9 @@ import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.State
 import automaton.constructor.utils.hoverableTooltip
 import automaton.constructor.utils.subPane
+import automaton.constructor.view.AutomatonEdgeView
+import automaton.constructor.view.AutomatonVertexView
+import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.module.executor.executionStatesTooltip
 import javafx.collections.MapChangeListener
 import javafx.collections.SetChangeListener
@@ -17,7 +20,7 @@ import tornadofx.add
 import tornadofx.fitToParentSize
 import kotlin.collections.set
 
-class AutomatonGraphView(val automaton: Automaton, val automatonViewContext: AutomatonViewContext) : Pane() {
+class AutomatonGraphView(val automaton: Automaton, private val automatonViewContext: AutomatonViewContext) : Pane() {
     private val edgePane = subPane()
     val edgeViews = mutableMapOf<Pair<AutomatonVertex, AutomatonVertex>, AutomatonEdgeView>()
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonVertexView>()
@@ -55,6 +58,7 @@ class AutomatonGraphView(val automaton: Automaton, val automatonViewContext: Aut
                         maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
                         val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
                         add(subAutomatonView)
+                        subAutomatonView.tablePrefHeight.bind(subAutomatonView.heightProperty())
                         subAutomatonView.fitToParentSize()
                     }
                 }
@@ -89,7 +93,7 @@ class AutomatonGraphView(val automaton: Automaton, val automatonViewContext: Aut
         edgeView.oppositeEdge?.oppositeEdge = null
     }
 
-    fun transitionLayoutBounds() = edgeViews.values.flatMap { it.transitionViews }.associate { 
+    fun transitionLayoutBounds() = edgeViews.values.flatMap { it.transitionViews }.associate {
         it.transition to it.layoutBounds
     }
 

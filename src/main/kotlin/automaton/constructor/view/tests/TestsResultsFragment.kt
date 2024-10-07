@@ -1,4 +1,4 @@
-package automaton.constructor.view
+package automaton.constructor.view.tests
 
 import automaton.constructor.model.memory.Test
 import automaton.constructor.utils.I18N

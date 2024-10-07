@@ -1,0 +1,68 @@
+{
+    "base": {
+        "type": "pushdown-automaton",
+        "inputTape": {
+        },
+        "stacks": [
+            {
+                "acceptsByEmptyStack": true,
+                "value": "$"
+            }
+        ]
+    },
+    "vertices": [
+        {
+            "type": "state",
+            "id": 1,
+            "name": "S2",
+            "x": 500049.9733633101,
+            "y": 500174.9733633101
+        },
+        {
+            "type": "state",
+            "id": 0,
+            "name": "S1",
+            "x": 499575.0165449231,
+            "y": 500172.5165449231,
+            "isInitial": true
+        }
+    ],
+    "transitions": [
+        {
+            "source": 0,
+            "target": 0,
+            "properties": [
+                "0",
+                "ε",
+                "0"
+            ]
+        },
+        {
+            "source": 0,
+            "target": 1,
+            "properties": [
+                "ε",
+                "ε",
+                "ε"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "ε",
+                "$",
+                "ε"
+            ]
+        },
+        {
+            "source": 1,
+            "target": 1,
+            "properties": [
+                "1",
+                "0",
+                "ε"
+            ]
+        }
+    ]
+}
