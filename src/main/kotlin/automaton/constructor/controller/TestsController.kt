@@ -76,7 +76,11 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
             mode = mode,
             owner = testsWindow.currentWindow,
             initialFileName = openedAutomaton.name + "_tests"
-        ).firstOrNull()
+        ).firstOrNull()?.let { file ->
+            if (mode == FileChooserMode.Save && file.extension.isEmpty())
+                File(file.path + ".json")
+            else file
+        }
 
     private fun defaultDirectory() = runCatching {
         File("${System.getProperty("user.home")}/Documents/automaton-constructor").takeIf { it.isDirectory || it.mkdirs() }
