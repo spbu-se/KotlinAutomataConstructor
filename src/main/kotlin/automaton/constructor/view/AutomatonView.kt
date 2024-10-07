@@ -7,8 +7,13 @@ import automaton.constructor.model.module.problems
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.SettingsEditor
 import automaton.constructor.utils.customizedZoomScrollPane
-import automaton.constructor.utils.nonNullObjectBinding
+import automaton.constructor.view.automaton.AutomatonAdjacencyMatrixView
+import automaton.constructor.view.automaton.AutomatonGraphView
+import automaton.constructor.view.automaton.AutomatonTransitionTableView
 import javafx.beans.binding.Bindings.not
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.scene.control.ScrollPane
+import javafx.scene.control.TabPane
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
@@ -19,6 +24,12 @@ import tornadofx.*
 // TODO extract AutomatonDescriptionProviderView and ProblemDetectorView
 class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonViewContext) : Pane() {
     val automatonGraphView = AutomatonGraphView(automaton, automatonViewContext)
+    private val tablePrefWidth = SimpleDoubleProperty().also { it.bind(this.widthProperty()) }
+    val tablePrefHeight = SimpleDoubleProperty().also { it.bind(this.heightProperty() - 48.0) }
+    private val automatonTransitionTableView = AutomatonTransitionTableView(
+        automaton, automatonViewContext, tablePrefWidth, tablePrefHeight)
+    private val automatonAdjacencyMatrixView = AutomatonAdjacencyMatrixView(
+        automaton, automatonViewContext, tablePrefWidth, tablePrefHeight)
     val undoRedoController = UndoRedoController(this)
 
     init {
@@ -30,13 +41,55 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             }
             event.consume()
         }
-        customizedZoomScrollPane { add(automatonGraphView) }
+
+        automatonGraphView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+            automatonTransitionTableView.controller.lastSelectedElement = newValue
+            automatonAdjacencyMatrixView.controller.lastSelectedElement = newValue
+        })
+        automatonTransitionTableView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+            automatonGraphView.controller.lastSelectedElement = newValue
+            automatonAdjacencyMatrixView.controller.lastSelectedElement = newValue
+        })
+        automatonAdjacencyMatrixView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+            automatonGraphView.controller.lastSelectedElement = newValue
+            automatonTransitionTableView.controller.lastSelectedElement = newValue
+        })
+        val graphPane = customizedZoomScrollPane { add(automatonGraphView) }
+        val tablePane = ScrollPane().also { it.add(automatonTransitionTableView) }
+        val matrixPane = ScrollPane().also { it.add(automatonAdjacencyMatrixView) }
+        tabpane {
+            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+            tab(I18N.messages.getString("AutomatonView.Graph")) {
+                add(graphPane)
+            }
+            val tableTab = tab(I18N.messages.getString("AutomatonView.Table")) {
+                add(tablePane)
+            }
+            val matrixTab = tab(I18N.messages.getString("AutomatonView.Matrix")) {
+                add(matrixPane)
+            }
+            selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+                if (newValue == tableTab) {
+                    automatonTransitionTableView.enableProperResizing()
+                }
+                if (newValue == matrixTab) {
+                    automatonAdjacencyMatrixView.enableProperResizing()
+                }
+            }
+        }
         val settingsEditor = SettingsEditor().apply {
-            settingsProperty.bind(automatonGraphView.controller.lastSelectedElementProperty.nonNullObjectBinding {
-                it?.getSettings()
+            automatonGraphView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+                settingsProperty.set(newValue?.getSettings())
+            })
+            automatonTransitionTableView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+                settingsProperty.set(newValue?.getSettings())
+            })
+            automatonAdjacencyMatrixView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
+                settingsProperty.set(newValue?.getSettings())
             })
             editingDisabledProperty.bind(not(automaton.allowsModificationsByUserProperty))
             visibleWhen(automaton.isOutputOfTransformationProperty.booleanBinding { it == null })
+            layoutY = 23.8
         }
         add(settingsEditor)
         label {

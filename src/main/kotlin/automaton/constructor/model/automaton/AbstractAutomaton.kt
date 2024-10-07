@@ -75,7 +75,7 @@ abstract class AbstractAutomaton(
     override val buildingBlocks =
         vertices.filteredSet { (it is BuildingBlock).toProperty() } as ObservableSet<BuildingBlock>
 
-    private fun nextStateSuffix(): Int = nextVertexSuffix(GENERATED_STATE_NAME_REGEX)
+    fun nextStateSuffix(): Int = nextVertexSuffix(GENERATED_STATE_NAME_REGEX)
     private fun nextBuildingBlockSuffix(): Int = nextVertexSuffix(GENERATED_BUILDING_BLOCK_NAME_REGEX)
 
     private fun nextVertexSuffix(vertexNameRegex: Regex): Int {
@@ -254,7 +254,7 @@ abstract class AbstractAutomaton(
     }
 
     companion object {
-        private const val STATE_NAME_PREFIX = "S"
+        const val STATE_NAME_PREFIX = "S"
         private const val BUILDING_BLOCK_NAME_PREFIX = "M"
         private val GENERATED_STATE_NAME_REGEX = Regex("$STATE_NAME_PREFIX(\\d+)")
         private val GENERATED_BUILDING_BLOCK_NAME_REGEX = Regex("$BUILDING_BLOCK_NAME_PREFIX(\\d+)")

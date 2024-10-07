@@ -2,7 +2,6 @@ package automaton.constructor.view
 
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.*
-import automaton.constructor.utils.I18N.messages
 import javafx.beans.binding.Binding
 import javafx.beans.property.DoubleProperty
 import javafx.scene.paint.Color
@@ -24,13 +23,13 @@ class TransitionView(
 
     override fun getSettings() = listOf(
         SettingGroup(
-            messages.getString("TransitionView.Transition").toProperty(), listOf(
+            I18N.messages.getString("TransitionView.Transition").toProperty(), listOf(
                 Setting(
-                    messages.getString("TransitionView.Source"),
+                    I18N.messages.getString("TransitionView.Source"),
                     createUnmodifiableSettingControl(transition.source.nameProperty)
                 ),
                 Setting(
-                    messages.getString("TransitionView.Target"),
+                    I18N.messages.getString("TransitionView.Target"),
                     createUnmodifiableSettingControl(transition.target.nameProperty)
                 )
             )

@@ -67,6 +67,13 @@ object TestAutomatons {
     val TRANSITION_FROM_FINAL_STATE get() = getAutomatonFromJson("/transition-from-final-state.atmtn") as TuringMachine
     val UNREACH_STATE get() = getAutomatonFromJson("/unreach-state.atmtn") as FiniteAutomaton
     val USELESS_STATE_REMOVED get() = getAutomatonFromJson("/useless-state-removed.atmtn") as FiniteAutomaton
+    val FROM_REFERENCE_COURSE get() = getAutomatonFromJson("/from-reference-course.atmtn") as FiniteAutomaton
+    val CAACBB get() = getAutomatonFromJson("/caacbb.atmtn") as FiniteAutomaton
+    val DFA_110011 get() = getAutomatonFromJson("/dfa-110011.atmtn") as FiniteAutomaton
+    val CORRECT_BRACKET_SEQUENCE_RECOGNISER get() = getAutomatonFromJson("/correct-bracket-sequence-recogniser.atmtn") as PushdownAutomaton
+    val SAME_NUMBER_OF_ZEROS_AND_ONES get() = getAutomatonFromJson("/same-number-of-zeros-and-ones.atmtn") as PushdownAutomaton
+    val DFA_0110011 get() = getAutomatonFromJson("/dfa-0110011.atmtn") as FiniteAutomaton
+    val SAME_NUMBER_OF_ZEROS_AND_ONES_BY_EMPTY_STACK get() = getAutomatonFromJson("/same-number-of-zeros-and-ones-by-empty-stack.atmtn") as PushdownAutomaton
 
     private fun getAutomatonFromJson(path: String): Automaton {
         val file = File(requireNotNull(javaClass.getResource(path)) { "Missing resource $path" }.file)
@@ -128,5 +135,12 @@ object TestAutomatons {
         TRANSITION_FROM_FINAL_STATE,
         UNREACH_STATE,
         USELESS_STATE_REMOVED,
+        FROM_REFERENCE_COURSE,
+        CAACBB,
+        DFA_110011,
+        CORRECT_BRACKET_SEQUENCE_RECOGNISER,
+        SAME_NUMBER_OF_ZEROS_AND_ONES,
+        DFA_0110011,
+        SAME_NUMBER_OF_ZEROS_AND_ONES_BY_EMPTY_STACK
     )
 }

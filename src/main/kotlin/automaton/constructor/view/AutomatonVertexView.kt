@@ -7,15 +7,12 @@ import automaton.constructor.model.element.State
 import automaton.constructor.model.module.hasProblems
 import automaton.constructor.model.module.hasProblemsBinding
 import automaton.constructor.utils.*
-import automaton.constructor.utils.I18N.messages
 import automaton.constructor.view.AutomatonVertexView.ShapeType.CIRCLE
 import automaton.constructor.view.AutomatonVertexView.ShapeType.SQUARE
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
 import javafx.geometry.VPos
 import javafx.scene.Node
-import javafx.scene.control.CheckBox
-import javafx.scene.control.TextField
 import javafx.scene.paint.Color
 import javafx.scene.shape.Shape
 import javafx.scene.text.Font.font
@@ -24,7 +21,7 @@ import tornadofx.*
 import kotlin.math.abs
 import kotlin.math.max
 
-class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(vertex) {
+class AutomatonVertexView(vertex: AutomatonVertex) : AutomatonBasicVertexView(vertex) {
     val positionProperty: Property<Point2D> = vertex.position.toProperty().apply { bind(vertex.positionProperty) }
     val colorProperty: Property<Color> = DEFAULT_COLOR.toProperty().apply {
         val colorBinding =
@@ -105,20 +102,6 @@ class AutomatonVertexView(val vertex: AutomatonVertex) : AutomatonElementView(ve
             yProperty().bind(positionProperty.y)
         }
     }
-
-    override fun getSettings() = listOf(
-        SettingGroup(
-            messages.getString("StateView.State").toProperty(), listOf(
-                Setting(messages.getString("StateView.Name"),
-                    TextField().apply { textProperty().bindBidirectional(vertex.nameProperty) }),
-                Setting(messages.getString("StateView.Initial"),
-                    CheckBox().apply { selectedProperty().bindBidirectional(vertex.isInitialProperty) })
-            ) + if (vertex.alwaysEffectivelyFinal) emptyList() else listOf(
-                Setting(messages.getString("StateView.Final"),
-                    CheckBox().apply { selectedProperty().bindBidirectional(vertex.isFinalProperty) })
-            )
-        )
-    ) + super.getSettings()
 
     private fun placeShape(radius: Double, op: Shape.() -> Unit) = when (shapeType) {
         CIRCLE -> circle {
