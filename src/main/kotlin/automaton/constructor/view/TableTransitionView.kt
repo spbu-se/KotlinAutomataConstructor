@@ -1,13 +1,15 @@
 package automaton.constructor.view
 
 import automaton.constructor.model.element.Transition
-import automaton.constructor.utils.I18N
-import automaton.constructor.utils.Setting
-import automaton.constructor.utils.SettingGroup
-import automaton.constructor.utils.createUnmodifiableSettingControl
+import automaton.constructor.utils.*
+import javafx.beans.binding.Binding
+import javafx.scene.paint.Color
 import tornadofx.toProperty
 
 open class TableTransitionView(val transition: Transition): AutomatonElementView(transition) {
+    val colorProperty: Binding<Color> = selectedProperty.nonNullObjectBinding {
+        if (selected) Color.AQUA else Color.BLACK
+    }
     override fun getSettings() = listOf(
         SettingGroup(
             I18N.messages.getString("TransitionView.Transition").toProperty(), listOf(

@@ -8,7 +8,7 @@ class AdjacencyMatrixTransitionView(transition: Transition): TableTransitionView
     init {
         label {
             textProperty().bind(transition.propertiesTextBinding)
-            textFill = Color.BLACK
+            textFillProperty().bind(colorProperty)
         }
     }
 }

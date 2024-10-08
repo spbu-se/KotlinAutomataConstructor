@@ -45,6 +45,7 @@ class AutomatonTransitionTableView(
 
     override fun unregisterVertex(vertex: AutomatonVertex) {
         transitionsByVertices.removeAll { it.source == vertex }
+        super.unregisterVertex(vertex)
     }
 
     override fun registerTransition(transition: Transition) {
@@ -56,7 +57,7 @@ class AutomatonTransitionTableView(
 
     override fun unregisterTransition(transition: Transition) {
         deleteTransitionFromTable(transition)
-        transitionToViewMap.remove(transition)
+        super.unregisterTransition(transition)
     }
 
     private fun addTransitionToTable(transition: Transition) {
