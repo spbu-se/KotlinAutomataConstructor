@@ -20,39 +20,47 @@ A comprehensive user guide is available in Russian in the [Wiki of this reposito
 ## Features
 
 * Automata types
-    - DFA, NFA, epsilon-NFA
-    - PDA, n-PDA, DPDA, n-DPDA
-    - Register automaton
-    - Mealy machine, Moore machine
-    - Turing Machine (TM), multi-tape TM, multi-track TM, TM with registers
-      - Support building blocks
+  - DFA, NFA, epsilon-NFA
+  - PDA, n-PDA, DPDA, n-DPDA
+  - Register automaton
+  - Mealy machine, Moore machine
+  - Turing Machine (TM), multi-tape TM, multi-track TM, TM with registers
+    - Support building blocks
 * Automaton graph editing and visualization
-    - State and transition addition, editing, and deletion
-    - State moving
-    - Automatically laying out automaton graph
-    - Group selection
-    - Graph pane zooming and scrolling
-    - Undoing and redoing performed operations
+  - State and transition addition, editing, and deletion
+  - State moving
+  - Automatically laying out automaton graph
+  - Group selection
+  - Graph pane zooming and scrolling
+  - Undoing and redoing performed operations
+* State-transition table and adjacency matrix representations
+  - State and transition addition, editing, and deletion
+  - Group selection
+  - Undoing and redoing performed operations
 * Simulation
-    - Instant simulation
-    - Step-by-state simulation
-    - Step-by-closure simulation
-    - Execution tree
-    - Advancing and restarting execution for individual execution states
-    - Freezing executions states
-    - Viewing execution states associated with a given state
-* Transformations
-    - Determinization of finite automata
-    - Minimization of finite automata
-    - Conversion of regular expression to finite automata
-    - Elimination of epsilon-transitions
-    - Conversion of Mealy machine to Moore machine
-    - Conversion of Moore machine to Mealy machine
+  - Instant simulation
+  - Step-by-state simulation
+  - Step-by-closure simulation
+  - Execution tree
+  - Advancing and restarting execution for individual execution states
+  - Freezing executions states
+  - Viewing execution states associated with a given state
+* Algorithms
+  - Determinization of finite automata
+  - Minimization of finite automata
+  - Conversion of regular expression to finite automata
+  - Elimination of epsilon-transitions
+  - Conversion of Mealy machine to Moore machine
+  - Conversion of Moore machine to Mealy machine
+  - Conversion of PDA to context-free grammar
+  - Hellings algorithm
 * Other features
-    - Non determinism detection
-    - Epsilon-transition detection
-    - Problem detection
-    - Serialization
+  - Non determinism detection
+  - Epsilon-transition detection
+  - Problem detection
+  - Serialization
+  - Test panel to run the automaton on multiple inputs
+  - Library of automaton examples
 
 ## Architecture
 
@@ -77,7 +85,7 @@ This project uses Gradle build system. Here are commands for some of its most im
 | `./gradlew tasks`    | Displays all runnable tasks              |
 
 When running Gradle task you can specify target platform classifier with `-Pplatform={classifier}` option,
-the following classifiers are supported: `win`, `linux`, `mac`, `win-x86`, `linux-aarch64`, `mac-aarch64`. 
+the following classifiers are supported: `win`, `linux`, `mac`, `win-x86`, `linux-aarch64`, `mac-aarch64`.
 
 ## Technologies
 
@@ -87,10 +95,8 @@ the following classifiers are supported: `win`, `linux`, `mac`, `win-x86`, `linu
 
 **Build system:** Gradle
 
-**Tests:** JUnit5, MockK
+**Tests:** JUnit5, MockK, TestFX
 
 ## License
 
 The Automata Constructor is licensed under the Apache-2.0 license, as detailed in the [LICENSE](LICENSE) file.
-
-
