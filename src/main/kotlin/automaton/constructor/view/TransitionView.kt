@@ -9,9 +9,9 @@ import javafx.scene.text.Font
 import tornadofx.*
 
 class TransitionView(
-    val transition: Transition,
+    transition: Transition,
     index: Int
-) : AutomatonElementView(transition) {
+) : BasicTransitionView(transition) {
     val indexProperty = index.toProperty()
     var index by indexProperty
     val xProperty: DoubleProperty
@@ -20,21 +20,6 @@ class TransitionView(
     val colorProperty: Binding<Color> = selectedProperty.nonNullObjectBinding {
         if (selected) Color.BLUE else Color.BLACK
     }
-
-    override fun getSettings() = listOf(
-        SettingGroup(
-            I18N.messages.getString("TransitionView.Transition").toProperty(), listOf(
-                Setting(
-                    I18N.messages.getString("TransitionView.Source"),
-                    createUnmodifiableSettingControl(transition.source.nameProperty)
-                ),
-                Setting(
-                    I18N.messages.getString("TransitionView.Target"),
-                    createUnmodifiableSettingControl(transition.target.nameProperty)
-                )
-            )
-        )
-    ) + super.getSettings()
 
     init {
         val text = text {
