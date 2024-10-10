@@ -4,7 +4,7 @@ import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
-import automaton.constructor.view.elements.vertex.AdjacencyMatrixTransitionView
+import automaton.constructor.view.elements.transition.AdjacencyMatrixTransitionView
 import automaton.constructor.view.AutomatonViewContext
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
