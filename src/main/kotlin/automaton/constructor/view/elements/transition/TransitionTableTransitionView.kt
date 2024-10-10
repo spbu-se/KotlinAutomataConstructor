@@ -1,4 +1,4 @@
-package automaton.constructor.view
+package automaton.constructor.view.elements.transition
 
 import automaton.constructor.model.element.Transition
 import javafx.scene.paint.Color

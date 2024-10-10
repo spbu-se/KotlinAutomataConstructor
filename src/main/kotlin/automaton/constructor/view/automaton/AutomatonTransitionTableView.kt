@@ -5,7 +5,7 @@ import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.AutomatonViewContext
-import automaton.constructor.view.TransitionTableTransitionView
+import automaton.constructor.view.elements.transition.TransitionTableTransitionView
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.*

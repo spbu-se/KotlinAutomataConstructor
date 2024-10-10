@@ -1,4 +1,4 @@
-package automaton.constructor.view
+package automaton.constructor.view.elements.vertex
 
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.AutomatonVertex.Companion.RADIUS
@@ -7,8 +7,9 @@ import automaton.constructor.model.element.State
 import automaton.constructor.model.module.hasProblems
 import automaton.constructor.model.module.hasProblemsBinding
 import automaton.constructor.utils.*
-import automaton.constructor.view.AutomatonVertexView.ShapeType.CIRCLE
-import automaton.constructor.view.AutomatonVertexView.ShapeType.SQUARE
+import automaton.constructor.view.elements.vertex.AutomatonVertexView.ShapeType.CIRCLE
+import automaton.constructor.view.elements.vertex.AutomatonVertexView.ShapeType.SQUARE
+import automaton.constructor.view.elements.vertex.AutomatonBasicVertexView
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
 import javafx.geometry.VPos

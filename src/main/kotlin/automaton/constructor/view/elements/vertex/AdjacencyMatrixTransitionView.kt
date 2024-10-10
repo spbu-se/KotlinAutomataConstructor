@@ -1,6 +1,7 @@
-package automaton.constructor.view
+package automaton.constructor.view.elements.vertex
 
 import automaton.constructor.model.element.Transition
+import automaton.constructor.view.elements.transition.TableTransitionView
 import javafx.scene.paint.Color
 import tornadofx.label
 

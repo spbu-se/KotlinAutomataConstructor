@@ -1,4 +1,4 @@
-package automaton.constructor.view
+package automaton.constructor.view.elements.vertex
 
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock

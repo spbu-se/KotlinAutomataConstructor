@@ -4,9 +4,11 @@ import automaton.constructor.model.element.AutomatonEdge
 import automaton.constructor.model.element.AutomatonVertex.Companion.RADIUS
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.*
-import automaton.constructor.view.AutomatonVertexView.ShapeType
-import automaton.constructor.view.AutomatonVertexView.ShapeType.CIRCLE
-import automaton.constructor.view.AutomatonVertexView.ShapeType.SQUARE
+import automaton.constructor.view.elements.vertex.AutomatonVertexView
+import automaton.constructor.view.elements.vertex.AutomatonVertexView.ShapeType
+import automaton.constructor.view.elements.vertex.AutomatonVertexView.ShapeType.CIRCLE
+import automaton.constructor.view.elements.vertex.AutomatonVertexView.ShapeType.SQUARE
+import automaton.constructor.view.elements.transition.TransitionView
 import javafx.beans.binding.Bindings.isNotNull
 import javafx.beans.value.ObservableBooleanValue
 import javafx.beans.value.ObservableDoubleValue

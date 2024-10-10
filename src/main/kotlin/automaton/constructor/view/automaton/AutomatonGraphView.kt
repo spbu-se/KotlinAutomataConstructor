@@ -10,7 +10,7 @@ import automaton.constructor.model.element.State
 import automaton.constructor.utils.hoverableTooltip
 import automaton.constructor.utils.subPane
 import automaton.constructor.view.AutomatonEdgeView
-import automaton.constructor.view.AutomatonVertexView
+import automaton.constructor.view.elements.vertex.AutomatonVertexView
 import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.module.executor.executionStatesTooltip
 import javafx.collections.MapChangeListener

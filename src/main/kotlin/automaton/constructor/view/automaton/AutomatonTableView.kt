@@ -10,9 +10,9 @@ import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.hoverableTooltip
-import automaton.constructor.view.AutomatonTableVertexView
+import automaton.constructor.view.elements.vertex.AutomatonTableVertexView
 import automaton.constructor.view.AutomatonViewContext
-import automaton.constructor.view.TableTransitionView
+import automaton.constructor.view.elements.transition.TableTransitionView
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty

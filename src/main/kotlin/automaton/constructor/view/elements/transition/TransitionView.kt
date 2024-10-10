@@ -1,7 +1,8 @@
-package automaton.constructor.view
+package automaton.constructor.view.elements.transition
 
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.*
+import automaton.constructor.view.elements.transition.BasicTransitionView
 import javafx.beans.binding.Binding
 import javafx.beans.property.DoubleProperty
 import javafx.scene.paint.Color
