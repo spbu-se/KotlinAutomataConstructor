@@ -24,7 +24,7 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
     private val edgePane = subPane()
     val edgeViews = mutableMapOf<Pair<AutomatonVertex, AutomatonVertex>, AutomatonEdgeView>()
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonVertexView>()
-    val controller: AutomatonGraphController = AutomatonGraphController(automaton, automatonViewContext)
+    override val controller: AutomatonGraphController = AutomatonGraphController(automaton, automatonViewContext)
 
     init {
         minWidth = GRAPH_PANE_INIT_SIZE.x

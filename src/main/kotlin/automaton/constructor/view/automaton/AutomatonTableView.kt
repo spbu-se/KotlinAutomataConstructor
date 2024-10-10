@@ -153,7 +153,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     val transitionsByVertices = observableListOf<M>()
     val table = TableView(transitionsByVertices)
     val sourceColumn = TableColumn<M, AutomatonVertex>()
-    val controller = AutomatonRepresentationController(automaton, automatonViewContext)
+    override val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val transitionToViewMap = mutableMapOf<Transition, T>()
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonTableVertexView>()
     init {
