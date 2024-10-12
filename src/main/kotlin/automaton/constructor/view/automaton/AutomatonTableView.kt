@@ -20,7 +20,6 @@ import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.SetChangeListener
 import javafx.geometry.Insets
-import javafx.scene.control.ListCell
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
@@ -29,7 +28,6 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
-import javafx.scene.paint.Color
 import tornadofx.*
 import kotlin.random.Random
 
@@ -136,7 +134,7 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     val transitionsByVertices = observableListOf<M>()
     val table = TableView(transitionsByVertices)
     val sourceColumn = TableColumn<M, AutomatonVertex>()
-    override val controller = AutomatonRepresentationController(automaton, automatonViewContext)
+    final override val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val transitionToViewMap = mutableMapOf<Transition, T>()
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonTableVertexView>()
     init {
