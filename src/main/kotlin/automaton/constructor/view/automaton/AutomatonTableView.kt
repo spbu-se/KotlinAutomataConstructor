@@ -108,29 +108,13 @@ class NewTransitionPopup: Fragment() {
     override val root = vbox(5.0) {
         label(I18N.messages.getString("NewTransitionPopup.Question"))
         borderpane {
-            class VertexCell: ListCell<AutomatonVertex>() {
-                override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
-                    super.updateItem(item, empty)
-                    graphic = if (item != null) {
-                        label(item.name) {
-                            textFill = Color.BLACK
-                        }
-                    } else {
-                        null
-                    }
-                }
-            }
             left = hbox(5.0) {
                 label(I18N.messages.getString("NewTransitionPopup.Source"))
-                val sourceBox = combobox(source, automaton.vertices.toList())
-                sourceBox.setCellFactory { VertexCell() }
-                sourceBox.buttonCell = VertexCell()
+                choicebox(source, automaton.vertices.toList())
             }
             right = hbox(2.0) {
                 label(I18N.messages.getString("NewTransitionPopup.Target"))
-                val targetBox = combobox(target, automaton.vertices.toList())
-                targetBox.setCellFactory { VertexCell() }
-                targetBox.buttonCell = VertexCell()
+                choicebox(target, automaton.vertices.toList())
             }
         }
         button(I18N.messages.getString("NewTransitionPopup.Add")) {
