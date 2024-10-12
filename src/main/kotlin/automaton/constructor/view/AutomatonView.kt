@@ -83,6 +83,7 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             })
             automatonTransitionTableView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
                 settingsProperty.set(newValue?.getSettings())
+
             })
             automatonAdjacencyMatrixView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
                 settingsProperty.set(newValue?.getSettings())
@@ -95,14 +96,18 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
         label {
             isWrapText = true
             layoutXProperty().bind(this@AutomatonView.widthProperty() - widthProperty() - 10.0)
-            maxWidthProperty().bind(this@AutomatonView.widthProperty() - settingsEditor.widthProperty() - 20.0)
+            val tabWidth = 700.0
+            maxWidthProperty().bind(this@AutomatonView.widthProperty() - tabWidth - 20.0)
+            maxHeight = 30.0
             font = Font.font(16.0)
             textProperty().bind(automaton.descriptionBinding)
             visibleWhen(automaton.isOutputOfTransformationProperty.booleanBinding { it == null })
         }
         label {
             layoutXProperty().bind(this@AutomatonView.widthProperty() - widthProperty() - 10.0)
-            layoutYProperty().bind(this@AutomatonView.heightProperty() - heightProperty())
+            layoutYProperty().bind(this@AutomatonView.heightProperty() - heightProperty() - 45.0)
+            val buttonsWidth = 700.0
+            maxWidthProperty().bind(this@AutomatonView.widthProperty() - buttonsWidth - 20.0)
             font = Font.font(16.0)
             textFill = Color.DARKRED
             textAlignment = TextAlignment.RIGHT

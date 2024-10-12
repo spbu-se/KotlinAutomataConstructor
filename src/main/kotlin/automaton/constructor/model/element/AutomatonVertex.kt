@@ -58,6 +58,8 @@ sealed class AutomatonVertex(
         get() = super.undoRedoProperties +
                 listOf(nameProperty, lastReleasePositionProperty, isInitialProperty, isFinalProperty, requiresLayoutProperty)
 
+    override fun toString() = name
+
     companion object {
         const val RADIUS = 50.0
     }
