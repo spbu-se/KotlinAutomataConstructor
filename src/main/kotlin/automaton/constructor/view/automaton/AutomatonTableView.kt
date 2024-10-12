@@ -7,15 +7,17 @@ import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
+import automaton.constructor.model.module.hasProblems
+import automaton.constructor.model.module.hasProblemsBinding
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.hoverableTooltip
+import automaton.constructor.view.AutomatonElementView
 import automaton.constructor.view.elements.vertex.AutomatonTableVertexView
 import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.elements.transition.TableTransitionView
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.collections.SetChangeListener
 import javafx.geometry.Insets
 import javafx.scene.control.ListCell
@@ -23,6 +25,7 @@ import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
+import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
@@ -35,9 +38,6 @@ interface TransitionMap
 class VertexCell<T: TableTransitionView, M: TransitionMap>(
     private val table: AutomatonTableView<T, M>
 ): TableCell<M, AutomatonVertex>() {
-    private val colourProperty = SimpleStringProperty("")
-    private var colour by colourProperty
-
     private fun registerVertex(vertex: AutomatonVertex): AutomatonTableVertexView {
         val vertexView = AutomatonTableVertexView(vertex)
         table.controller.registerAutomatonElementView(vertexView)
@@ -54,18 +54,27 @@ class VertexCell<T: TableTransitionView, M: TransitionMap>(
                 }
             }
         }
+        table.vertexToViewMap[vertex] = vertexView
         return vertexView
     }
 
     override fun updateItem(item: AutomatonVertex?, empty: Boolean) {
         super.updateItem(item, empty)
+        this.style = "-fx-background-color: none;"
         if (item != null) {
             val vertexView = registerVertex(item)
-            colourProperty.bind(vertexView.colourProperty)
-            this.style = "-fx-background-color: ${colour};"
-            colourProperty.addListener(ChangeListener { _, _, newValue ->
-                this.style = "-fx-background-color: ${newValue};"
-            })
+            if (item is BuildingBlock) {
+                if (item.subAutomaton.hasProblems) {
+                    this.style = "-fx-background-color: red;"
+                }
+                item.subAutomaton.hasProblemsBinding.addListener { _, _, newValue ->
+                    if (newValue) {
+                        this.style = "-fx-background-color: red;"
+                    } else {
+                        this.style = "-fx-background-color: none;"
+                    }
+                }
+            }
             graphic = vertexView
         } else {
             this.style = "-fx-background-color: none;"
@@ -139,12 +148,13 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
     val automatonViewContext: AutomatonViewContext,
     private val tablePrefWidth: ReadOnlyDoubleProperty,
     private val tablePrefHeight: ReadOnlyDoubleProperty
-): Pane() {
+): AutomatonRepresentationView() {
     val transitionsByVertices = observableListOf<M>()
     val table = TableView(transitionsByVertices)
     val sourceColumn = TableColumn<M, AutomatonVertex>()
-    val controller = AutomatonRepresentationController(automaton, automatonViewContext)
+    override val controller = AutomatonRepresentationController(automaton, automatonViewContext)
     val transitionToViewMap = mutableMapOf<Transition, T>()
+    val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonTableVertexView>()
     init {
         automaton.vertices.addListener(SetChangeListener {
             if (it.wasRemoved()) {
@@ -226,17 +236,31 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
         table.setOnMouseClicked {
             if (it.button == MouseButton.PRIMARY) controller.clearSelection()
         }
+        table.selectionModel = null
+        table.setOnKeyPressed { event ->
+            if (event.code == KeyCode.A && event.isControlDown) { // AutomatonTableView can't consume this event for some reason
+                controller.clearSelection()
+                controller.selectedElementsViews.addAll(getAllElementsViews().onEach { it.selected = true })
+            }
+        }
+        controller.enableShortcuts(this)
 
         table.style {
             fontSize = 16.0.px
         }
     }
 
-    abstract fun unregisterVertex(vertex: AutomatonVertex)
+    override fun getAllElementsViews(): List<AutomatonElementView> = vertexToViewMap.values + transitionToViewMap.values
+
+    open fun unregisterVertex(vertex: AutomatonVertex) {
+        vertexToViewMap.remove(vertex)
+    }
 
     abstract fun registerTransition(transition: Transition)
 
-    abstract fun unregisterTransition(transition: Transition)
+    open fun unregisterTransition(transition: Transition) {
+        transitionToViewMap.remove(transition)
+    }
 
     fun enableProperResizing() {
         table.prefWidthProperty().bind(tablePrefWidth)

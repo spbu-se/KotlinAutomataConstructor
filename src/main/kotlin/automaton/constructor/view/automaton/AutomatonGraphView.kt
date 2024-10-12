@@ -20,11 +20,11 @@ import tornadofx.add
 import tornadofx.fitToParentSize
 import kotlin.collections.set
 
-class AutomatonGraphView(val automaton: Automaton, private val automatonViewContext: AutomatonViewContext) : Pane() {
+class AutomatonGraphView(val automaton: Automaton, private val automatonViewContext: AutomatonViewContext) : AutomatonRepresentationView() {
     private val edgePane = subPane()
     val edgeViews = mutableMapOf<Pair<AutomatonVertex, AutomatonVertex>, AutomatonEdgeView>()
     val vertexToViewMap = mutableMapOf<AutomatonVertex, AutomatonVertexView>()
-    val controller: AutomatonGraphController = AutomatonGraphController(automaton, automatonViewContext)
+    override val controller: AutomatonGraphController = AutomatonGraphController(automaton, automatonViewContext)
 
     init {
         minWidth = GRAPH_PANE_INIT_SIZE.x
@@ -42,6 +42,8 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
         })
         controller.clearSelection()
     }
+
+    override fun getAllElementsViews() = edgeViews.values.flatMap { it.transitionViews } + vertexToViewMap.values
 
     private fun registerVertex(vertex: AutomatonVertex) {
         val automatonVertexView = AutomatonVertexView(vertex)

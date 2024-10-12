@@ -66,6 +66,7 @@ class AutomatonAdjacencyMatrixView(
         transitionsByVertices.removeAll { it.source == vertex }
         unregisterColumn(
             transitionsColumns.columns.find { it.text == vertex.name } as TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>)
+        super.unregisterVertex(vertex)
     }
 
     override fun registerTransition(transition: Transition) {
@@ -83,7 +84,7 @@ class AutomatonAdjacencyMatrixView(
             val list = this!!.transitions[transition.target]!!.value
             this.transitions[transition.target]!!.set(list - transition)
         }
-        transitionToViewMap.remove(transition)
+        super.unregisterTransition(transition)
     }
 
     private fun registerColumn(addedColumn: TableColumn<AdjacencyMatrixTransitionMap, List<Transition>>) {

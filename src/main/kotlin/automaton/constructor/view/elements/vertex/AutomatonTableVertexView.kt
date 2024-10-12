@@ -4,19 +4,22 @@ import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.module.hasProblems
 import automaton.constructor.model.module.hasProblemsBinding
+import automaton.constructor.utils.nonNullObjectBinding
+import javafx.beans.binding.Binding
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.paint.Color
 import tornadofx.*
 
 class AutomatonTableVertexView(vertex: AutomatonVertex): AutomatonBasicVertexView(vertex) {
-    val colourProperty = SimpleStringProperty("none")
-    private var colour by colourProperty
+    private val colorBinding: Binding<Color> = selectedProperty.nonNullObjectBinding {
+        if (selected) Color.AQUA else Color.BLACK
+    }
     init {
         hbox {
             label {
                 textProperty().bind(vertex.nameProperty)
-                textFill = Color.BLACK
+                textFillProperty().bind(colorBinding)
             }
             val startFinalCount = SimpleIntegerProperty(0)
             if (vertex.isInitial) {
@@ -41,7 +44,7 @@ class AutomatonTableVertexView(vertex: AutomatonVertex): AutomatonBasicVertexVie
                 if (startFinalCount.value == 2) {
                     text = " (start, final)"
                 }
-                textFill = Color.BLACK
+                textFillProperty().bind(colorBinding)
                 isVisible = vertex.isInitial || vertex.isFinal
             }
             vertex.isInitialProperty.addListener { _, _, newValue ->
@@ -75,18 +78,6 @@ class AutomatonTableVertexView(vertex: AutomatonVertex): AutomatonBasicVertexVie
                     }
                 }
             }
-        }
-        if (vertex is BuildingBlock) {
-            if (vertex.subAutomaton.hasProblems) {
-                colour = "red"
-            }
-            vertex.subAutomaton.hasProblemsBinding.addListener(ChangeListener { _, _, newValue ->
-                colour = if (newValue) {
-                    "red"
-                } else {
-                    "none"
-                }
-            })
         }
     }
 }

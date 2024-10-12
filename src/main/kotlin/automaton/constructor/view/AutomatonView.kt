@@ -83,6 +83,7 @@ class AutomatonView(val automaton: Automaton, automatonViewContext: AutomatonVie
             })
             automatonTransitionTableView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
                 settingsProperty.set(newValue?.getSettings())
+
             })
             automatonAdjacencyMatrixView.controller.lastSelectedElementProperty.addListener(ChangeListener { _, _, newValue ->
                 settingsProperty.set(newValue?.getSettings())
