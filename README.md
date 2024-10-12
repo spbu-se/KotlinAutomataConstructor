@@ -92,5 +92,3 @@ the following classifiers are supported: `win`, `linux`, `mac`, `win-x86`, `linu
 ## License
 
 The Automata Constructor is licensed under the Apache-2.0 license, as detailed in the [LICENSE](LICENSE) file.
-
-
