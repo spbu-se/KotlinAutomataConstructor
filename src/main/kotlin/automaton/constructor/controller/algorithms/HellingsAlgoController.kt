@@ -43,7 +43,8 @@ class HellingsAlgoController(
                 it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
             }
             productions.forEach {
-                val newHellingsTransition = HellingsTransition(it.leftSide, transition.source,
+                val newHellingsTransition = HellingsTransition(
+                    it.leftSide, transition.source,
                     transition.target, SimpleBooleanProperty(false)
                 )
                 currentTransitions.add(newHellingsTransition)
@@ -52,7 +53,8 @@ class HellingsAlgoController(
         }
         if (grammar.productions.any { it.leftSide == grammar.initialNonterminal && it.rightSide.isEmpty() }) {
             openedAutomaton.vertices.forEach {
-                val newHellingsTransition = HellingsTransition(grammar.initialNonterminal, it, it,
+                val newHellingsTransition = HellingsTransition(
+                    grammar.initialNonterminal, it, it,
                     SimpleBooleanProperty(false)
                 )
                 currentTransitions.add(newHellingsTransition)
@@ -66,10 +68,12 @@ class HellingsAlgoController(
         val allTransitions = observableListOf<HellingsTransition>()
         prepareForExecution(currentTransitions, allTransitions)
 
-        val hellingsAlgoExecutionWindow = find<HellingsAlgoExecutionView>(mapOf(
-            HellingsAlgoExecutionView::currentTransitions to currentTransitions,
-            HellingsAlgoExecutionView::allTransitions to allTransitions
-        )).apply { title = I18N.messages.getString("HellingsAlgorithm.Execution.Title") }
+        val hellingsAlgoExecutionWindow = find<HellingsAlgoExecutionView>(
+            mapOf(
+                HellingsAlgoExecutionView::currentTransitions to currentTransitions,
+                HellingsAlgoExecutionView::allTransitions to allTransitions
+            )
+        ).apply { title = I18N.messages.getString("HellingsAlgorithm.Execution.Title") }
         hellingsAlgoExecutionWindow.openWindow()
         find<CFGView>(mapOf(CFGView::grammar to grammar)).apply {
             title = I18N.messages.getString("CFGView.Title")

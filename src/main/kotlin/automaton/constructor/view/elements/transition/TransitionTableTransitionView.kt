@@ -1,4 +1,4 @@
-package automaton.constructor.view
+package automaton.constructor.view.elements.transition
 
 import automaton.constructor.model.element.Transition
 import javafx.scene.paint.Color
@@ -9,15 +9,15 @@ class TransitionTableTransitionView(transition: Transition): TableTransitionView
         hbox {
             label {
                 textProperty().bind(transition.filtersTextBinding)
-                textFill = Color.BLACK
+                textFillProperty().bind(colorProperty)
             }
             if (transition.sideEffectsText.isNotEmpty()) {
                 label("→") {
-                    textFill = Color.BLACK
+                    textFillProperty().bind(colorProperty)
                 }
                 label {
                     textProperty().bind(transition.sideEffectsTextBinding)
-                    textFill = Color.BLACK
+                    textFillProperty().bind(colorProperty)
                 }
             }
         }
