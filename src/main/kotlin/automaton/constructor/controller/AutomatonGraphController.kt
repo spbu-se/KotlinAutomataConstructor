@@ -7,9 +7,10 @@ import automaton.constructor.model.element.*
 import automaton.constructor.utils.*
 import automaton.constructor.view.*
 import automaton.constructor.view.automaton.AutomatonGraphView
+import automaton.constructor.view.elements.vertex.AutomatonVertexView
+import automaton.constructor.view.elements.transition.TransitionView
 import javafx.geometry.Point2D
 import javafx.scene.control.ContextMenu
-import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
 import javafx.scene.shape.Line
 import tornadofx.*
@@ -89,27 +90,7 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
             newTransitionSource = null
         }
         graphView.focusedProperty().onChange { if (!it) newTransitionSource = null }
-        graphView.setOnKeyPressed { event ->
-            event.consume()
-            if (event.code == KeyCode.DELETE && automaton.allowsModificationsByUser) {
-                automaton.undoRedoManager.group {
-                    selectedElementsViews.forEach {
-                        when (it.automatonElement) {
-                            is AutomatonVertex -> automaton.removeVertex(it.automatonElement)
-                            is Transition -> automaton.removeTransition(it.automatonElement)
-                        }
-                    }
-                }
-                clearSelection()
-            } else if (event.code == KeyCode.A && event.isControlDown) {
-                clearSelection()
-                selectedElementsViews.addAll(
-                    graphView.edgeViews.values.flatMap { it.transitionViews }
-                    .onEach { it.selected = true })
-                selectedElementsViews.addAll(
-                    graphView.vertexToViewMap.values.onEach { it.selected = true })
-            }
-        }
+        enableShortcuts(graphView)
     }
 
     fun registerVertexView(automatonVertexView: AutomatonVertexView) {

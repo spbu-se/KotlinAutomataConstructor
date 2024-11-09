@@ -6,7 +6,7 @@ import automaton.constructor.model.module.executor.SimpleExecutionState
 import automaton.constructor.model.module.executor.SuperExecutionState
 import automaton.constructor.utils.*
 import automaton.constructor.view.AutomatonEdgeView
-import automaton.constructor.view.AutomatonVertexView
+import automaton.constructor.view.elements.vertex.AutomatonVertexView
 import automaton.constructor.view.TransitionLabelPosition
 import automaton.constructor.view.module.executor.color
 import automaton.constructor.view.module.executor.simpleTooltipContent

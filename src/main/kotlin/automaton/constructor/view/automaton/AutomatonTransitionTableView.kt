@@ -5,7 +5,7 @@ import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.AutomatonViewContext
-import automaton.constructor.view.TransitionTableTransitionView
+import automaton.constructor.view.elements.transition.TransitionTableTransitionView
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.*
@@ -45,6 +45,7 @@ class AutomatonTransitionTableView(
 
     override fun unregisterVertex(vertex: AutomatonVertex) {
         transitionsByVertices.removeAll { it.source == vertex }
+        super.unregisterVertex(vertex)
     }
 
     override fun registerTransition(transition: Transition) {
@@ -56,7 +57,7 @@ class AutomatonTransitionTableView(
 
     override fun unregisterTransition(transition: Transition) {
         deleteTransitionFromTable(transition)
-        transitionToViewMap.remove(transition)
+        super.unregisterTransition(transition)
     }
 
     private fun addTransitionToTable(transition: Transition) {

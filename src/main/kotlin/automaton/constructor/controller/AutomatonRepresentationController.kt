@@ -4,14 +4,13 @@ import automaton.constructor.model.action.Action
 import automaton.constructor.model.action.ActionAvailability
 import automaton.constructor.model.action.ActionFailedException
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.element.AutomatonElement
-import automaton.constructor.model.element.BuildingBlock
-import automaton.constructor.model.element.State
-import automaton.constructor.model.element.Transition
+import automaton.constructor.model.element.*
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.AutomatonElementView
 import automaton.constructor.view.AutomatonViewContext
+import automaton.constructor.view.automaton.AutomatonRepresentationView
 import javafx.scene.control.ContextMenu
+import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
 import tornadofx.*
 
@@ -117,5 +116,25 @@ open class AutomatonRepresentationController(
     fun clearSelection() {
         selectedElementsViews.onEach { it.selected = false }.clear()
         lastSelectedElement = null
+    }
+
+    fun enableShortcuts(automatonView: AutomatonRepresentationView) {
+        automatonView.setOnKeyPressed { event ->
+            event.consume()
+            if (event.code == KeyCode.DELETE && automaton.allowsModificationsByUser) {
+                automaton.undoRedoManager.group {
+                    selectedElementsViews.forEach {
+                        when (it.automatonElement) {
+                            is AutomatonVertex -> automaton.removeVertex(it.automatonElement)
+                            is Transition -> automaton.removeTransition(it.automatonElement)
+                        }
+                    }
+                }
+                clearSelection()
+            } else if (event.code == KeyCode.A && event.isControlDown) {
+                clearSelection()
+                selectedElementsViews.addAll(automatonView.getAllElementsViews().onEach { it.selected = true })
+            }
+        }
     }
 }
