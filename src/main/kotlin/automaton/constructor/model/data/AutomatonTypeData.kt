@@ -155,6 +155,17 @@ data class CustomAutomatonData(
     )
 }
 
+@MostlyGeneratedOrInline
+@Serializable
+@SerialName("recursive-automaton")
+data class RecursiveAutomatonData(
+    val inputTape: InputTapeDescriptorData,
+) : AutomatonTypeData {
+    override fun createEmptyAutomaton() = RecursiveAutomaton(
+        inputTape = inputTape.createDescriptor(),
+    )
+}
+
 
 val AutomatonTypeData.Companion.serializersModule
     get() = SerializersModule {
@@ -168,5 +179,6 @@ val AutomatonTypeData.Companion.serializersModule
             subclass(MultiTapeTuringMachineData::class)
             subclass(TuringMachineWithRegistersData::class)
             subclass(CustomAutomatonData::class)
+            subclass(RecursiveAutomatonData::class)
         }
     }
