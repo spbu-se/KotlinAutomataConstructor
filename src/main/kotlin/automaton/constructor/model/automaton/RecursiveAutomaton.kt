@@ -1,7 +1,9 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.action.transition.EliminateEpsilonTransitionAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.data.RecursiveAutomatonData
+import automaton.constructor.model.element.ContextFreeGrammar
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N
 
@@ -15,8 +17,14 @@ class RecursiveAutomaton(
     I18N.messages.getString("RecursiveAutomaton.Untitled")
 ), AutomatonWithInputTape {
 
+    private var grammar: ContextFreeGrammar? = null
+
     override fun getTypeData() = RecursiveAutomatonData(
         inputTape = inputTape.getData()
+    )
+
+    override val transitionActions = super.transitionActions + listOf(
+        EliminateEpsilonTransitionAction(automaton = this)
     )
 
     override fun createEmptyAutomatonOfSameType() = RecursiveAutomaton(inputTape)
