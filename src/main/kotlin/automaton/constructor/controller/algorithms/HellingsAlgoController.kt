@@ -25,7 +25,7 @@ class HellingsTransition(
 
 class HellingsAlgoController(
     private val openedAutomaton: Automaton
-): Controller() {
+) : Controller() {
     lateinit var grammar: ContextFreeGrammar
 
     fun getGrammar() {

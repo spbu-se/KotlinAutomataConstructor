@@ -8,9 +8,14 @@ import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.utils.I18N
 import tornadofx.Controller
 
+/**
+ * TODO:
+ *  - CFPQ
+ *  - RPQ
+ */
 class AlgorithmsController(
     private val openedAutomaton: Automaton
-): Controller() {
+) : Controller() {
     fun convertToCFG() {
         if (openedAutomaton !is PushdownAutomaton || openedAutomaton.stacks.size > 1) {
             tornadofx.error(I18N.messages.getString("CFGView.Error"))
