@@ -1,6 +1,6 @@
 package automaton.constructor.view.algorithms
 
-import GrammarInputView
+import automaton.constructor.view.grammar.GrammarInputView
 import automaton.constructor.controller.algorithms.HellingsAlgoController
 import automaton.constructor.model.element.CFGSymbol
 import automaton.constructor.model.element.ContextFreeGrammar

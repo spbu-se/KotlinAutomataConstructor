@@ -1,21 +1,27 @@
 package automaton.constructor.controller.grammar
 
+import automaton.constructor.model.automaton.RecursiveAutomaton
 import automaton.constructor.model.element.ContextFreeGrammar
+import automaton.constructor.model.factory.RecursiveAutomatonFactory
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.grammar.EBNFInputView
 import tornadofx.*
 
-class RecursiveAutomatonGrammarInputController : Controller() {
+class RecursiveAutomatonGrammarInputController(private val factory: RecursiveAutomatonFactory) : Controller() {
     lateinit var grammar: ContextFreeGrammar
 
     fun getGrammar() {
         find<EBNFInputView>(mapOf(EBNFInputView::controller to this)).apply {
             title = I18N.messages.getString("EBNF.Input.Title")
         }.openWindow()
-
     }
 
-    fun buildRecursiveAutomatonFromCFG() {
-        TODO("Not yet implemented")
+    fun onGrammarEdited() {
+        factory.grammar = grammar
+    }
+
+    fun buildRecursiveAutomatonFromCFG(automaton: RecursiveAutomaton, grammar: ContextFreeGrammar) {
+//        TODO("Not yet implemented")l
+        println(grammar.initialNonterminal.value)
     }
 }
