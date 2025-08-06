@@ -16,8 +16,6 @@ class RecursiveAutomaton(
     I18N.messages.getString("RecursiveAutomaton.Untitled")
 ), AutomatonWithInputTape {
 
-//    private var grammar: ContextFreeGrammar? = null
-
     override fun getTypeData() = RecursiveAutomatonData(
         inputTape = inputTape.getData()
     )

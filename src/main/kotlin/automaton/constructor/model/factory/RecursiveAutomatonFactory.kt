@@ -25,10 +25,11 @@ class RecursiveAutomatonFactory : AbstractAutomatonFactory(RecursiveAutomaton.DI
 
     override fun createSettings() = listOf(
         Setting(
-        displayName = I18N.messages.getString("RecursiveAutomatonFactory.FromCFG"),
-        editor = Button(I18N.messages.getString("RecursiveAutomatonFactory.FromCFGButton")).apply {
-            action {
-                controller.getGrammar()
-            }
-        }))
+            displayName = I18N.messages.getString("RecursiveAutomatonFactory.FromCFG"),
+            editor = Button(I18N.messages.getString("RecursiveAutomatonFactory.FromCFGButton")).apply {
+                action {
+                    controller.getGrammar()
+                }
+            })
+    )
 }

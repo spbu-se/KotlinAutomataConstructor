@@ -1,8 +1,5 @@
 package automaton.constructor.model.element
 
-import javafx.beans.property.SimpleStringProperty
-import tornadofx.*
-
 class EBNFSymbol(var value: String) : CFGSymbol {
     override fun getSymbol(): String = value
 }
@@ -21,5 +18,10 @@ data class EBNFGrammar(var newInitialNonterminal: Nonterminal? = null) : Grammar
     override val nonterminals: MutableList<Nonterminal> = mutableListOf()
     override lateinit var initialNonterminal: Nonterminal
 
-//    TODO: Implement methods for EBNF grammar handling
+    //    TODO: Implement methods for EBNF grammar handling
+    fun addProduction(leftSide: Nonterminal, rightSide: String) {
+        productions.add(EBNFProduction(leftSide, rightSide))
+    }
+
+
 }

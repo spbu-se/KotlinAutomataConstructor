@@ -21,7 +21,8 @@ class RecursiveAutomatonGrammarInputController(private val factory: RecursiveAut
     }
 
     fun buildRecursiveAutomatonFromCFG(automaton: RecursiveAutomaton, grammar: EBNFGrammar) {
-//        TODO("Not yet implemented")l
-        println(grammar.initialNonterminal.value)
+//        TODO("Not yet implemented")
+        grammar.productions.forEach { production -> println("${production.leftSide.value} -> ${production.rightSide}") }
+        return
     }
 }

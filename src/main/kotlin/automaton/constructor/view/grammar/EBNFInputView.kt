@@ -208,8 +208,6 @@ class EBNFInputView() :
         if (blankFieldsCount.value > 0 || ebnfProductions.isEmpty()) {
             error(errorMessage)
         } else {
-            // TODO: something like `ebnfGrammar.clear()`
-
             val initialNonterminal = initialNonterminalValue.value
             if (!initialNonterminal.isNullOrEmpty()) {
                 ebnfGrammar.initialNonterminal = Nonterminal(initialNonterminal)
@@ -220,7 +218,7 @@ class EBNFInputView() :
                 val rightSide = production.rightSide.value ?: ""
 
                 if (leftSide.isNotEmpty() && rightSide.isNotEmpty()) {
-                    // TODO: `ebnfGrammar.addProduction(Nonterminal(leftSide), rightSide)`
+                    ebnfGrammar.addProduction(Nonterminal(leftSide), rightSide)
                     println("Adding production: $leftSide -> $rightSide")
                 }
             }
@@ -231,5 +229,3 @@ class EBNFInputView() :
         }
     }
 }
-
-// TODO: remove temporary prints
