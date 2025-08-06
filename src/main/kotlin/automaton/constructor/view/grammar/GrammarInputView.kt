@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.geometry.Insets
 import javafx.scene.control.ChoiceBox
+import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TextField
 import javafx.scene.control.cell.PropertyValueFactory
@@ -35,7 +36,7 @@ class EditableProduction(
 class InputCFGLeftSideCell(
     private val blankFieldsCount: SimpleIntegerProperty,
     private val indexesOfSelectedProductions: MutableSet<Int>
-) : javafx.scene.control.TableCell<EditableProduction, EditableNonterminal>() {
+) : TableCell<EditableProduction, EditableNonterminal>() {
     override fun updateItem(item: EditableNonterminal?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -77,7 +78,7 @@ class InputCFGRightSideCell(
     private val grammar: ContextFreeGrammar,
     private val productions: ObservableList<EditableProduction>,
     private val blankFieldsCount: SimpleIntegerProperty
-) : javafx.scene.control.TableCell<EditableProduction, MutableList<EditableCFGSymbol>>() {
+) : TableCell<EditableProduction, MutableList<EditableCFGSymbol>>() {
     private fun getTextField(symbol: EditableCFGSymbol): TextField {
         return TextField().apply {
             if (symbol.wasEdited) {
@@ -161,6 +162,8 @@ class InputCFGRightSideCell(
         }
     }
 }
+
+
 
 open class GrammarInputView(val label: String, val errorMessage: String) : Fragment() {
     protected val grammar = ContextFreeGrammar()

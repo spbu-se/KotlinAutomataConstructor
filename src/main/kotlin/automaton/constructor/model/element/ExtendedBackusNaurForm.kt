@@ -3,22 +3,23 @@ package automaton.constructor.model.element
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
-interface EBNFSymbol {
-    fun getSymbol(): String
+class EBNFSymbol(var value: String) : CFGSymbol {
+    override fun getSymbol(): String = value
 }
 
 class EBNFProduction(
-    leftSide: String = "",
-    rightSide: String = ""
-) {
-    val leftSideProperty = SimpleStringProperty(leftSide)
-    var leftSide by leftSideProperty
-
-    val rightSideProperty = SimpleStringProperty(rightSide)
-    var rightSide by rightSideProperty
+    override val leftSide: Nonterminal,
+    override val rightSide: String
+) : ProductionInterface<String> {
+    override fun toString(): String {
+        return super.toString()
+    }
 }
 
-data class EBNFGrammar(
-    val initialNonterminal: String,
-    val productions: List<EBNFProduction>
-)
+data class EBNFGrammar(var newInitialNonterminal: Nonterminal? = null) : Grammar<String> {
+    override val productions: MutableList<ProductionInterface<String>> = mutableListOf()
+    override val nonterminals: MutableList<Nonterminal> = mutableListOf()
+    override lateinit var initialNonterminal: Nonterminal
+
+//    TODO: Implement methods for EBNF grammar handling
+}

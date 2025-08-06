@@ -1,14 +1,14 @@
 package automaton.constructor.controller.grammar
 
 import automaton.constructor.model.automaton.RecursiveAutomaton
-import automaton.constructor.model.element.ContextFreeGrammar
+import automaton.constructor.model.element.EBNFGrammar
 import automaton.constructor.model.factory.RecursiveAutomatonFactory
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.grammar.EBNFInputView
-import tornadofx.*
+import tornadofx.Controller
 
 class RecursiveAutomatonGrammarInputController(private val factory: RecursiveAutomatonFactory) : Controller() {
-    lateinit var grammar: ContextFreeGrammar
+    lateinit var grammar: EBNFGrammar
 
     fun getGrammar() {
         find<EBNFInputView>(mapOf(EBNFInputView::controller to this)).apply {
@@ -20,7 +20,7 @@ class RecursiveAutomatonGrammarInputController(private val factory: RecursiveAut
         factory.grammar = grammar
     }
 
-    fun buildRecursiveAutomatonFromCFG(automaton: RecursiveAutomaton, grammar: ContextFreeGrammar) {
+    fun buildRecursiveAutomatonFromCFG(automaton: RecursiveAutomaton, grammar: EBNFGrammar) {
 //        TODO("Not yet implemented")l
         println(grammar.initialNonterminal.value)
     }
