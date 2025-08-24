@@ -3,10 +3,12 @@ package automaton.constructor.model.data
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.*
 
 @Serializable
 sealed class AutomatonVertexData {
@@ -57,35 +59,76 @@ data class BuildingBlockData(
     val edges: Set<AutomatonEdgeData> = emptySet()
 ) : AutomatonVertexData()
 
+@MostlyGeneratedOrInline
+@Serializable
+@SerialName("recursive-automaton-box")
+data class RecursiveAutomatonBoxData(
+    override val id: Int,
+    override val name: String,
+    override val x: Double,
+    override val y: Double,
+    override val isInitial: Boolean = false,
+    override val isFinal: Boolean = false,
+    override val requiresLayout: Boolean = false,
+    val vertices: Set<AutomatonVertexData>,
+    val transitions: Set<TransitionData>,
+    val edges: Set<AutomatonEdgeData> = emptySet()
+) : AutomatonVertexData()
+
 /**
- * Retrieves [data][AutomatonVertexData] for all [vertices][Automaton.vertices] os the automaton.
+ * Retrieves [data][AutomatonVertexData] for all [vertices][Automaton.vertices] of the automaton.
  */
-fun Automaton.getVerticesData(vertexToIdMap: Map<AutomatonVertex, Int>): Set<AutomatonVertexData> = vertices.map { vertex ->
-    when (vertex) {
-        is State -> StateData(
-            id = vertexToIdMap.getValue(vertex),
-            name = vertex.name,
-            x = vertex.position.x,
-            y = vertex.position.y,
-            isInitial = vertex.isInitial,
-            isFinal = vertex.isFinal,
-            requiresLayout = vertex.requiresLayout,
-            properties = vertex.readProperties()
-        )
-        is BuildingBlock -> {
-            val automatonData = vertex.subAutomaton.getData()
-            BuildingBlockData(
-                id = vertexToIdMap.getValue(vertex),
-                name = vertex.name,
-                x = vertex.position.x,
-                y = vertex.position.y,
-                isInitial = vertex.isInitial,
-                isFinal = vertex.isFinal,
-                requiresLayout = vertex.requiresLayout,
-                vertices = automatonData.vertices,
-                transitions = automatonData.transitions,
-                edges = automatonData.edges
-            )
+fun Automaton.getVerticesData(
+    vertexToIdMap: Map<AutomatonVertex, Int>,
+): Set<AutomatonVertexData> =
+    vertices.map { vertex ->
+        when (vertex) {
+            is State -> {
+                StateData(
+                    id = vertexToIdMap.getValue(vertex),
+                    name = vertex.name,
+                    x = vertex.position.x,
+                    y = vertex.position.y,
+                    isInitial = vertex.isInitial,
+                    isFinal = vertex.isFinal,
+                    requiresLayout = vertex.requiresLayout,
+                    properties = vertex.readProperties()
+                )
+            }
+
+            is BuildingBlock -> {
+                val automatonData = vertex.subAutomaton.getData()
+                BuildingBlockData(
+                    id = vertexToIdMap.getValue(vertex),
+                    name = vertex.name,
+                    x = vertex.position.x,
+                    y = vertex.position.y,
+                    isInitial = vertex.isInitial,
+                    isFinal = vertex.isFinal,
+                    requiresLayout = vertex.requiresLayout,
+                    vertices = automatonData.vertices,
+                    transitions = automatonData.transitions,
+                    edges = automatonData.edges
+                )
+            }
+
+            is RecursiveAutomatonBox -> {
+                val isSelf = vertex.subAutomaton === this
+                val automatonData = if (!isSelf) {
+                    vertex.subAutomaton.getDataInternal(Collections.newSetFromMap(IdentityHashMap()))
+                } else null
+                RecursiveAutomatonBoxData(
+                    id = vertexToIdMap.getValue(vertex),
+                    name = vertex.name,
+                    x = vertex.position.x,
+                    y = vertex.position.y,
+                    isInitial = vertex.isInitial,
+                    isFinal = vertex.isFinal,
+                    requiresLayout = vertex.requiresLayout,
+                    vertices = automatonData?.vertices ?: emptySet(),
+                    transitions = automatonData?.transitions ?: emptySet(),
+                    edges = automatonData?.edges ?: emptySet()
+                )
+            }
         }
-    }
-}.toSet()
+    }.toSet()

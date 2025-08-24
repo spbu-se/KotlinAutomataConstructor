@@ -40,7 +40,7 @@ class HellingsAlgoController(
     ) {
         openedAutomaton.transitions.forEach { transition ->
             val productions = grammar.productions.filter {
-                it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
+                it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propertiesText
             }
             productions.forEach {
                 val newHellingsTransition = HellingsTransition(

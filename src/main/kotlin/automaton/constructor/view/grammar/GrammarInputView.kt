@@ -103,7 +103,7 @@ class InputCFGRightSideCell(
             }
             prefWidth = 73.0
             contextMenu = contextmenu {
-                item(I18N.messages.getString("HellingsAlgorithm.Grammar.Delete")).setOnAction {
+                item(I18N.messages.getString("Grammar.Delete")).setOnAction {
                     val productionRightSide = productions[index].rightSide.value
                     if (text.isEmpty()) {
                         blankFieldsCount.set(blankFieldsCount.value - 1)
@@ -164,7 +164,6 @@ class InputCFGRightSideCell(
 }
 
 
-
 open class GrammarInputView(val label: String, val errorMessage: String) : Fragment() {
     protected val grammar = ContextFreeGrammar()
     protected val productions = observableListOf<EditableProduction>()
@@ -212,7 +211,7 @@ open class GrammarInputView(val label: String, val errorMessage: String) : Fragm
 
         bottom = borderpane {
             left = hbox(5) {
-                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Add")).action {
+                button(I18N.messages.getString("Grammar.Add")).action {
                     productions.add(
                         EditableProduction(
                             EditableNonterminal(
@@ -222,7 +221,7 @@ open class GrammarInputView(val label: String, val errorMessage: String) : Fragm
                     )
                     blankFieldsCount.set(blankFieldsCount.value + 1)
                 }
-                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Delete")).action {
+                button(I18N.messages.getString("Grammar.Delete")).action {
                     val productionsToDelete = indexesOfSelectedProductions.map { productions[it] }
                     productionsToDelete.forEach { production ->
                         val productionBlankFieldsCount = (production.rightSide.value + production.leftSide).count {
@@ -233,7 +232,7 @@ open class GrammarInputView(val label: String, val errorMessage: String) : Fragm
                     productions.removeAll(productionsToDelete)
                     indexesOfSelectedProductions.clear()
                 }
-                button(I18N.messages.getString("HellingsAlgorithm.Grammar.OK")).action {
+                button(I18N.messages.getString("Grammar.OK")).action {
                     okButtonAction()
                 }
                 padding = Insets(5.0, 5.0, 5.0, 5.0)
@@ -242,8 +241,6 @@ open class GrammarInputView(val label: String, val errorMessage: String) : Fragm
         prefWidth = 510.0
     }
 
-    // NOTE: Override this method to define the action for the OK button. Otherwise, it will just close the window.
-    // If the grammar is not valid, it will show an error message.
     protected open fun okButtonAction() {
         if (blankFieldsCount.value > 0 || productions.isEmpty()) {
             error(errorMessage)

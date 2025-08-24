@@ -12,7 +12,7 @@ import tornadofx.*
 
 class HellingsAlgoGrammarView : GrammarInputView(
     I18N.messages.getString("HellingsAlgorithm.Grammar.Info"),
-    I18N.messages.getString("HellingsAlgorithm.Grammar.Error")
+    I18N.messages.getString("Grammar.Error")
 ) {
     val controller: HellingsAlgoController by param()
 

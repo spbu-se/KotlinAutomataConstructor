@@ -70,7 +70,8 @@ class LoopEdgeRenderer(
 
     private val constants = when (vertexShape) {
         CIRCLE -> CircleConstants
-        SQUARE -> SquareConstants
+        SQUARE, ShapeType.ROUND_SQUARE -> SquareConstants
+
     }
     override val sourceShapeType: ShapeType get() = vertexShape
     override val targetShapeType: ShapeType get() = vertexShape

@@ -6,6 +6,7 @@ import automaton.constructor.controller.UndoRedoController
 import automaton.constructor.controller.module.executor.ExecutorController
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.view.module.executor.ExecutorView
 import automaton.constructor.view.module.executor.tree.ExecutionTreeView
@@ -86,6 +87,16 @@ class CentralView(
             tabPane.tab(tag = buildingBlock.subAutomaton) {
                 textProperty().bind(buildingBlock.subAutomaton.nameProperty)
                 content = getAutomatonTabView(buildingBlock.subAutomaton)
+            }
+        }
+        tabPane.selectionModel.select(tab)
+    }
+
+    override fun onRecursiveBoxDoubleClicked(box: RecursiveAutomatonBox) {
+        val tab = tabPane.tabs.firstOrNull { it.tag == box.subAutomaton } ?: run {
+            tabPane.tab(tag = box.subAutomaton) {
+                textProperty().bind(box.subAutomaton.nameProperty)
+                content = getAutomatonTabView(box.subAutomaton)
             }
         }
         tabPane.selectionModel.select(tab)

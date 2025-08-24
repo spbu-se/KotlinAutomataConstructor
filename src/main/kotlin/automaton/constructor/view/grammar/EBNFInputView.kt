@@ -124,7 +124,7 @@ class EBNFInputRightCell(
 
 
 class EBNFInputView() :
-    GrammarInputView(I18N.messages.getString("EBNF.Input.Info"), I18N.messages.getString("EBNF.Input.Error")) {
+    GrammarInputView(I18N.messages.getString("EBNF.Input.Info"), I18N.messages.getString("Grammar.Error")) {
     private val ebnfGrammar = EBNFGrammar()
     val controller: RecursiveAutomatonGrammarInputController by param()
     private val ebnfProductions = observableListOf<EditableEBNFProduction>()
@@ -174,7 +174,7 @@ class EBNFInputView() :
 
         bottom = borderpane {
             left = hbox {
-                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Add")).action {
+                button(I18N.messages.getString("Grammar.Add")).action {
                     ebnfProductions.add(
                         EditableEBNFProduction(
                             EditableNonterminal(grammar.addNonterminal()), SimpleObjectProperty("")
@@ -182,7 +182,7 @@ class EBNFInputView() :
                     )
                     blankFieldsCount.set(blankFieldsCount.value + 1)
                 }
-                button(I18N.messages.getString("HellingsAlgorithm.Grammar.Delete")).action {
+                button(I18N.messages.getString("Grammar.Delete")).action {
                     val productionsToDelete = indexesOfSelectedProductions.map { ebnfProductions[it] }
                     productionsToDelete.forEach { production ->
                         val isLeftSideBlank =
@@ -195,9 +195,7 @@ class EBNFInputView() :
                     ebnfProductions.removeAll(productionsToDelete)
                     indexesOfSelectedProductions.clear()
                 }
-                button(I18N.messages.getString("HellingsAlgorithm.Grammar.OK")).action {
-                    okButtonAction()
-                }
+                button(I18N.messages.getString("Grammar.OK")).action { okButtonAction() }
                 padding = Insets(5.0, 5.0, 5.0, 5.0)
             }
         }
@@ -208,21 +206,22 @@ class EBNFInputView() :
         if (blankFieldsCount.value > 0 || ebnfProductions.isEmpty()) {
             error(errorMessage)
         } else {
-            val initialNonterminal = initialNonterminalValue.value
-            if (!initialNonterminal.isNullOrEmpty()) {
-                ebnfGrammar.initialNonterminal = Nonterminal(initialNonterminal)
+            // Rebuild grammar fresh
+            ebnfGrammar.clearProductions()
+            val canonical = mutableMapOf<String, Nonterminal>()
+            fun canon(name: String): Nonterminal = canonical.getOrPut(name) { ebnfGrammar.findOrAddNonterminal(name) }
+            val initialName = initialNonterminalValue.value
+            if (!initialName.isNullOrEmpty()) {
+                ebnfGrammar.initialNonterminal = canon(initialName)
+                ebnfGrammar.declaredInitialName = initialName
             }
-
             ebnfProductions.forEach { production ->
-                val leftSide = production.leftSide.cfgSymbol.value
+                val leftSideName = production.leftSide.cfgSymbol.value
                 val rightSide = production.rightSide.value ?: ""
-
-                if (leftSide.isNotEmpty() && rightSide.isNotEmpty()) {
-                    ebnfGrammar.addProduction(Nonterminal(leftSide), rightSide)
-                    println("Adding production: $leftSide -> $rightSide")
+                if (leftSideName.isNotEmpty() && rightSide.isNotEmpty()) {
+                    ebnfGrammar.addProduction(canon(leftSideName), rightSide)
                 }
             }
-
             controller.grammar = ebnfGrammar
             controller.onGrammarEdited()
             close()

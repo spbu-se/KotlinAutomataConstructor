@@ -49,7 +49,9 @@ sealed class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDesc
 
     fun readProperties(): List<String> = properties.values.map { it.toString() }
     fun writeProperties(values: List<String>) = properties.values.zip(values).forEach { (property, value) ->
-        property.value = property.descriptor.stringConverter.fromString(value)
+        val parsed = property.descriptor.stringConverter.fromString(value)
+        @Suppress("UNCHECKED_CAST")
+        (property as DynamicProperty<Any?>).value = parsed
     }
 
     private fun <T> registerProperty(descriptor: DynamicPropertyDescriptor<T>): DynamicProperty<T> =
@@ -71,7 +73,7 @@ sealed class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDesc
                 .joinToString(separator = ";")
                 .replace("\\n", "\n")
         }
-    val propetiesText by propertiesTextBinding
+    val propertiesText by propertiesTextBinding
 
     val filtersTextBinding =
         stringBinding(this, *propertyGroups.flatMap { it.filters }.toTypedArray()) {

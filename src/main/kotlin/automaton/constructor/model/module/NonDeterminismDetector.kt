@@ -2,6 +2,7 @@ package automaton.constructor.model.module
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
 import automaton.constructor.model.element.Transition
 import automaton.constructor.utils.filteredSet
@@ -45,9 +46,9 @@ class NonDeterminismDetector(automaton: Automaton) : AutomatonModule {
         when (vertex) {
             is State -> isNonDeterministic
             is BuildingBlock -> isNonDeterministic.or(not(vertex.subAutomaton.isDeterministicBinding))
+            is RecursiveAutomatonBox -> isNonDeterministic
         }
     }
     val isDeterministicBinding: BooleanBinding =
-        not(automaton.hasRegexesBinding) and isEmpty(nonDeterministicStates) and
-                (size(automaton.initialVertices).booleanBinding { automaton.initialVertices.size <= 1 })
+        not(automaton.hasRegexesBinding) and isEmpty(nonDeterministicStates) and (size(automaton.initialVertices).booleanBinding { automaton.initialVertices.size <= 1 })
 }

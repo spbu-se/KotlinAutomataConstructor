@@ -91,6 +91,15 @@ interface Automaton {
         position: Point2D = Point2D.ZERO
     ): BuildingBlock
 
+    fun addRecursiveAutomatonBox(
+        subAutomaton: Automaton = this,
+        name: String? = null,
+        position: Point2D = Point2D.ZERO,
+        bindName: Boolean = true,
+        registerSubManager: Boolean = true,
+        visibleInParent: Boolean = true
+    ): RecursiveAutomatonBox
+
     fun createEmptyAutomatonOfSameType(): Automaton
 
     fun removeVertex(vertex: AutomatonVertex)
@@ -264,18 +273,19 @@ fun Automaton.getNondistinguishableStateGroupByMember(groupMember: State): Set<S
     return states.filter { getStateIdentifier(it) == memberIdentifier }.toSet()
 }
 
-fun Automaton.mergeStates(stateGroup: Set<State>, mergeState: State = stateGroup.minBy { it.name }) = undoRedoManager.group {
-    if (stateGroup.size <= 1) return@group
-    mergeState.isInitial = stateGroup.any { it.isInitial }
-    mergeState.requiresLayout = true
-    val remainingStates = stateGroup.toMutableSet().also { it.remove(mergeState) }
-    remainingStates.forEach { state ->
-        getIncomingTransitions(state).forEach { transition ->
-            addTransition(transition.source, mergeState).writeProperties(transition.readProperties())
+fun Automaton.mergeStates(stateGroup: Set<State>, mergeState: State = stateGroup.minBy { it.name }) =
+    undoRedoManager.group {
+        if (stateGroup.size <= 1) return@group
+        mergeState.isInitial = stateGroup.any { it.isInitial }
+        mergeState.requiresLayout = true
+        val remainingStates = stateGroup.toMutableSet().also { it.remove(mergeState) }
+        remainingStates.forEach { state ->
+            getIncomingTransitions(state).forEach { transition ->
+                addTransition(transition.source, mergeState).writeProperties(transition.readProperties())
+            }
         }
+        remainingStates.forEach { removeVertex(it) }
     }
-    remainingStates.forEach { removeVertex(it) }
-}
 
 val Automaton.transformationOutput: Automaton? get() = isInputForTransformation?.resultingAutomaton
 
