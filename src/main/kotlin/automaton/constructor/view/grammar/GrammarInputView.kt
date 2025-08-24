@@ -1,9 +1,9 @@
 package automaton.constructor.view.grammar
 
-import automaton.constructor.model.element.CFGSymbol
-import automaton.constructor.model.element.ContextFreeGrammar
-import automaton.constructor.model.element.Nonterminal
-import automaton.constructor.model.element.Terminal
+import automaton.constructor.model.grammar.CFGSymbol
+import automaton.constructor.model.grammar.ContextFreeGrammar
+import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.Terminal
 import automaton.constructor.utils.I18N
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty

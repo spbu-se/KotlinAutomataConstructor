@@ -1,8 +1,8 @@
 package automaton.constructor.view.grammar
 
-import automaton.constructor.model.element.EBNFGrammar
-import automaton.constructor.model.element.ProductionInterface
-import automaton.constructor.model.element.Nonterminal
+import automaton.constructor.model.grammar.EBNFGrammar
+import automaton.constructor.model.grammar.ProductionInterface
+import automaton.constructor.model.grammar.Nonterminal
 import automaton.constructor.utils.I18N
 import javafx.geometry.Insets
 import javafx.scene.control.TableCell

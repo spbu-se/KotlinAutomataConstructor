@@ -1,7 +1,7 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.*
-import automaton.constructor.model.element.EBNFGrammar
+import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

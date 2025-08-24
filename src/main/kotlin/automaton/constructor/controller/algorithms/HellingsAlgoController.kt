@@ -2,6 +2,9 @@ package automaton.constructor.controller.algorithms
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.*
+import automaton.constructor.model.grammar.ContextFreeGrammar
+import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.Terminal
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.doNextIterationOfHellingsAlgo
 import automaton.constructor.view.algorithms.CFGView

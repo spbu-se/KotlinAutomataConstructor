@@ -3,7 +3,7 @@ package automaton.constructor.model.automaton
 import automaton.constructor.model.action.transition.EliminateEpsilonTransitionAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.data.RecursiveAutomatonData
-import automaton.constructor.model.element.EBNFGrammar
+import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
 import automaton.constructor.model.memory.tape.InputTapeDescriptor

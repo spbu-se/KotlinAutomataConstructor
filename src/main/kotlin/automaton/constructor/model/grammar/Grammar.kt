@@ -1,4 +1,4 @@
-package automaton.constructor.model.element
+package automaton.constructor.model.grammar
 
 interface CFGSymbol {
     fun getSymbol(): String

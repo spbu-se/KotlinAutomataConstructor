@@ -1,10 +1,10 @@
 package automaton.constructor.view.algorithms
 
-import automaton.constructor.model.element.CFGSymbol
-import automaton.constructor.model.element.ContextFreeGrammar
-import automaton.constructor.model.element.Nonterminal
-import automaton.constructor.model.element.Production
-import automaton.constructor.model.element.ProductionInterface
+import automaton.constructor.model.grammar.CFGSymbol
+import automaton.constructor.model.grammar.ContextFreeGrammar
+import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.Production
+import automaton.constructor.model.grammar.ProductionInterface
 import automaton.constructor.utils.I18N
 import javafx.geometry.Insets
 import javafx.scene.control.TableCell

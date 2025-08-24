@@ -1,11 +1,12 @@
-package automaton.constructor.model.automaton
+package automaton.constructor.model.grammar
 
-import automaton.constructor.model.element.EBNFGrammar
-import automaton.constructor.model.element.Nonterminal
-import automaton.constructor.model.factory.RecursiveAutomatonFactory
+import automaton.constructor.model.automaton.RecursiveAutomaton
+import automaton.constructor.model.automaton.RecursiveAutomatonEBNFExporter
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
+import automaton.constructor.model.factory.RecursiveAutomatonFactory
 import automaton.constructor.model.serializers.JsonAutomatonSerializer
+import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -26,11 +27,10 @@ class RecursiveAutomatonEBNFExporterTest {
     fun exportSimpleGrammar() {
         val grammar = buildGrammar()
         val factory = RecursiveAutomatonFactory().apply { this.grammar = grammar }
-        val ra = factory.createAutomaton() as RecursiveAutomaton
+        val ra = factory.createAutomaton()
         val (exported, warnings) = RecursiveAutomatonEBNFExporter.export(ra)
         assertEquals("S", exported.initialNonterminal.value)
         val sProductions = exported.productions.filter { it.leftSide.value == "S" }.map { it.rightSide }
-        // Expect either separate alts (legacy) or combined with '|'
         val alts = sProductions.flatMap { it.split('|') }.map { it.trim() }
         assertTrue(alts.any { it.replace(" ", "") == "NS" }, "Expected alternative NS in S productions: $sProductions")
         assertTrue(alts.any { it.replace(" ", "") == "b" }, "Expected alternative b in S productions: $sProductions")
@@ -41,7 +41,6 @@ class RecursiveAutomatonEBNFExporterTest {
 
     @Test
     fun exportFactoringGrammar() {
-        // Grammar: A -> a A b | a B b; B -> c
         val g = EBNFGrammar()
         val A = Nonterminal("A")
         val B = Nonterminal("B")
@@ -50,10 +49,9 @@ class RecursiveAutomatonEBNFExporterTest {
         g.addProduction(A, "'a' B 'b'")
         g.addProduction(B, "'c'")
         val factory = RecursiveAutomatonFactory().apply { this.grammar = g }
-        val ra = factory.createAutomaton() as RecursiveAutomaton
+        val ra = factory.createAutomaton()
         val (exported, _) = RecursiveAutomatonEBNFExporter.export(ra)
         val aProduction = exported.productions.first { it.leftSide.value == "A" }.rightSide
-        // Accept forms: a (A | B) b  or a (B | A) b  (ordering may vary)
         val normalized = aProduction.replace(Regex("\\s+"), " ").trim()
         val variants = setOf("a (A | B) b", "a (B | A) b")
         assertTrue(normalized in variants, "Expected factored production 'a (A | B) b' got '$aProduction'")
@@ -63,18 +61,14 @@ class RecursiveAutomatonEBNFExporterTest {
     fun exportAfterSaveLoadKeepsInitialSymbol() {
         val g = buildGrammar()
         val factory = RecursiveAutomatonFactory().apply { this.grammar = g }
-        val ra = factory.createAutomaton() as RecursiveAutomaton
+        val ra = factory.createAutomaton()
         val data = ra.getData()
-        val f = java.io.File("build/tmp/ra_roundtrip.atmtn").apply { parentFile.mkdirs() }
+        val f = File("build/tmp/ra_roundtrip.atmtn").apply { parentFile.mkdirs() }
         JsonAutomatonSerializer.serialize(f, data)
         val loadedData = JsonAutomatonSerializer.deserialize(f)
         val loaded = loadedData.createAutomaton() as RecursiveAutomaton
-        // reattach grammar to loaded root if absent
         if (loaded.grammar == null) loaded.grammar = g
         val (exp, _) = RecursiveAutomatonEBNFExporter.export(loaded)
         assertEquals("S", exp.initialNonterminal.value, "Initial symbol after round-trip must remain S")
     }
 }
-
-
-

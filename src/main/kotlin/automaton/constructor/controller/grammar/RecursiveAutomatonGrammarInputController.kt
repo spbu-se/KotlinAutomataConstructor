@@ -2,7 +2,7 @@ package automaton.constructor.controller.grammar
 
 import automaton.constructor.model.automaton.RecursiveAutomaton
 import automaton.constructor.model.automaton.RecursiveAutomatonBuilder
-import automaton.constructor.model.element.EBNFGrammar
+import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.model.factory.RecursiveAutomatonFactory
 import automaton.constructor.utils.I18N
 import automaton.constructor.view.grammar.EBNFInputView

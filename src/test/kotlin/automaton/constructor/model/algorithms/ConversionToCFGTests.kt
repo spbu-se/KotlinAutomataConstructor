@@ -1,10 +1,10 @@
 package automaton.constructor.model.algorithms
 
 import automaton.constructor.model.TestAutomatons
-import automaton.constructor.model.element.ContextFreeGrammar
-import automaton.constructor.model.element.Nonterminal
-import automaton.constructor.model.element.Production
-import automaton.constructor.model.element.Terminal
+import automaton.constructor.model.grammar.ContextFreeGrammar
+import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.Production
+import automaton.constructor.model.grammar.Terminal
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.Collections.swap

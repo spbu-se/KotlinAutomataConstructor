@@ -1,8 +1,8 @@
 package automaton.constructor.view.grammar
 
 import automaton.constructor.controller.grammar.RecursiveAutomatonGrammarInputController
-import automaton.constructor.model.element.EBNFGrammar
-import automaton.constructor.model.element.Nonterminal
+import automaton.constructor.model.grammar.EBNFGrammar
+import automaton.constructor.model.grammar.Nonterminal
 import automaton.constructor.utils.I18N
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty

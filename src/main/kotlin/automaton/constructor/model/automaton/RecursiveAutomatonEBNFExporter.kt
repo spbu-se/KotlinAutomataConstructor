@@ -1,7 +1,7 @@
 package automaton.constructor.model.automaton
 
-import automaton.constructor.model.element.EBNFGrammar
-import automaton.constructor.model.element.Nonterminal
+import automaton.constructor.model.grammar.EBNFGrammar
+import automaton.constructor.model.grammar.Nonterminal
 import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.property.FormalRegex
