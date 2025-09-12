@@ -2,17 +2,13 @@ package automaton.constructor.controller
 
 import automaton.constructor.controller.algorithms.ConversionToCFGController
 import automaton.constructor.controller.algorithms.HellingsAlgoController
+import automaton.constructor.controller.algorithms.RPQAlgoController
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.FiniteAutomaton
 import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.utils.I18N
 import tornadofx.Controller
 
-/**
- * TODO:
- *  - CFPQ
- *  - RPQ
- */
 class AlgorithmsController(
     private val openedAutomaton: Automaton
 ) : Controller() {
@@ -31,4 +27,13 @@ class AlgorithmsController(
         }
         HellingsAlgoController(openedAutomaton).getGrammar()
     }
+
+    fun executeRPQAlgo() {
+        if (openedAutomaton !is FiniteAutomaton) {
+            tornadofx.error(I18N.messages.getString("RPQAlgorithm.Error"))
+            return
+        }
+        RPQAlgoController(openedAutomaton).execute()
+    }
+
 }
