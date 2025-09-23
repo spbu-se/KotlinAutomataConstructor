@@ -44,7 +44,7 @@ version = appVersion
 
 repositories {
     mavenCentral()
-    maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
+   maven("https://jitpack.io")
 }
 
 application {
@@ -55,7 +55,7 @@ application {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJsonVersion")
-    implementation("no.tornado:tornadofx:$tornadofxVersion")
+    implementation("com.github.edvin:tornadofx2:${tornadofxVersion}")
     implementation("org.eclipse.elk:org.eclipse.elk.core:$elkVersion")
     implementation("org.eclipse.elk:org.eclipse.elk.graph:$elkVersion")
     implementation("org.eclipse.elk:org.eclipse.elk.alg.common:$elkVersion")
