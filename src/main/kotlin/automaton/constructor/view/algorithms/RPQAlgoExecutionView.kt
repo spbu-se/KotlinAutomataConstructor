@@ -1,43 +1,47 @@
 package automaton.constructor.view.algorithms
 
 import automaton.constructor.controller.algorithms.RPQAlgoController
-import automaton.constructor.controller.algorithms.RPQTransition
+import automaton.constructor.controller.algorithms.RPQResultPair
+import automaton.constructor.controller.algorithms.rpq.RPQTransition
 import automaton.constructor.utils.I18N
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.StringProperty
 import javafx.collections.ObservableList
 import javafx.geometry.Insets
 import javafx.scene.control.Button
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.control.TextField
+import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
 
 class RPQTransitionCell : ListCell<RPQTransition>() {
-    private val isNew = SimpleBooleanProperty()
     override fun updateItem(item: RPQTransition?, empty: Boolean) {
         super.updateItem(item, empty)
-        if (item != null) {
-            isNew.bind(item.isNew)
-            this.style = if (item.isNew.value) {
-                "-fx-background-color: aqua;"
-            } else {
-                "-fx-background-color: white;"
+        if (empty || item == null) {
+            style = "-fx-background-color: white;"
+            graphic = null
+        } else {
+            // Color background if transition was newly discovered this iteration
+            style = if (item.isNew.value) "-fx-background-color: aqua;" else "-fx-background-color: white;"
+            item.isNew.addListener { _, _, nv ->
+                style = if (nv) "-fx-background-color: aqua;" else "-fx-background-color: white;"
             }
-            isNew.addListener { _, _, newValue ->
-                this.style = if (newValue) {
-                    "-fx-background-color: aqua;"
-                } else {
-                    "-fx-background-color: white;"
-                }
-            }
-            graphic = label(item.source.name + ", " + item.target.name) {
+            graphic = label(item.toString()) {
                 textFill = Color.BLACK
             }
-        } else {
-            this.style = "-fx-background-color: white;"
+        }
+    }
+}
+
+class RPQResultPairCell : ListCell<RPQResultPair>() {
+    override fun updateItem(item: RPQResultPair?, empty: Boolean) {
+        super.updateItem(item, empty)
+        if (empty || item == null) {
+            style = "-fx-background-color: white;"
             graphic = null
+        } else {
+            graphic = label(item.toString())
         }
     }
 }
@@ -46,48 +50,73 @@ class RPQAlgoExecutionView : Fragment() {
     val controller: RPQAlgoController by param()
     val currentTransitions: ObservableList<RPQTransition> by param()
     val allTransitions: ObservableList<RPQTransition> by param()
-    val regexProperty: SimpleStringProperty by param()
+    val resultPairs: ObservableList<RPQResultPair> by param()
+    val regexProperty: StringProperty by param()
+
     private var regexField: TextField by singleAssign()
-    private val currentTransitionsListView =
-        ListView(currentTransitions).apply { this.setCellFactory { RPQTransitionCell() } }
-    private val allTransitionsListView = ListView(allTransitions).apply {
-        this.setCellFactory { RPQTransitionCell() }
-    }
+
     val nextIterationButton = Button(I18N.messages.getString("RPQAlgorithm.Execution.NextIteration"))
+    val runToEndButton = Button(I18N.messages.getString("RPQAlgorithm.Execution.RunToEnd"))
+    val resetButton = Button(I18N.messages.getString("RPQAlgorithm.Execution.Reset"))
+
+    private val currentTransitionsListView =
+        ListView(currentTransitions).apply { setCellFactory { RPQTransitionCell() } }
+
+    private val allTransitionsListView = ListView(allTransitions).apply { setCellFactory { RPQTransitionCell() } }
+
+    private val resultPairsListView = ListView(resultPairs).apply { setCellFactory { RPQResultPairCell() } }
 
     override val root = vbox {
-        label(I18N.messages.getString("RPQAlgorithm.Execution.Description")) {
-            padding = Insets(5.0, 5.0, 5.0, 5.0)
+        padding = Insets(8.0)
+        spacing = 8.0
+
+        label(I18N.messages.getString("RPQAlgorithm.Execution.Info")) {
+            padding = Insets(4.0)
         }
+        label(I18N.messages.getString("RPQAlgorithm.Execution.Description")) {
+            padding = Insets(4.0)
+        }
+
         hbox(spacing = 10.0) {
+            alignment = javafx.geometry.Pos.CENTER_LEFT
             label(I18N.messages.getString("RPQAlgorithm.Regex")) {
-                padding = Insets(0.0, 0.0, 0.0, 5.0)
+                padding = Insets(0.0, 0.0, 0.0, 4.0)
             }
             regexField = textfield(regexProperty) {
-                promptText = "a|b"
-                prefWidth = 128.0
+                promptText = "a|(ab)*"
+                prefWidth = 160.0
                 textProperty().bindBidirectional(regexProperty)
             }
         }
-        padding = Insets(5.0, 5.0, 5.0, 5.0)
-        hbox {
+
+        hbox(spacing = 12.0) {
             vbox {
-                label(I18N.messages.getString("RPQAlgorithm.Execution.CurrentTransitions")) {
-                    padding = Insets(0.0, 0.0, 0.0, 5.0)
-                }
-                add(currentTransitionsListView)
+                label(I18N.messages.getString("RPQAlgorithm.Execution.CurrentTransitions"))
+                this += currentTransitionsListView
+                vgrow = Priority.ALWAYS
             }
             vbox {
-                label(I18N.messages.getString("RPQAlgorithm.Execution.AllTransitions")) {
-                    padding = Insets(0.0, 0.0, 0.0, 5.0)
-                }
-                add(allTransitionsListView)
+                label(I18N.messages.getString("RPQAlgorithm.Execution.AllTransitions"))
+                this += allTransitionsListView
+                vgrow = Priority.ALWAYS
+            }
+            vbox {
+                label(I18N.messages.getString("RPQAlgorithm.Execution.ResultPairs"))
+                this += resultPairsListView
+                vgrow = Priority.ALWAYS
             }
         }
-        hbox {
+
+        hbox(spacing = 10.0) {
             add(nextIterationButton)
-            padding = Insets(5.0, 5.0, 5.0, 5.0)
+            add(runToEndButton)
+            add(resetButton)
+            padding = Insets(4.0)
         }
+
+        separator()
+        prefWidth = 900.0
+        prefHeight = 520.0
     }
 
     fun lockRegexInput() {
