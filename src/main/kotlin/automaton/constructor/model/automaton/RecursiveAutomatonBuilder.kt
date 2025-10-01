@@ -1,8 +1,10 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
 import automaton.constructor.model.grammar.EBNFGrammar
+import automaton.constructor.model.grammar.EBNFProduction
 import automaton.constructor.model.grammar.Nonterminal
 import automaton.constructor.model.grammar.RARegex
 import automaton.constructor.model.module.layout.static.ELKLayeredLayout
@@ -32,16 +34,17 @@ object RecursiveAutomatonBuilder {
 
         val grouped = groupProductions(transformed)
         if (initial !in grouped.keys) return
-        val parsed = parseAndNormalize(grouped)
+
+        val normalized = grouped.mapValues { (_, r) -> normalizeRegex(r) }
 
         val infos = createAutomataForNonterminals(root, grouped.keys, initial)
 
-        addReferenceBoxes(infos, grouped.keys, parsed)
+        addReferenceBoxes(infos, grouped.keys, normalized)
 
         val (startStates, endStates) = createBoundaryStates(infos.values.map { it.sub })
 
         infos.values.forEach { (nt, sub) ->
-            buildRegexIntoAutomaton(sub, parsed[nt], startStates.getValue(sub), endStates.getValue(sub))
+            buildRegexIntoAutomaton(sub, normalized[nt], startStates.getValue(sub), endStates.getValue(sub))
         }
 
         infos.values.map { it.sub }.distinct().forEach { applyElkLayout(it) }
@@ -51,14 +54,12 @@ object RecursiveAutomatonBuilder {
         toRemove.forEach { old -> if (old.referenceCount == 0) RecursiveAutomaton.registry.remove(old) }
     }
 
-
     private data class Info(val nt: Nonterminal, val sub: RecursiveAutomaton)
 
-    private fun groupProductions(g: EBNFGrammar): Map<Nonterminal, String> =
-        g.productions.groupBy { it.leftSide }.mapValues { (_, ps) -> ps.joinToString("|") { it.rightSide.trim() } }
-
-    private fun parseAndNormalize(grouped: Map<Nonterminal, String>): Map<Nonterminal, RARegex?> =
-        grouped.mapValues { (_, rhs) -> normalizeRegex(parseRegex(rhs)) }
+    private fun groupProductions(g: EBNFGrammar): Map<Nonterminal, RARegex?> =
+        g.productions.groupBy { it.leftSide }.mapValues { (_, ps) ->
+            ps.map { it.rightSide }.reduceOrNull { acc, r -> RARegex.Alt(acc, r) }
+        }
 
     private fun createAutomataForNonterminals(
         root: RecursiveAutomaton, nonterminals: Set<Nonterminal>, initial: Nonterminal
@@ -79,7 +80,6 @@ object RecursiveAutomatonBuilder {
     ) {
         infos.values.forEach { info ->
             val refs = collectReferencedNonterminals(parsed[info.nt])
-            // Self‑reference always needed for recursion path correctness
             if (info.nt.value in refs) refs.add(info.nt.value)
             refs.forEach { refName ->
                 allNts.firstOrNull { it.value == refName }?.let { refNt ->
@@ -117,19 +117,74 @@ object RecursiveAutomatonBuilder {
             is RARegex.Terminal -> addTerminal(automaton, start, end, regex.ch)
             is RARegex.NonTerminalRef -> addNonterminalRef(automaton, start, end, regex.name)
             is RARegex.Concat -> {
-                val mid = automaton.addState()
-                buildRegexIntoAutomaton(automaton, regex.left, start, mid)
-                buildRegexIntoAutomaton(automaton, regex.right, mid, end)
+                // Recursively chain left/right
+                val nodes = flattenConcat(regex)
+                var current = start
+                nodes.forEachIndexed { idx, piece ->
+                    val target = if (idx == nodes.lastIndex) end else automaton.addState()
+                    buildRegexIntoAutomaton(automaton, piece, current, target)
+                    current = target
+                }
             }
 
-            is RARegex.Alt -> buildAlternation(automaton, start, end, regex.a, regex.b)
-            is RARegex.KleeneStar -> buildKleeneStar(automaton, start, end, regex.inner)
+            is RARegex.Alt -> {
+                val alts = flattenAlt(regex)
+                alts.forEach { alt -> buildRegexIntoAutomaton(automaton, alt, start, end) }
+            }
+
+            is RARegex.KleeneStar -> {
+                val inner = regex.inner
+                if (inner == null || inner is RARegex.Eps) {
+                    addEpsilon(automaton, start, end)
+                } else {
+                    val mid = automaton.addState()
+                    addEpsilon(automaton, start, mid)
+                    buildRegexIntoAutomaton(automaton, inner, mid, mid)
+                    addEpsilon(automaton, mid, end)
+                    addEpsilon(automaton, start, end)
+                }
+            }
         }
     }
 
+    private fun flattenConcat(c: RARegex.Concat): List<RARegex> {
+        val acc = mutableListOf<RARegex>()
+        fun visit(r: RARegex?) {
+            when (r) {
+                null, RARegex.Eps -> {}
+                is RARegex.Concat -> {
+                    visit(r.left); visit(r.right)
+                }
+
+                else -> acc += r
+            }
+        }
+        visit(c)
+        return acc
+    }
+
+    private fun flattenAlt(a: RARegex.Alt): List<RARegex> {
+        val acc = mutableListOf<RARegex>()
+        fun visit(r: RARegex?) {
+            when (r) {
+                null -> {}
+                is RARegex.Alt -> {
+                    visit(r.a); visit(r.b)
+                }
+
+                else -> acc += r
+            }
+        }
+        visit(a)
+        return acc
+    }
 
     private fun addEpsilon(automaton: RecursiveAutomaton, from: State, to: State) =
         setRegex(automaton, automaton.addTransition(from, to), EPSILON_VALUE)
+
+    private fun addEpsilon(
+        automaton: RecursiveAutomaton, from: AutomatonVertex, to: AutomatonVertex
+    ) = setRegex(automaton, automaton.addTransition(from, to), EPSILON_VALUE)
 
     private fun addTerminal(automaton: RecursiveAutomaton, from: State, to: State, ch: Char) =
         setRegex(automaton, automaton.addTransition(from, to), FormalRegex.Singleton(ch))
@@ -144,47 +199,31 @@ object RecursiveAutomatonBuilder {
         }
     }
 
-    private fun addEpsilon(
-        automaton: RecursiveAutomaton,
-        from: automaton.constructor.model.element.AutomatonVertex,
-        to: automaton.constructor.model.element.AutomatonVertex
-    ) = setRegex(automaton, automaton.addTransition(from, to), EPSILON_VALUE)
-
-    private fun buildAlternation(
-        automaton: RecursiveAutomaton, start: State, end: State, a: RARegex?, b: RARegex?
-    ) {
-        val aIsEps = a == null || a is RARegex.Eps
-        val bIsEps = b == null || b is RARegex.Eps
-        if (aIsEps || bIsEps) addEpsilon(automaton, start, end)
-        if (!aIsEps) buildRegexIntoAutomaton(automaton, a, start, end)
-        if (!bIsEps) buildRegexIntoAutomaton(automaton, b, start, end)
-    }
-
-    private fun buildKleeneStar(automaton: RecursiveAutomaton, start: State, end: State, inner: RARegex?) {
-        if (inner == null || inner is RARegex.Eps) {
-            addEpsilon(automaton, start, end)
-            return
-        }
-        val mid = automaton.addState()
-        addEpsilon(automaton, start, mid)
-        buildRegexIntoAutomaton(automaton, inner, mid, mid)
-        addEpsilon(automaton, mid, end)
-    }
-
-
-    private fun parseRegex(rhs: String): RARegex? = try {
-        RARegex.parse(rhs)
-    } catch (e: Exception) {
-        throw e
-    }
-
     private fun normalizeRegex(r: RARegex?): RARegex? = when (r) {
         null -> null
         RARegex.Eps -> RARegex.Eps
         is RARegex.Terminal -> if (r.ch == '$') RARegex.Eps else r
         is RARegex.NonTerminalRef -> r
-        is RARegex.Concat -> RARegex.Concat(normalizeRegex(r.left), normalizeRegex(r.right))
-        is RARegex.Alt -> RARegex.Alt(normalizeRegex(r.a), normalizeRegex(r.b))
+        is RARegex.Concat -> {
+            val left = normalizeRegex(r.left)
+            val right = normalizeRegex(r.right)
+            when {
+                left == null || left == RARegex.Eps -> right
+                right == null || right == RARegex.Eps -> left
+                else -> RARegex.Concat(left, right)
+            }
+        }
+
+        is RARegex.Alt -> {
+            val a = normalizeRegex(r.a)
+            val b = normalizeRegex(r.b)
+            when {
+                a == null -> b
+                b == null -> a
+                else -> RARegex.Alt(a, b)
+            }
+        }
+
         is RARegex.KleeneStar -> RARegex.KleeneStar(normalizeRegex(r.inner))
     }
 
@@ -209,7 +248,6 @@ object RecursiveAutomatonBuilder {
         return acc
     }
 
-
     private fun collectReachableAutomata(start: RecursiveAutomaton): MutableSet<RecursiveAutomaton> {
         val acc = mutableSetOf<RecursiveAutomaton>()
         fun dfs(cur: RecursiveAutomaton) {
@@ -231,62 +269,86 @@ object RecursiveAutomatonBuilder {
         automaton.applyLayout(mapping, bounds)
     }
 
-
     private fun eliminateImmediateLeftRecursion(original: EBNFGrammar): EBNFGrammar {
         val g = EBNFGrammar()
-        val existing = original.productions.groupBy { it.leftSide }
-        // Copy terminals & productions
-        original.productions.forEach {
-            g.addNonterminal(it.leftSide)
-            g.addProduction(it.leftSide, it.rightSide)
-        }
+        original.nonterminals.forEach { g.addNonterminal(it) }
         g.initialNonterminal = original.initialNonterminal
 
-        val used = original.productions.map { it.leftSide.value }.toMutableSet()
+        original.productions.forEach { g.addProduction(it.leftSide, it.rightSide) }
+
+        val byNt = g.productions.groupBy { it.leftSide }.toMutableMap()
+
+        val newProductions = mutableListOf<EBNFProduction>()
+        val toRemove = mutableSetOf<EBNFProduction>()
+
+        fun startsWith(nt: Nonterminal, r: RARegex): Pair<Boolean, RARegex?> {
+            return when (r) {
+                is RARegex.NonTerminalRef -> if (r.name == nt.value) true to RARegex.Eps else false to null
+                is RARegex.Concat -> {
+                    when (val l = r.left) {
+                        is RARegex.NonTerminalRef -> if (l.name == nt.value) true to r.right else false to null
+                        RARegex.Eps -> startsWith(nt, r.right ?: RARegex.Eps)
+                        else -> false to null
+                    }
+                }
+
+                else -> false to null
+            }
+        }
+
+        fun concat(a: RARegex?, b: RARegex?): RARegex? {
+            return when {
+                a == null || a == RARegex.Eps -> b
+                b == null || b == RARegex.Eps -> a
+                else -> RARegex.Concat(a, b)
+            }
+        }
+
+        val usedNames = g.nonterminals.map { it.value }.toMutableSet()
         fun fresh(): Nonterminal? {
-            for (c in 'A'..'Z') if (c.toString() !in used) return Nonterminal(c.toString()).also { used.add(it.value) }
+            for (c in 'A'..'Z') {
+                val name = c.toString()
+                if (name !in usedNames) {
+                    usedNames += name
+                    val nt = Nonterminal(name)
+                    g.addNonterminal(nt)
+                    return nt
+                }
+            }
             return null
         }
 
-        val toAdd = mutableListOf<Pair<Nonterminal, String>>()
-        val toRemove = mutableListOf<Pair<Nonterminal, String>>()
-
-        fun concatTokens(a: String, b: String): String {
-            if (a.isEmpty()) return b
-            if (b.isEmpty()) return a
-            val needSpace = a.last().isLetterOrDigit() && b.first().isLetterOrDigit()
-            return if (needSpace) "$a $b" else a + b
-        }
-
-        existing.forEach { (nt, prods) ->
-            val leftRecFull = mutableListOf<String>()      // full productions with immediate left recursion
-            val leftRecAlpha = mutableListOf<String>()     // the alpha parts after the left nonterminal
-            val nonLeft = mutableListOf<String>()          // productions without immediate left recursion
+        byNt.forEach { (nt, prods) ->
+            val recursiveAlphas = mutableListOf<RARegex?>()
+            val betas = mutableListOf<RARegex?>()
             prods.forEach { p ->
-                val rs = p.rightSide
-                val trimmedNt = nt.value
-                val isPrefixed = rs.startsWith(trimmedNt)
-                val boundaryOk =
-                    rs.length > trimmedNt.length && (rs.length == trimmedNt.length + 1 || rs[trimmedNt.length].isWhitespace() || !rs[trimmedNt.length].isLetterOrDigit())
-                if (isPrefixed && boundaryOk) {
-                    leftRecFull.add(p.rightSide)
-                    leftRecAlpha.add(rs.drop(trimmedNt.length).trimStart())
+                val (isRec, remainder) = startsWith(nt, p.rightSide)
+                if (isRec) {
+                    recursiveAlphas += remainder
+                    toRemove += (p as EBNFProduction)
                 } else {
-                    nonLeft.add(p.rightSide)
+                    betas += p.rightSide
                 }
             }
-            if (leftRecAlpha.isNotEmpty() && nonLeft.isNotEmpty()) {
-                val newNt = fresh() ?: return g // out of fresh letters -> return partially transformed grammar
-                leftRecFull.forEach { lr -> toRemove.add(nt to lr) }
-                nonLeft.forEach { beta -> toRemove.add(nt to beta) }
-                nonLeft.forEach { beta -> toAdd.add(nt to concatTokens(beta.trimEnd(), newNt.value)) }
-                leftRecAlpha.forEach { alpha -> toAdd.add(newNt to concatTokens(alpha.trimEnd(), newNt.value)) }
-                toAdd.add(newNt to "$") // epsilon
+            if (recursiveAlphas.isNotEmpty() && betas.isNotEmpty()) {
+                val ntPrime = fresh() ?: return g
+                betas.forEach { beta ->
+                    val newRhs =
+                        concat(beta, RARegex.NonTerminalRef(ntPrime.value)) ?: RARegex.NonTerminalRef(ntPrime.value)
+                    newProductions += EBNFProduction(nt, newRhs)
+                }
+                recursiveAlphas.forEach { alpha ->
+                    val newRhs =
+                        concat(alpha, RARegex.NonTerminalRef(ntPrime.value)) ?: RARegex.NonTerminalRef(ntPrime.value)
+                    newProductions += EBNFProduction(ntPrime, newRhs)
+                }
+                newProductions += EBNFProduction(ntPrime, RARegex.Eps)
             }
         }
 
-        toRemove.forEach { (l, r) -> g.productions.removeIf { it.leftSide == l && it.rightSide == r } }
-        toAdd.forEach { (l, r) -> g.addProduction(l, r) }
+        g.productions.removeAll(toRemove)
+        g.productions.addAll(newProductions)
+
         return g
     }
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * RPQAlgo tests
+ * Tests for [RPQAlgo].
  */
 class RPQAlgoTest {
     private fun newFA(): FiniteAutomaton = FiniteAutomaton(InputTapeDescriptor())

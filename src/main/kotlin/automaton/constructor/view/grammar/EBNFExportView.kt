@@ -1,8 +1,6 @@
 package automaton.constructor.view.grammar
 
-import automaton.constructor.model.grammar.EBNFGrammar
-import automaton.constructor.model.grammar.ProductionInterface
-import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.*
 import automaton.constructor.utils.I18N
 import javafx.geometry.Insets
 import javafx.scene.control.TableCell
@@ -11,17 +9,17 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
 import tornadofx.*
 
-class EBNFExportLeftCell : TableCell<ProductionInterface<String>, Nonterminal>() {
+class EBNFExportLeftCell : TableCell<ProductionInterface<RARegex>, Nonterminal>() {
     override fun updateItem(item: Nonterminal?, empty: Boolean) {
         super.updateItem(item, empty)
-        graphic = if (item != null) EBNFExportView.getLabelsForNonterminal(item) else null
+        graphic = if (!empty && item != null) EBNFExportView.getLabelsForNonterminal(item) else null
     }
 }
 
-class EBNFExportRightCell : TableCell<ProductionInterface<String>, String>() {
-    override fun updateItem(item: String?, empty: Boolean) {
+class EBNFExportRightCell : TableCell<ProductionInterface<RARegex>, RARegex>() {
+    override fun updateItem(item: RARegex?, empty: Boolean) {
         super.updateItem(item, empty)
-        text = if (item == null || empty) null else item
+        text = if (empty || item == null) null else item.render()
     }
 }
 
@@ -29,8 +27,10 @@ class EBNFExportView : Fragment() {
     val grammar: EBNFGrammar by param()
     val warnings: List<String> by param(listOf())
     private val productionsTableView = tableview(grammar.productions.toObservable())
-    private val leftSideColumn = TableColumn<ProductionInterface<String>, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
-    private val rightSideColumn = TableColumn<ProductionInterface<String>, String>(I18N.messages.getString("CFGView.RightSide"))
+    private val leftSideColumn =
+        TableColumn<ProductionInterface<RARegex>, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
+    private val rightSideColumn =
+        TableColumn<ProductionInterface<RARegex>, RARegex>(I18N.messages.getString("CFGView.RightSide"))
 
     init {
         leftSideColumn.cellValueFactory = PropertyValueFactory("leftSide")
@@ -47,7 +47,9 @@ class EBNFExportView : Fragment() {
             padding = Insets(5.0, 0.0, 0.0, 5.0)
         }
         hbox {
-            add(getLabelsForNonterminal(grammar.initialNonterminal).apply { padding = Insets(0.0,5.0,5.0,5.0) })
+            add(getLabelsForNonterminal(grammar.initialNonterminal).apply {
+                padding = Insets(0.0, 5.0, 5.0, 5.0)
+            })
         }
         if (warnings.isNotEmpty()) {
             textarea(warnings.joinToString("\n")) {

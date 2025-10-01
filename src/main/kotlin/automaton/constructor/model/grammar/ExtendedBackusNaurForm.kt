@@ -1,14 +1,12 @@
 package automaton.constructor.model.grammar
 
-
 class EBNFProduction(
-    override val leftSide: Nonterminal,
-    override val rightSide: String
-) : ProductionInterface<String>
+    override val leftSide: Nonterminal, override val rightSide: RARegex
+) : ProductionInterface<RARegex>
 
-class EBNFGrammar(var newInitialNonterminal: Nonterminal? = null) : Grammar<String> {
+class EBNFGrammar(var newInitialNonterminal: Nonterminal? = null) : Grammar<RARegex> {
     var declaredInitialName: String? = null
-    override val productions: MutableList<ProductionInterface<String>> = mutableListOf()
+    override val productions: MutableList<ProductionInterface<RARegex>> = mutableListOf()
     override val nonterminals: MutableList<Nonterminal> = mutableListOf()
     override lateinit var initialNonterminal: Nonterminal
 
@@ -16,8 +14,8 @@ class EBNFGrammar(var newInitialNonterminal: Nonterminal? = null) : Grammar<Stri
     private val nonterminalsValues = mutableSetOf<String>()
 
     fun addNonterminal(value: String = "A"): Nonterminal {
-        val newNt =
-            if (nonterminalsValues.contains(value)) Nonterminal(value + nonterminalsCount) else Nonterminal(value)
+        val newNt = if (nonterminalsValues.contains(value)) Nonterminal(value + nonterminalsCount)
+        else Nonterminal(value)
         nonterminals.add(newNt)
         nonterminalsValues.add(newNt.value)
         nonterminalsCount++
@@ -35,7 +33,7 @@ class EBNFGrammar(var newInitialNonterminal: Nonterminal? = null) : Grammar<Stri
     fun findOrAddNonterminal(value: String): Nonterminal =
         nonterminals.firstOrNull { it.value == value } ?: addNonterminal(value)
 
-    fun addProduction(leftSide: Nonterminal, rightSide: String) {
+    fun addProduction(leftSide: Nonterminal, rightSide: RARegex) {
         productions.add(EBNFProduction(leftSide, rightSide))
     }
 

@@ -3,6 +3,7 @@ package automaton.constructor.model.automaton
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.grammar.EBNFGrammar
+import automaton.constructor.model.grammar.RARegex
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.property.FormalRegex
 
@@ -15,9 +16,7 @@ object RecursiveAutomatonEBNFExporter {
 
     fun export(root: RecursiveAutomaton): ExportResult {
         val warnings = mutableListOf<String>()
-
         val closure = collectClosure(root)
-
         val nameMap = assignNames(root, closure)
 
         val grammar = EBNFGrammar()
@@ -36,18 +35,20 @@ object RecursiveAutomatonEBNFExporter {
             warnings += localWarnings
         }
 
+        val nonterminalNames = nonterminals.values.map { it.value }.toSet()
+
         closure.sortedBy { nameMap[it] }.forEach { ra ->
             val nt = nonterminals.getValue(ra)
-            val rhs = factorSequences(derivations.getValue(ra))
-            grammar.addProduction(nt, rhs)
+            val rhsRegex = factorSequencesToRegex(
+                sequences = derivations.getValue(ra), nonterminalNames = nonterminalNames
+            )
+            grammar.addProduction(nt, rhsRegex)
         }
 
         grammar.initialNonterminal = nonterminals.getValue(root)
-
         return ExportResult(grammar, warnings)
     }
 
-    private const val EPSILON_TOKEN = "$"
     private const val MAX_DEPTH = 200
 
     private fun collectClosure(root: RecursiveAutomaton): Set<RecursiveAutomaton> {
@@ -72,8 +73,9 @@ object RecursiveAutomatonEBNFExporter {
             root.grammar?.initialNonterminal?.value,
             root.displayNameForMenu(),
             root.name
-        ).firstOrNull { !it.isNullOrBlank() && !it.startsWith(root.untitledAdjective, ignoreCase = true) } ?: "S"
-
+        ).firstOrNull {
+            !it.isNullOrBlank() && !it.startsWith(root.untitledAdjective, ignoreCase = true)
+        } ?: "S"
         names[root] = rootName
 
         var synthCounter = 0
@@ -83,10 +85,9 @@ object RecursiveAutomatonEBNFExporter {
                 ra.displayNameForMenu()
             } else raw
             val assigned = candidate.takeIf {
-                !it.isNullOrBlank() && !it.startsWith(ra.untitledAdjective, true)
+                it.isNotBlank() && !it.startsWith(ra.untitledAdjective, true)
             } ?: "NT_${synthCounter++}"
 
-            // Avoid collision with root
             names[ra] = if (assigned == rootName) "NT_${synthCounter++}" else assigned
         }
         return names
@@ -96,10 +97,6 @@ object RecursiveAutomatonEBNFExporter {
         val vertex: AutomatonVertex, val tokens: MutableList<String>, val depth: Int
     )
 
-    /**
-     * Collects token sequences from a single initial state to any final state.
-     * Adds epsilon if no sequences found.
-     */
     private fun collectDerivations(
         automaton: RecursiveAutomaton,
         exportedName: String,
@@ -149,9 +146,7 @@ object RecursiveAutomatonEBNFExporter {
 
                 if (target is RecursiveAutomatonBox && label == EPSILON_VALUE) {
                     val sub = target.subAutomaton as? RecursiveAutomaton
-                    if (sub != null) {
-                        nextTokens += nameMap.getValue(sub)
-                    }
+                    if (sub != null) nextTokens += nameMap.getValue(sub)
                     automaton.getOutgoingTransitions(target).forEach { out ->
                         stack += Frame(out.target, nextTokens.toMutableList(), frame.depth + 1)
                     }
@@ -166,9 +161,7 @@ object RecursiveAutomatonEBNFExporter {
             }
         }
 
-        if (outSequences.isEmpty()) {
-            outSequences.add(emptyList())
-        }
+        if (outSequences.isEmpty()) outSequences.add(emptyList())
         if (truncatedCount > 0) {
             warnings += "Automaton $exportedName derivations truncated at depth $MAX_DEPTH ($truncatedCount paths cut)."
         }
@@ -177,21 +170,22 @@ object RecursiveAutomatonEBNFExporter {
         }
     }
 
-    private fun factorSequences(sequences: Set<List<String>>): String {
-        if (sequences.isEmpty()) return EPSILON_TOKEN
+    private fun factorSequencesToRegex(
+        sequences: Set<List<String>>, nonterminalNames: Set<String>
+    ): RARegex {
+        if (sequences.isEmpty()) return RARegex.Eps
         if (sequences.size == 1) {
             val seq = sequences.first()
-            return if (seq.isEmpty()) EPSILON_TOKEN else seq.joinToString(" ")
+            return if (seq.isEmpty()) RARegex.Eps else buildConcat(seq.map { tokenToRegex(it, nonterminalNames) })
         }
 
         val ordered = sequences.toList()
         val first = ordered.first()
+
         var prefixLen = 0
         while (true) {
             val token = first.getOrNull(prefixLen) ?: break
-            if (ordered.all { it.getOrNull(prefixLen) == token }) {
-                prefixLen++
-            } else break
+            if (ordered.all { it.getOrNull(prefixLen) == token }) prefixLen++ else break
         }
 
         var suffixLen = 0
@@ -202,39 +196,54 @@ object RecursiveAutomatonEBNFExporter {
             if (ordered.all {
                     val j = it.size - 1 - suffixLen
                     j >= prefixLen && it.getOrNull(j) == token
-                }) {
-                suffixLen++
-            } else break
+                }) suffixLen++ else break
         }
 
         val prefix = first.take(prefixLen)
         val suffix = if (suffixLen == 0) emptyList() else first.takeLast(suffixLen)
-
         val cores = ordered.map { it.subList(prefixLen, it.size - suffixLen) }.toSet()
-        val coreStrings = cores.map { core ->
-            when {
-                core.isEmpty() -> EPSILON_TOKEN
-                else -> core.joinToString(" ")
-            }
-        }.sorted()
 
-        val multipleAlternatives = coreStrings.size > 1
-        val hasContext = prefix.isNotEmpty() || suffix.isNotEmpty()
-        val coreCombined = if (coreStrings.size == 1) coreStrings.first() else coreStrings.joinToString(" | ")
-        val wrap = multipleAlternatives && hasContext
+        val coreRegexes = cores.map { seq ->
+            if (seq.isEmpty()) RARegex.Eps else buildConcat(seq.map { tokenToRegex(it, nonterminalNames) })
+        }
 
-        return buildString {
-            if (prefix.isNotEmpty()) {
-                append(prefix.joinToString(" "))
-                append(' ')
-            }
-            if (wrap) append('(')
-            append(coreCombined)
-            if (wrap) append(')')
-            if (suffix.isNotEmpty()) {
-                append(' ')
-                append(suffix.joinToString(" "))
-            }
-        }.trim().ifBlank { EPSILON_TOKEN }
+        val coreCombined = when (coreRegexes.size) {
+            0 -> RARegex.Eps
+            1 -> coreRegexes.first()
+            else -> buildAlt(coreRegexes.sortedBy { renderKey(it) })
+        }
+
+        val parts = mutableListOf<RARegex>()
+        if (prefix.isNotEmpty()) parts += buildConcat(prefix.map { tokenToRegex(it, nonterminalNames) })
+        parts += coreCombined
+        if (suffix.isNotEmpty()) parts += buildConcat(suffix.map { tokenToRegex(it, nonterminalNames) })
+
+        return when (parts.size) {
+            0 -> RARegex.Eps
+            1 -> parts.first()
+            else -> buildConcat(parts)
+        }
+    }
+
+    private fun tokenToRegex(token: String, nonterminalNames: Set<String>): RARegex = if (token in nonterminalNames) {
+        RARegex.NonTerminalRef(token)
+    } else {
+        require(token.length == 1) {
+            "Unexpected multi-character terminal token '$token'. Consider introducing RARegex.Literal if needed."
+        }
+        RARegex.Terminal(token[0])
+    }
+
+    private fun buildConcat(parts: List<RARegex>): RARegex = parts.reduce { acc, r -> RARegex.Concat(acc, r) }
+
+    private fun buildAlt(parts: List<RARegex>): RARegex = parts.reduce { acc, r -> RARegex.Alt(acc, r) }
+
+    private fun renderKey(r: RARegex): String = when (r) {
+        RARegex.Eps -> "$"
+        is RARegex.Terminal -> r.ch.toString()
+        is RARegex.NonTerminalRef -> r.name
+        is RARegex.Concat -> "C(${renderKey(r.left ?: RARegex.Eps)}·${renderKey(r.right ?: RARegex.Eps)})"
+        is RARegex.Alt -> "A(${renderKey(r.a ?: RARegex.Eps)}|${renderKey(r.b ?: RARegex.Eps)})"
+        is RARegex.KleeneStar -> "K(${r.inner?.let { renderKey(it) } ?: "$"})"
     }
 }
