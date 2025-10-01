@@ -1,24 +1,18 @@
-package automaton.constructor.model.element
+package automaton.constructor.model.grammar
 
-interface CFGSymbol {
-    fun getSymbol(): String
-}
-class Terminal(var value: Char): CFGSymbol {
-    override fun getSymbol() = value.toString()
-}
-class Nonterminal(var value: String): CFGSymbol {
-    override fun getSymbol() = value
-}
-class Production(val leftSide: Nonterminal, val rightSide: MutableList<CFGSymbol>) {
+class Production(
+    override val leftSide: Nonterminal,
+    override val rightSide: MutableList<CFGSymbol>
+) : ProductionInterface<MutableList<CFGSymbol>> {
     override fun toString() = leftSide.value + ";" + rightSide.joinToString(separator = ",") { it.getSymbol() }
 }
 
-class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
-    val nonterminals = mutableListOf<Nonterminal>()
-    val productions = mutableListOf<Production>()
+class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<MutableList<CFGSymbol>> {
+    override val nonterminals = mutableListOf<Nonterminal>()
+    override val productions: MutableList<ProductionInterface<MutableList<CFGSymbol>>> = mutableListOf()
+    override lateinit var initialNonterminal: Nonterminal
     private var nonterminalsCount = 0 // count of all ever used nonterminals, used for naming to avoid collisions
     private val nonterminalsValues = mutableSetOf<String>()
-    var initialNonterminal: Nonterminal
 
     init {
         initialNonterminal = if (newInitialNonterminal == null) {
@@ -89,7 +83,7 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
                         }
                     }
 
-                    addProductions(it, 0)
+                    addProductions(it as Production, 0)
                 }
                 productions.addAll(productionsToAdd)
             }
@@ -239,7 +233,7 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) {
         }
         var areThereNewConvertible = true
         while (areThereNewConvertible) {
-            val newConvertible = productions.filter { production ->  
+            val newConvertible = productions.filter { production ->
                 var areAllNonterminalsConvertible = true
                 production.rightSide.forEach {
                     if (it is Nonterminal && !convertibleIntoTerminals.contains(it)) {

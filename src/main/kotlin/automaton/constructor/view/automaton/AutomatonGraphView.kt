@@ -6,6 +6,7 @@ import automaton.constructor.model.automaton.GRAPH_PANE_INIT_SIZE
 import automaton.constructor.model.element.AutomatonEdge
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
 import automaton.constructor.utils.hoverableTooltip
 import automaton.constructor.utils.subPane
@@ -46,12 +47,27 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
     override fun getAllElementsViews() = edgeViews.values.flatMap { it.transitionViews } + vertexToViewMap.values
 
     private fun registerVertex(vertex: AutomatonVertex) {
+        if (vertex is RecursiveAutomatonBox && !vertex.visibleInParent) return
         val automatonVertexView = AutomatonVertexView(vertex)
         controller.registerVertexView(automatonVertexView)
         vertexToViewMap[vertex] = automatonVertexView
         when (vertex) {
             is State -> automatonVertexView.hoverableTooltip { executionStatesTooltip(vertex) }
             is BuildingBlock -> {
+                automatonVertexView.hoverableTooltip(stopManagingOnInteraction = true) {
+                    Pane().apply {
+                        minWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                        minHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                        maxWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                        maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                        val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
+                        add(subAutomatonView)
+                        subAutomatonView.tablePrefHeight.bind(subAutomatonView.heightProperty())
+                        subAutomatonView.fitToParentSize()
+                    }
+                }
+            }
+            is RecursiveAutomatonBox -> {
                 automatonVertexView.hoverableTooltip(stopManagingOnInteraction = true) {
                     Pane().apply {
                         minWidth = this@AutomatonGraphView.scene.window.width / 1.5
@@ -74,6 +90,7 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
     }
 
     private fun registerEdge(edge: AutomatonEdge) {
+        if (!vertexToViewMap.containsKey(edge.source) || !vertexToViewMap.containsKey(edge.target)) return
         edgeViews[edge.source to edge.target] = AutomatonEdgeView(
             edge,
             vertexToViewMap.getValue(edge.source),

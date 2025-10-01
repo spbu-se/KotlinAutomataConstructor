@@ -165,6 +165,9 @@ class MainWindow(
                     item(I18N.messages.getString("MainView.Algorithms.FiniteAutomaton.Hellings")).action {
                         algorithmsController.executeHellingsAlgo()
                     }
+                    item(I18N.messages.getString("MainView.Algorithms.FiniteAutomaton.RPQ")).action {
+                        algorithmsController.executeRPQAlgo()
+                    }
                 }
                 menu(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton")) {
                     item(I18N.messages.getString("MainView.Algorithms.PushdownAutomaton.CFG")).action {

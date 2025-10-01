@@ -6,7 +6,7 @@ import javafx.geometry.Point2D
 
 class BuildingBlock(
     memoryDescriptors: List<MemoryUnitDescriptor>,
-    val subAutomaton: Automaton,
+    override val subAutomaton: Automaton,
     name: String,
     position: Point2D,
-) : AutomatonVertex(memoryDescriptors, propertyDescriptorGroups = emptyList(), name, position)
+) : AutomatonVertex(memoryDescriptors, propertyDescriptorGroups = emptyList(), name, position), HasSubAutomaton

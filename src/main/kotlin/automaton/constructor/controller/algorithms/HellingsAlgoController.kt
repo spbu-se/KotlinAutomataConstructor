@@ -2,6 +2,9 @@ package automaton.constructor.controller.algorithms
 
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.element.*
+import automaton.constructor.model.grammar.ContextFreeGrammar
+import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.Terminal
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.doNextIterationOfHellingsAlgo
 import automaton.constructor.view.algorithms.CFGView
@@ -25,7 +28,7 @@ class HellingsTransition(
 
 class HellingsAlgoController(
     private val openedAutomaton: Automaton
-): Controller() {
+) : Controller() {
     lateinit var grammar: ContextFreeGrammar
 
     fun getGrammar() {
@@ -40,7 +43,7 @@ class HellingsAlgoController(
     ) {
         openedAutomaton.transitions.forEach { transition ->
             val productions = grammar.productions.filter {
-                it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propetiesText
+                it.rightSide.size == 1 && it.rightSide[0] is Terminal && it.rightSide[0].getSymbol() == transition.propertiesText
             }
             productions.forEach {
                 val newHellingsTransition = HellingsTransition(

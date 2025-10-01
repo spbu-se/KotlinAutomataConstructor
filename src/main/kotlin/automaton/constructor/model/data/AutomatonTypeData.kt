@@ -1,6 +1,7 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.*
+import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -155,6 +156,27 @@ data class CustomAutomatonData(
     )
 }
 
+@MostlyGeneratedOrInline
+@Serializable
+@SerialName("recursive-automaton")
+data class RecursiveAutomatonData(
+    val inputTape: InputTapeDescriptorData,
+    val initialNonterminalName: String? = null,
+) : AutomatonTypeData {
+    override fun createEmptyAutomaton() = RecursiveAutomaton(
+        inputTape = inputTape.createDescriptor(),
+    ).also { ra ->
+        if (!initialNonterminalName.isNullOrBlank()) {
+            val g = EBNFGrammar().apply {
+                val nt = findOrAddNonterminal(initialNonterminalName)
+                initialNonterminal = nt
+                declaredInitialName = initialNonterminalName
+            }
+            ra.grammar = g
+        }
+    }
+}
+
 
 val AutomatonTypeData.Companion.serializersModule
     get() = SerializersModule {
@@ -168,5 +190,6 @@ val AutomatonTypeData.Companion.serializersModule
             subclass(MultiTapeTuringMachineData::class)
             subclass(TuringMachineWithRegistersData::class)
             subclass(CustomAutomatonData::class)
+            subclass(RecursiveAutomatonData::class)
         }
     }
