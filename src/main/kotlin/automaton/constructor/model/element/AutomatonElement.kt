@@ -49,9 +49,7 @@ sealed class AutomatonElement(propertyDescriptorGroups: List<DynamicPropertyDesc
 
     fun readProperties(): List<String> = properties.values.map { it.toString() }
     fun writeProperties(values: List<String>) = properties.values.zip(values).forEach { (property, value) ->
-        val parsed = property.descriptor.stringConverter.fromString(value)
-        @Suppress("UNCHECKED_CAST")
-        (property as DynamicProperty<Any?>).value = parsed
+        property.setFromString(value)
     }
 
     private fun <T> registerProperty(descriptor: DynamicPropertyDescriptor<T>): DynamicProperty<T> =
