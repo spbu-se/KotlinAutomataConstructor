@@ -5,7 +5,7 @@ import automaton.constructor.controller.algorithms.HellingsAlgoController
 import automaton.constructor.model.grammar.CFGSymbol
 import automaton.constructor.model.grammar.ContextFreeGrammar
 import automaton.constructor.model.grammar.Nonterminal
-import automaton.constructor.model.grammar.Production
+import automaton.constructor.model.grammar.SimpleProduction
 import automaton.constructor.utils.I18N
 import tornadofx.*
 
@@ -47,7 +47,7 @@ class HellingsAlgoGrammarView : GrammarInputView(
                     newRightSide.add(symbol.cfgSymbol)
                 }
             }
-            fixedGrammar.productions.add(Production(newLeftSide, newRightSide))
+            fixedGrammar.productions.add(SimpleProduction(newLeftSide, newRightSide))
         }
         fixedGrammar.convertToCNF()
         return fixedGrammar

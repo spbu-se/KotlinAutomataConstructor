@@ -3,7 +3,7 @@ package automaton.constructor.model.algorithms
 import automaton.constructor.model.TestAutomatons
 import automaton.constructor.model.grammar.ContextFreeGrammar
 import automaton.constructor.model.grammar.Nonterminal
-import automaton.constructor.model.grammar.Production
+import automaton.constructor.model.grammar.SimpleProduction
 import automaton.constructor.model.grammar.Terminal
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -70,16 +70,16 @@ class ConversionToCFGTests {
         val U = expected.addNonterminal("U")
         val U1 = expected.addNonterminal("U1")
         val Y = expected.addNonterminal("Y")
-        expected.productions.add(Production(A, mutableListOf(A, A)))
-        expected.productions.add(Production(A, mutableListOf(Y, U1)))
-        expected.productions.add(Production(A, mutableListOf(U, U1)))
-        expected.productions.add(Production(S, mutableListOf()))
-        expected.productions.add(Production(S, mutableListOf(A, A)))
-        expected.productions.add(Production(S, mutableListOf(Y, U1)))
-        expected.productions.add(Production(S, mutableListOf(U, U1)))
-        expected.productions.add(Production(U, mutableListOf(Terminal('('))))
-        expected.productions.add(Production(U1, mutableListOf(Terminal(')'))))
-        expected.productions.add(Production(Y, mutableListOf(U, A)))
+        expected.productions.add(SimpleProduction(A, mutableListOf(A, A)))
+        expected.productions.add(SimpleProduction(A, mutableListOf(Y, U1)))
+        expected.productions.add(SimpleProduction(A, mutableListOf(U, U1)))
+        expected.productions.add(SimpleProduction(S, mutableListOf()))
+        expected.productions.add(SimpleProduction(S, mutableListOf(A, A)))
+        expected.productions.add(SimpleProduction(S, mutableListOf(Y, U1)))
+        expected.productions.add(SimpleProduction(S, mutableListOf(U, U1)))
+        expected.productions.add(SimpleProduction(U, mutableListOf(Terminal('('))))
+        expected.productions.add(SimpleProduction(U1, mutableListOf(Terminal(')'))))
+        expected.productions.add(SimpleProduction(Y, mutableListOf(U, A)))
 
         assertTrue(areGrammarsEqual(expected, actual))
     }
@@ -94,14 +94,14 @@ class ConversionToCFGTests {
         val U = expected.addNonterminal("U")
         val U1 = expected.addNonterminal("U1")
         val Y = expected.addNonterminal("Y")
-        expected.productions.add(Production(A, mutableListOf(Y, U1)))
-        expected.productions.add(Production(A, mutableListOf(U, U1)))
-        expected.productions.add(Production(S, mutableListOf()))
-        expected.productions.add(Production(S, mutableListOf(Y, U1)))
-        expected.productions.add(Production(S, mutableListOf(U, U1)))
-        expected.productions.add(Production(U, mutableListOf(Terminal('0'))))
-        expected.productions.add(Production(U1, mutableListOf(Terminal('1'))))
-        expected.productions.add(Production(Y, mutableListOf(U, A)))
+        expected.productions.add(SimpleProduction(A, mutableListOf(Y, U1)))
+        expected.productions.add(SimpleProduction(A, mutableListOf(U, U1)))
+        expected.productions.add(SimpleProduction(S, mutableListOf()))
+        expected.productions.add(SimpleProduction(S, mutableListOf(Y, U1)))
+        expected.productions.add(SimpleProduction(S, mutableListOf(U, U1)))
+        expected.productions.add(SimpleProduction(U, mutableListOf(Terminal('0'))))
+        expected.productions.add(SimpleProduction(U1, mutableListOf(Terminal('1'))))
+        expected.productions.add(SimpleProduction(Y, mutableListOf(U, A)))
 
         assertTrue(areGrammarsEqual(expected, actual))
     }
@@ -116,14 +116,14 @@ class ConversionToCFGTests {
         val U = expected.addNonterminal("U")
         val U1 = expected.addNonterminal("U1")
         val Y = expected.addNonterminal("Y")
-        expected.productions.add(Production(A, mutableListOf(Y, U1)))
-        expected.productions.add(Production(A, mutableListOf(U, U1)))
-        expected.productions.add(Production(S, mutableListOf()))
-        expected.productions.add(Production(S, mutableListOf(Y, U1)))
-        expected.productions.add(Production(S, mutableListOf(U, U1)))
-        expected.productions.add(Production(U, mutableListOf(Terminal('0'))))
-        expected.productions.add(Production(U1, mutableListOf(Terminal('1'))))
-        expected.productions.add(Production(Y, mutableListOf(U, A)))
+        expected.productions.add(SimpleProduction(A, mutableListOf(Y, U1)))
+        expected.productions.add(SimpleProduction(A, mutableListOf(U, U1)))
+        expected.productions.add(SimpleProduction(S, mutableListOf()))
+        expected.productions.add(SimpleProduction(S, mutableListOf(Y, U1)))
+        expected.productions.add(SimpleProduction(S, mutableListOf(U, U1)))
+        expected.productions.add(SimpleProduction(U, mutableListOf(Terminal('0'))))
+        expected.productions.add(SimpleProduction(U1, mutableListOf(Terminal('1'))))
+        expected.productions.add(SimpleProduction(Y, mutableListOf(U, A)))
 
         assertTrue(areGrammarsEqual(expected, actual))
     }

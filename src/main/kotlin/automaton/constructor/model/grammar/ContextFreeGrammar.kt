@@ -1,15 +1,15 @@
 package automaton.constructor.model.grammar
 
-class Production(
+class SimpleProduction(
     override val leftSide: Nonterminal,
     override val rightSide: MutableList<CFGSymbol>
-) : ProductionInterface<MutableList<CFGSymbol>> {
+) : Production<MutableList<CFGSymbol>> {
     override fun toString() = leftSide.value + ";" + rightSide.joinToString(separator = ",") { it.getSymbol() }
 }
 
 class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<MutableList<CFGSymbol>> {
     override val nonterminals = mutableListOf<Nonterminal>()
-    override val productions: MutableList<ProductionInterface<MutableList<CFGSymbol>>> = mutableListOf()
+    override val productions: MutableList<Production<MutableList<CFGSymbol>>> = mutableListOf()
     override lateinit var initialNonterminal: Nonterminal
     private var nonterminalsCount = 0 // count of all ever used nonterminals, used for naming to avoid collisions
     private val nonterminalsValues = mutableSetOf<String>()
@@ -65,25 +65,25 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<M
             }
             productions.removeAll { it.rightSide.isEmpty() && it.leftSide != initialNonterminal }
             nullableNonterminals.forEach { nonterminal ->
-                val productionsToAdd = mutableListOf<Production>()
+                val productionsToAdd = mutableListOf<SimpleProduction>()
                 productions.forEach {
-                    fun addProductions(production: Production, start: Int) {
-                        for (i in start..production.rightSide.lastIndex) {
-                            if (production.rightSide[i] == nonterminal) {
-                                val newRightSide = production.rightSide.toMutableList()
+                    fun addProductions(simpleProduction: SimpleProduction, start: Int) {
+                        for (i in start..simpleProduction.rightSide.lastIndex) {
+                            if (simpleProduction.rightSide[i] == nonterminal) {
+                                val newRightSide = simpleProduction.rightSide.toMutableList()
                                 newRightSide.removeAt(i)
-                                val newProduction = Production(production.leftSide, newRightSide)
+                                val newSimpleProduction = SimpleProduction(simpleProduction.leftSide, newRightSide)
                                 if (newRightSide.isNotEmpty()) {
-                                    productionsToAdd.add(newProduction)
-                                    addProductions(newProduction, i)
-                                } else if (newProduction.leftSide != nonterminal) {
-                                    productionsToAdd.add(newProduction)
+                                    productionsToAdd.add(newSimpleProduction)
+                                    addProductions(newSimpleProduction, i)
+                                } else if (newSimpleProduction.leftSide != nonterminal) {
+                                    productionsToAdd.add(newSimpleProduction)
                                 }
                             }
                         }
                     }
 
-                    addProductions(it as Production, 0)
+                    addProductions(it as SimpleProduction, 0)
                 }
                 productions.addAll(productionsToAdd)
             }
@@ -121,7 +121,7 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<M
                         }
                         if (!productionsByNonterminals[leftNonterminal]!!.contains(it)) {
                             productionsByNonterminals[leftNonterminal]!!.add(it)
-                            productions.add(Production(leftNonterminal, it))
+                            productions.add(SimpleProduction(leftNonterminal, it))
                         }
                     }
                     if (unitProductions.containsKey(rightNonterminal)) {
@@ -137,7 +137,7 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<M
 
     private fun removeMixOfTerminalsAndNonterminals() {
         val newNonterminals = mutableMapOf<Char, Nonterminal>()
-        val productionsToAdd = mutableListOf<Production>()
+        val productionsToAdd = mutableListOf<SimpleProduction>()
         productions.forEach {
             if (!(it.rightSide.size == 1 && it.rightSide[0] is Terminal || it.rightSide.isEmpty())) {
                 for (i in it.rightSide.indices) {
@@ -146,7 +146,7 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<M
                         if (replacementNonterminal == null) {
                             replacementNonterminal = addNonterminal("U")
                             newNonterminals[it.rightSide[i].getSymbol()[0]] = replacementNonterminal
-                            productionsToAdd.add(Production(replacementNonterminal, mutableListOf(it.rightSide[i])))
+                            productionsToAdd.add(SimpleProduction(replacementNonterminal, mutableListOf(it.rightSide[i])))
                         }
                         it.rightSide[i] = replacementNonterminal
                     }
@@ -157,12 +157,12 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<M
     }
 
     private fun removeLongRightSides() {
-        val productionsToAdd = mutableListOf<Production>()
+        val productionsToAdd = mutableListOf<SimpleProduction>()
         productions.forEach {
             if (it.rightSide.size > 2) {
                 while (it.rightSide.size > 2) {
                     val newNonterminal = addNonterminal("Y")
-                    productionsToAdd.add(Production(newNonterminal, mutableListOf(it.rightSide[0], it.rightSide[1])))
+                    productionsToAdd.add(SimpleProduction(newNonterminal, mutableListOf(it.rightSide[0], it.rightSide[1])))
                     it.rightSide.removeFirst()
                     it.rightSide[0] = newNonterminal
                 }
@@ -177,7 +177,7 @@ class ContextFreeGrammar(newInitialNonterminal: Nonterminal? = null) : Grammar<M
         }
         if (isThereInitialNonterminalInRightSide) {
             val newInitialNonterminal = addNonterminal("S")
-            productions.add(Production(newInitialNonterminal, mutableListOf(initialNonterminal)))
+            productions.add(SimpleProduction(newInitialNonterminal, mutableListOf(initialNonterminal)))
             initialNonterminal = newInitialNonterminal
         }
     }

@@ -4,7 +4,7 @@ interface CFGSymbol {
     fun getSymbol(): String
 }
 
-interface ProductionInterface<R> {
+interface Production<R> {
     val leftSide: Nonterminal
     val rightSide: R
 }
@@ -18,7 +18,7 @@ class Nonterminal(var value: String) : CFGSymbol {
 }
 
 interface Grammar<R> {
-    val productions: MutableList<ProductionInterface<R>>
+    val productions: MutableList<Production<R>>
     val nonterminals: MutableList<Nonterminal>
     var initialNonterminal: Nonterminal
 }

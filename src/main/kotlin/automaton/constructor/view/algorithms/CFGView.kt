@@ -3,8 +3,8 @@ package automaton.constructor.view.algorithms
 import automaton.constructor.model.grammar.CFGSymbol
 import automaton.constructor.model.grammar.ContextFreeGrammar
 import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.SimpleProduction
 import automaton.constructor.model.grammar.Production
-import automaton.constructor.model.grammar.ProductionInterface
 import automaton.constructor.utils.I18N
 import javafx.geometry.Insets
 import javafx.scene.control.TableCell
@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.text.Font
 import tornadofx.*
 
-class LeftSideCell : TableCell<ProductionInterface<MutableList<CFGSymbol>>, Nonterminal>() {
+class LeftSideCell : TableCell<Production<MutableList<CFGSymbol>>, Nonterminal>() {
     override fun updateItem(item: Nonterminal?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -25,7 +25,7 @@ class LeftSideCell : TableCell<ProductionInterface<MutableList<CFGSymbol>>, Nont
     }
 }
 
-class RightSideCell : TableCell<ProductionInterface<MutableList<CFGSymbol>>, List<CFGSymbol>>() {
+class RightSideCell : TableCell<Production<MutableList<CFGSymbol>>, List<CFGSymbol>>() {
     override fun updateItem(item: List<CFGSymbol>?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (item != null) {
@@ -50,8 +50,8 @@ class RightSideCell : TableCell<ProductionInterface<MutableList<CFGSymbol>>, Lis
 class CFGView : Fragment() {
     val grammar: ContextFreeGrammar by param()
     private val productionsTableView = tableview(grammar.productions.toObservable())
-    private val leftSideColumn = TableColumn<ProductionInterface<MutableList<CFGSymbol>>, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
-    private val rightSideColumn = TableColumn<ProductionInterface<MutableList<CFGSymbol>>, List<CFGSymbol>>(I18N.messages.getString("CFGView.RightSide"))
+    private val leftSideColumn = TableColumn<Production<MutableList<CFGSymbol>>, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
+    private val rightSideColumn = TableColumn<Production<MutableList<CFGSymbol>>, List<CFGSymbol>>(I18N.messages.getString("CFGView.RightSide"))
 
     init {
         leftSideColumn.cellValueFactory = PropertyValueFactory("leftSide")
@@ -62,7 +62,7 @@ class CFGView : Fragment() {
         rightSideColumn.minWidth = 190.0
         productionsTableView.columns.addAll(leftSideColumn, rightSideColumn)
         if (productionsTableView.items.isEmpty()) {
-            productionsTableView.items.add(Production(grammar.initialNonterminal, mutableListOf()))
+            productionsTableView.items.add(SimpleProduction(grammar.initialNonterminal, mutableListOf()))
         }
     }
 

@@ -9,14 +9,14 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
 import tornadofx.*
 
-class EBNFExportLeftCell : TableCell<ProductionInterface<RARegex>, Nonterminal>() {
+class EBNFExportLeftCell : TableCell<Production<RARegex>, Nonterminal>() {
     override fun updateItem(item: Nonterminal?, empty: Boolean) {
         super.updateItem(item, empty)
         graphic = if (!empty && item != null) EBNFExportView.getLabelsForNonterminal(item) else null
     }
 }
 
-class EBNFExportRightCell : TableCell<ProductionInterface<RARegex>, RARegex>() {
+class EBNFExportRightCell : TableCell<Production<RARegex>, RARegex>() {
     override fun updateItem(item: RARegex?, empty: Boolean) {
         super.updateItem(item, empty)
         text = if (empty || item == null) null else item.render()
@@ -28,9 +28,9 @@ class EBNFExportView : Fragment() {
     val warnings: List<String> by param(listOf())
     private val productionsTableView = tableview(grammar.productions.toObservable())
     private val leftSideColumn =
-        TableColumn<ProductionInterface<RARegex>, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
+        TableColumn<Production<RARegex>, Nonterminal>(I18N.messages.getString("CFGView.LeftSide"))
     private val rightSideColumn =
-        TableColumn<ProductionInterface<RARegex>, RARegex>(I18N.messages.getString("CFGView.RightSide"))
+        TableColumn<Production<RARegex>, RARegex>(I18N.messages.getString("CFGView.RightSide"))
 
     init {
         leftSideColumn.cellValueFactory = PropertyValueFactory("leftSide")

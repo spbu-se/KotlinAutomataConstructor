@@ -2,11 +2,11 @@ package automaton.constructor.model.grammar
 
 class EBNFProduction(
     override val leftSide: Nonterminal, override val rightSide: RARegex
-) : ProductionInterface<RARegex>
+) : Production<RARegex>
 
 class EBNFGrammar(var newInitialNonterminal: Nonterminal? = null) : Grammar<RARegex> {
     var declaredInitialName: String? = null
-    override val productions: MutableList<ProductionInterface<RARegex>> = mutableListOf()
+    override val productions: MutableList<Production<RARegex>> = mutableListOf()
     override val nonterminals: MutableList<Nonterminal> = mutableListOf()
     override lateinit var initialNonterminal: Nonterminal
 
