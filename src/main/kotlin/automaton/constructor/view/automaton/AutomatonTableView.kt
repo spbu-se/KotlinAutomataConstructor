@@ -3,7 +3,7 @@ package automaton.constructor.view.automaton
 import automaton.constructor.controller.AutomatonRepresentationController
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
-import automaton.constructor.model.automaton.RecursiveAutomaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock

@@ -1,7 +1,7 @@
 package automaton.constructor.model.grammar
 
-import automaton.constructor.model.automaton.RecursiveAutomaton
-import automaton.constructor.model.automaton.RecursiveAutomatonEBNFExporter
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomatonEBNFExporter
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
 import automaton.constructor.model.factory.RecursiveAutomatonFactory

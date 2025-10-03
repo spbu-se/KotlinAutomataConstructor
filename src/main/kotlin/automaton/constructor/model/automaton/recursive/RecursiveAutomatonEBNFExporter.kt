@@ -1,4 +1,4 @@
-package automaton.constructor.model.automaton
+package automaton.constructor.model.automaton.recursive
 
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.RecursiveAutomatonBox

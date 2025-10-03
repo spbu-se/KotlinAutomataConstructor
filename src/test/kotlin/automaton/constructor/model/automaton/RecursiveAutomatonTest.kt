@@ -1,5 +1,7 @@
 package automaton.constructor.model.automaton
 
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomatonBuilder
 import automaton.constructor.model.factory.RecursiveAutomatonFactory
 import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.model.grammar.Nonterminal
@@ -13,7 +15,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
- * Tests for [RecursiveAutomaton].
+ * Tests for [automaton.constructor.model.automaton.recursive.RecursiveAutomaton].
  */
 class RecursiveAutomatonTest : AbstractAutomatonTest() {
 

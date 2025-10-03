@@ -1,8 +1,10 @@
-package automaton.constructor.model.automaton
+package automaton.constructor.model.automaton.recursive
 
 import automaton.constructor.model.action.transition.EliminateEpsilonTransitionAction
+import automaton.constructor.model.automaton.AbstractAutomaton
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
 import automaton.constructor.model.data.RecursiveAutomatonData
+import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
@@ -73,7 +75,7 @@ class RecursiveAutomaton(
     fun shallowCloneForRecursion(): RecursiveAutomaton {
         val clone = RecursiveAutomaton(inputTape, registerInitially = false)
         val vertexMap =
-            mutableMapOf<automaton.constructor.model.element.AutomatonVertex, automaton.constructor.model.element.AutomatonVertex>()
+            mutableMapOf<AutomatonVertex, AutomatonVertex>()
         vertices.forEach { v ->
             when (v) {
                 is State -> {

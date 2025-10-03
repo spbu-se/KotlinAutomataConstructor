@@ -1,7 +1,7 @@
 package automaton.constructor.model.factory
 
 import automaton.constructor.controller.grammar.RecursiveAutomatonGrammarInputController
-import automaton.constructor.model.automaton.RecursiveAutomaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.utils.I18N

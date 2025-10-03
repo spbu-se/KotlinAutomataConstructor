@@ -1,5 +1,6 @@
 package automaton.constructor.model.module.executor
 
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
@@ -118,7 +119,7 @@ class SuperExecutionState(
     superState: SuperExecutionState?
 ) : ExecutionState(buildingBlock as AutomatonVertex, lastTransition, memory, superState) {
     private val effectiveSubAutomaton = when (buildingBlock) {
-        is RecursiveAutomatonBox -> (buildingBlock.subAutomaton as? automaton.constructor.model.automaton.RecursiveAutomaton)
+        is RecursiveAutomatonBox -> (buildingBlock.subAutomaton as? RecursiveAutomaton)
             ?.shallowCloneForRecursion() ?: buildingBlock.subAutomaton
 
         else -> buildingBlock.subAutomaton

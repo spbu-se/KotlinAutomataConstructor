@@ -1,4 +1,6 @@
-package automaton.constructor.model.automaton
+package automaton.constructor.model.automaton.recursive
+
+import automaton.constructor.model.element.RecursiveAutomatonBox
 
 fun RecursiveAutomaton.displayNameForMenu(): String {
     val g = grammar
@@ -23,7 +25,7 @@ fun RecursiveAutomaton.allowedBoxes(): Set<RecursiveAutomaton> {
     val forward = mutableMapOf<RecursiveAutomaton, MutableSet<RecursiveAutomaton>>()
     val indegree = mutableMapOf<RecursiveAutomaton, Int>().apply { all.forEach { this[it] = 0 } }
     all.forEach { ra ->
-        val children = ra.vertices.filterIsInstance<automaton.constructor.model.element.RecursiveAutomatonBox>()
+        val children = ra.vertices.filterIsInstance<RecursiveAutomatonBox>()
             .mapNotNull { it.subAutomaton as? RecursiveAutomaton }
             .filter { it !== ra }
         children.forEach { ch ->

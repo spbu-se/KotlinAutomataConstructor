@@ -1,6 +1,7 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.*
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import kotlinx.serialization.SerialName

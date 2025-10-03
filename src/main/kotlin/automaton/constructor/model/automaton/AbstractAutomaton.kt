@@ -6,6 +6,7 @@ import automaton.constructor.model.action.state.MergeNondistinguishableStatesAct
 import automaton.constructor.model.action.state.RemoveStateAction
 import automaton.constructor.model.action.transition.RemoveTransitionAction
 import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor

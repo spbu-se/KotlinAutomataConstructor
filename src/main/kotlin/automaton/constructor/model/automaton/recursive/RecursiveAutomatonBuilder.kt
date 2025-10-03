@@ -1,8 +1,9 @@
-package automaton.constructor.model.automaton
+package automaton.constructor.model.automaton.recursive
 
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
+import automaton.constructor.model.element.Transition
 import automaton.constructor.model.grammar.EBNFGrammar
 import automaton.constructor.model.grammar.EBNFProduction
 import automaton.constructor.model.grammar.Nonterminal
@@ -353,7 +354,7 @@ object RecursiveAutomatonBuilder {
     }
 
     private fun setRegex(
-        automaton: RecursiveAutomaton, t: automaton.constructor.model.element.Transition, r: FormalRegex?
+        automaton: RecursiveAutomaton, t: Transition, r: FormalRegex?
     ) {
         t.getProperty(automaton.inputTape.expectedChar).set(r)
     }

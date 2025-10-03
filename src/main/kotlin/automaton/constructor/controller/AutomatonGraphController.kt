@@ -1,7 +1,7 @@
 package automaton.constructor.controller
 
 import automaton.constructor.model.automaton.Automaton
-import automaton.constructor.model.automaton.RecursiveAutomaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.BuildingBlock
@@ -20,10 +20,10 @@ import javafx.scene.control.Label
 import javafx.scene.input.MouseButton
 import javafx.scene.shape.Line
 import tornadofx.*
-import automaton.constructor.model.automaton.displayNameForMenu
-import automaton.constructor.model.automaton.allowedBoxes
+import automaton.constructor.model.automaton.recursive.displayNameForMenu
+import automaton.constructor.model.automaton.recursive.allowedBoxes
 import automaton.constructor.view.grammar.EBNFExportView
-import automaton.constructor.model.automaton.RecursiveAutomatonEBNFExporter
+import automaton.constructor.model.automaton.recursive.RecursiveAutomatonEBNFExporter
 
 class AutomatonGraphController(automaton: Automaton, automatonViewContext: AutomatonViewContext) :
     AutomatonRepresentationController(automaton, automatonViewContext) {
