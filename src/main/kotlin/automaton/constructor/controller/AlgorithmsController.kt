@@ -22,7 +22,7 @@ class AlgorithmsController(
 
     fun executeHellingsAlgo() {
         if (openedAutomaton !is FiniteAutomaton) {
-            tornadofx.error(I18N.messages.getString("Algorithms.Error"))
+            tornadofx.error(I18N.messages.getString("FiniteAutomatonOnlyAlgorithm.Error"))
             return
         }
         HellingsAlgoController(openedAutomaton).getGrammar()
@@ -30,7 +30,7 @@ class AlgorithmsController(
 
     fun executeRPQAlgo() {
         if (openedAutomaton !is FiniteAutomaton) {
-            tornadofx.error(I18N.messages.getString("Algorithms.Error"))
+            tornadofx.error(I18N.messages.getString("FiniteAutomatonOnlyAlgorithm.Error"))
             return
         }
         RPQAlgoController(openedAutomaton).execute()
