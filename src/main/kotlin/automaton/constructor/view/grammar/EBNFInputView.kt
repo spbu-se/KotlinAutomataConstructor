@@ -33,11 +33,11 @@ class EBNFInputLeftSideCell(
                     }
                 }
                 textfield {
-                    promptText = "N"
+                    promptText = "S"
                     if (item.wasEdited) text = item.cfgSymbol.value
                     textProperty().addListener { _, _, newValue ->
                         val prevEmpty = item.cfgSymbol.value.isEmpty()
-                        item.cfgSymbol.value = newValue
+                        item.cfgSymbol.value = newValue.trim()
                         item.wasEdited = true
                         val nowEmpty = newValue.isEmpty()
                         if (prevEmpty && !nowEmpty) blankFieldsCount.set(blankFieldsCount.value - 1)
@@ -65,7 +65,7 @@ class EBNFInputRightCell(
         val value = item.value ?: ""
         if (currentTextField == null) {
             currentTextField = TextField().apply {
-                promptText = "e.g. (T | a) | N"
+                promptText = "e.g. 'a' S 'b' | $"
                 prefWidth = 400.0
                 text = value
                 focusedProperty().addListener { _, wasFocused, isFocused ->

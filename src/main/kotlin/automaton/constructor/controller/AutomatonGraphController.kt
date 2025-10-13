@@ -61,7 +61,7 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
                             if (automaton.allowsModificationsByUser) automaton.addState(position = Point2D(it.x, it.y))
                         }
                     }
-                    if (automaton.allowsBuildingBlocks && automaton !is RecursiveAutomaton) {
+                    if (automaton.allowsBuildingBlocks) {
                         item(I18N.messages.getString("AutomatonGraphController.AddEmptyBuildingBlock")) {
                             action {
                                 if (automaton.allowsModificationsByUser) automaton.addBuildingBlock(
@@ -93,7 +93,6 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
                             }
                         }
                     }
-                    // Recursive automaton boxes (available only for recursive automatons)
                     if (automaton is RecursiveAutomaton) {
                         addRecursiveAutomatonItems(automaton, it, graphView)
                     }
@@ -178,17 +177,9 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
             if (automaton.allowsModificationsByUser) {
                 source.vertex.requiresLayout = false
                 automatonVertexView.vertex.requiresLayout = false
-                val srcV = source.vertex
-                val tgtV = automatonVertexView.vertex
-                if (srcV is RecursiveAutomatonBox && tgtV is RecursiveAutomatonBox) {
-                    information(
-                        I18N.messages.getString("RecursiveAutomaton.TransitionBetweenBoxesHint"),
-                        title = I18N.messages.getString("Dialog.information"),
-                        owner = automatonViewContext.uiComponent.currentWindow
-                    )
-                } else {
-                    automaton.addTransition(srcV, tgtV)
-                }
+                val src = source.vertex
+                val tgt = automatonVertexView.vertex
+                tryAddTransitionWithDialog(automaton, src, tgt, automatonViewContext.uiComponent.currentWindow)
             }
         }
     }
@@ -232,26 +223,29 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
         val existingRecursive = allowed.sortedBy { it.displayNameForMenu() }
         if (existingRecursive.isNotEmpty()) {
             val existingMenu =
-                MenuItem(I18N.messages.getString("RecursiveAutomaton.Context.RecursiveBox.AddExisting")).also { mi ->
-                    val cm = ContextMenu()
+                MenuItem(I18N.messages.getString("RecursiveAutomaton.Context.RecursiveBox.AddExisting")).also { menuItem ->
+                    val contextMenu = ContextMenu()
                     existingRecursive.forEach { sub ->
                         val label = sub.displayNameForMenu()
                             .ifBlank { I18N.messages.getString("RecursiveAutomaton.Context.RecursiveBox.AddExisting.Unnamed") }
-                        cm.items.add(MenuItem(label).apply {
+                        contextMenu.items.add(MenuItem(label).apply {
                             setOnAction { _ ->
                                 automaton.addRecursiveAutomatonBox(
                                     subAutomaton = sub,
                                     name = sub.name,
                                     position = Point2D(mouseEvent.x, mouseEvent.y),
                                     bindName = false,
-                                    registerSubManager = false,
-                                    visibleInParent = true
+                                    registerSubManager = false
                                 )
                             }
                         })
                     }
-                    mi.graphic = Label("▶")
-                    mi.setOnAction { _ -> cm.show(graphView.scene.window, mouseEvent.screenX, mouseEvent.screenY) }
+                    menuItem.graphic = Label("▶")
+                    menuItem.setOnAction { _ ->
+                        contextMenu.show(
+                            graphView.scene.window, mouseEvent.screenX, mouseEvent.screenY
+                        )
+                    }
                 }
             items.add(existingMenu)
         }

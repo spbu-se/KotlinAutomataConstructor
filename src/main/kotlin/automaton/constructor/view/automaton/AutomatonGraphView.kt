@@ -47,7 +47,6 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
     override fun getAllElementsViews() = edgeViews.values.flatMap { it.transitionViews } + vertexToViewMap.values
 
     private fun registerVertex(vertex: AutomatonVertex) {
-        if (vertex is RecursiveAutomatonBox && !vertex.visibleInParent) return
         val automatonVertexView = AutomatonVertexView(vertex)
         controller.registerVertexView(automatonVertexView)
         vertexToViewMap[vertex] = automatonVertexView
