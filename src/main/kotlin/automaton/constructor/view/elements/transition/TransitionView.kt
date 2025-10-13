@@ -1,7 +1,9 @@
 package automaton.constructor.view.elements.transition
 
 import automaton.constructor.model.element.Transition
-import automaton.constructor.model.element.RecursiveAutomatonBox
+import automaton.constructor.model.element.touchesRecursiveBox
+import automaton.constructor.utils.I18N
+import automaton.constructor.utils.SettingGroup
 import automaton.constructor.utils.nonNullObjectBinding
 import automaton.constructor.utils.translateToCenter
 import javafx.beans.binding.Binding
@@ -26,12 +28,25 @@ class TransitionView(
         if (selected) Color.BLUE else Color.BLACK
     }
 
+    override fun getSettings(): List<SettingGroup> {
+        val dynamicGroups = super.getSettings()
+        val expectedLabel = I18N.messages.getString("InputTape.ExpectedChar")
+        val processedDynamicGroups =
+            if (transition.touchesRecursiveBox()) {
+                dynamicGroups.map { group ->
+                    group.copy(settings = group.settings.filterNot { it.displayName == expectedLabel })
+                }.filter { it.settings.isNotEmpty() }
+            } else {
+                dynamicGroups
+            }
+        return processedDynamicGroups
+    }
+
     init {
-        val hideLabel = transition.source is RecursiveAutomatonBox || transition.target is RecursiveAutomatonBox
         val text = text {
             fillProperty().bind(colorProperty)
             font = Font.font(48.0)
-            if (hideLabel) this.text = "" else textProperty().bind(transition.propertiesTextBinding)
+            textProperty().bind(transition.propertiesTextBinding)
             translateToCenter()
         }
         xProperty = text.xProperty()
