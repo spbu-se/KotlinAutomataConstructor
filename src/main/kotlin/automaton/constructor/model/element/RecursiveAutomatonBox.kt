@@ -9,8 +9,7 @@ class RecursiveAutomatonBox(
     override val subAutomaton: Automaton,
     name: String,
     position: Point2D,
-    val registerSubManager: Boolean = true,
-    val visibleInParent: Boolean = true
+    val registerSubManager: Boolean = true
 ) : AutomatonVertex(memoryDescriptors, propertyDescriptorGroups = emptyList(), name, position), HasSubAutomaton {
     override fun isPure() = false
 

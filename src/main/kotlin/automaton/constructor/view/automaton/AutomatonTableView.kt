@@ -3,17 +3,16 @@ package automaton.constructor.view.automaton
 import automaton.constructor.controller.AutomatonRepresentationController
 import automaton.constructor.model.automaton.Automaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
-import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.data.addContent
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.BuildingBlock
 import automaton.constructor.model.element.Transition
-import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.module.hasProblems
 import automaton.constructor.model.module.hasProblemsBinding
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.hoverableTooltip
+import automaton.constructor.utils.tryAddTransitionWithDialog
 import automaton.constructor.view.AutomatonElementView
 import automaton.constructor.view.elements.vertex.AutomatonTableVertexView
 import automaton.constructor.view.AutomatonViewContext
@@ -120,26 +119,9 @@ class NewTransitionPopup: Fragment() {
         button(I18N.messages.getString("NewTransitionPopup.Add")) {
             action {
                 if (!automaton.allowsModificationsByUser) return@action
-                val src = source.value
-                val tgt = target.value
-                if (src == null || tgt == null) return@action
-                if (src is RecursiveAutomatonBox && tgt is RecursiveAutomatonBox) {
-                    information(
-                        "Transitions between recursive automaton boxes are not allowed",
-                        title = I18N.messages.getString("Dialog.information"),
-                        owner = currentWindow
-                    )
-                    return@action
-                }
-                try {
-                    automaton.addTransition(src, tgt)
-                } catch (e: IllegalArgumentException) {
-                    information(
-                        e.message ?: "Transition not allowed",
-                        title = I18N.messages.getString("Dialog.information"),
-                        owner = currentWindow
-                    )
-                }
+                val src = source.value ?: return@action
+                val tgt = target.value ?: return@action
+                tryAddTransitionWithDialog(automaton,src,tgt,currentWindow)
             }
         }
         padding = Insets(5.0, 5.0, 5.0, 5.0)
@@ -190,32 +172,30 @@ abstract class AutomatonTableView<T: TableTransitionView, M: TransitionMap>(
                     }
                 }
                 if (automaton.allowsBuildingBlocks) {
-                    if (automaton !is RecursiveAutomaton) {
-                        button(I18N.messages.getString("AutomatonTableView.AddBuildingBlock")) {
-                            action {
-                                if (automaton.allowsModificationsByUser) {
-                                    automaton.addBuildingBlock()
-                                }
+                    button(I18N.messages.getString("AutomatonTableView.AddBuildingBlock")) {
+                        action {
+                            if (automaton.allowsModificationsByUser) {
+                                automaton.addBuildingBlock()
                             }
                         }
-                        button(I18N.messages.getString("AutomatonTableView.CopyBuildingBlock")) {
-                            action {
-                                if (!automaton.allowsModificationsByUser) return@action
-                                val file = automatonViewContext.fileController.chooseFile(
-                                    I18N.messages.getString("MainView.File.Open"),
-                                    FileChooserMode.Single
-                                ) ?: return@action
-                                automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
-                                    if (type != automaton.getTypeData()) error(
-                                        I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
-                                        I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType"),
-                                        owner = automatonViewContext.uiComponent.currentWindow
-                                    )
-                                    else {
-                                        automaton.addBuildingBlock().apply {
-                                            subAutomaton.addContent(vertices, transitions, edges)
-                                            name = file.nameWithoutExtension
-                                        }
+                    }
+                    button(I18N.messages.getString("AutomatonTableView.CopyBuildingBlock")) {
+                        action {
+                            if (!automaton.allowsModificationsByUser) return@action
+                            val file = automatonViewContext.fileController.chooseFile(
+                                I18N.messages.getString("MainView.File.Open"),
+                                FileChooserMode.Single
+                            ) ?: return@action
+                            automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
+                                if (type != automaton.getTypeData()) error(
+                                    I18N.messages.getString("AutomatonGraphController.BuildingBlockLoadingFailed"),
+                                    I18N.messages.getString("AutomatonGraphController.IncompatibleAutomatonType"),
+                                    owner = automatonViewContext.uiComponent.currentWindow
+                                )
+                                else {
+                                    automaton.addBuildingBlock().apply {
+                                        subAutomaton.addContent(vertices, transitions, edges)
+                                        name = file.nameWithoutExtension
                                     }
                                 }
                             }

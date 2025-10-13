@@ -1,6 +1,7 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
@@ -92,13 +93,12 @@ fun Automaton.addContent(
                 } else {
                     subs[vData.name] ?: this
                 }
-                addRecursiveAutomatonBox(
+                (this as RecursiveAutomaton).addRecursiveAutomatonBox(
                     subAutomaton = subAutomaton,
                     name = vData.name,
                     position = Point2D(vData.x, vData.y),
                     bindName = false,
-                    registerSubManager = true,
-                    visibleInParent = true
+                    registerSubManager = true
                 )
             }
         }.apply {

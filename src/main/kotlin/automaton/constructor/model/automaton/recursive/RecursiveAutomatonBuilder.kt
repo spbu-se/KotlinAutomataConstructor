@@ -92,7 +92,6 @@ object RecursiveAutomatonBuilder {
                         name = refNt.value,
                         bindName = false,
                         registerSubManager = true,
-                        visibleInParent = true,
                         position = Point2D.ZERO
                     )
                 }

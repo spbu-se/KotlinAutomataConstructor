@@ -5,8 +5,6 @@ import automaton.constructor.model.action.buildingblock.RemoveBuildingBlockActio
 import automaton.constructor.model.action.state.MergeNondistinguishableStatesAction
 import automaton.constructor.model.action.state.RemoveStateAction
 import automaton.constructor.model.action.transition.RemoveTransitionAction
-import automaton.constructor.model.automaton.flavours.AutomatonWithInputTape
-import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
@@ -78,9 +76,8 @@ abstract class AbstractAutomaton(
 
     fun nextStateSuffix(): Int = nextVertexSuffix(GENERATED_STATE_NAME_REGEX)
     private fun nextBuildingBlockSuffix(): Int = nextVertexSuffix(GENERATED_BUILDING_BLOCK_NAME_REGEX)
-    private fun nextRecursiveBoxSuffix(): Int = nextVertexSuffix(GENERATED_RECURSIVE_BOX_NAME_REGEX)
 
-    private fun nextVertexSuffix(vertexNameRegex: Regex): Int {
+    protected fun nextVertexSuffix(vertexNameRegex: Regex): Int {
         val takenSuffixes = vertices
             .mapNotNull { vertexNameRegex.matchEntire(it.name) }
             .mapNotNull { it.groupValues[1].toIntOrNull() }
@@ -105,20 +102,13 @@ abstract class AbstractAutomaton(
 
     override fun getIncomingTransitions(vertex: AutomatonVertex): Set<Transition> = incomingTransitions.getValue(vertex)
 
+    protected open fun validateTransitionEndpoints(source: AutomatonVertex, target: AutomatonVertex) = Unit
+    protected open fun afterTransitionCreated(transition: Transition) = Unit
+
     override fun addTransition(source: AutomatonVertex, target: AutomatonVertex): Transition {
-        if (source is RecursiveAutomatonBox && target is RecursiveAutomatonBox) {
-            throw IllegalArgumentException("Transitions between recursive automaton boxes are not allowed")
-        }
+        validateTransitionEndpoints(source, target)
         val transition = Transition(source, target, memoryDescriptors)
-        if (source is RecursiveAutomatonBox || target is RecursiveAutomatonBox) {
-            if (this is AutomatonWithInputTape) {
-                transition[inputTape.expectedChar] = EPSILON_VALUE
-                val expectedProp = transition.getProperty(inputTape.expectedChar)
-                expectedProp.addListener { _, _, newValue ->
-                    if (newValue != EPSILON_VALUE) expectedProp.value = EPSILON_VALUE
-                }
-            }
-        }
+        afterTransitionCreated(transition)
         undoRedoManager.perform(
             act = { doAddTransition(transition) },
             undo = { doRemoveTransition(transition) }
@@ -181,37 +171,7 @@ abstract class AbstractAutomaton(
         return buildingBlock
     }
 
-    override fun addRecursiveAutomatonBox(
-        subAutomaton: Automaton,
-        name: String?,
-        position: Point2D,
-        bindName: Boolean,
-        registerSubManager: Boolean,
-        visibleInParent: Boolean
-    ): RecursiveAutomatonBox {
-        val box =
-            RecursiveAutomatonBox(
-                memoryDescriptors,
-                subAutomaton,
-                name ?: (RECURSIVE_BOX_NAME_PREFIX + nextRecursiveBoxSuffix()),
-                position,
-                registerSubManager = registerSubManager,
-                visibleInParent = visibleInParent
-            )
-        if (bindName && subAutomaton !== this) {
-            if (subAutomaton.nameProperty.isBound) subAutomaton.nameProperty.unbind()
-            subAutomaton.nameProperty.bind(box.nameProperty)
-        } else if (subAutomaton !== this && subAutomaton.name.startsWith(
-                (subAutomaton as? AbstractAutomaton)?.untitledAdjective ?: "Untitled"
-            )
-        ) {
-            if (!subAutomaton.nameProperty.isBound) subAutomaton.name = box.name
-        }
-        addVertex(box)
-        return box
-    }
-
-    private fun addVertex(vertex: AutomatonVertex) {
+    protected fun addVertex(vertex: AutomatonVertex) {
         vertex.positionProperty.onChange {
             undoRedoManager.group {
                 (getIncomingTransitions(vertex) + getOutgoingTransitions(vertex)).forEach {
@@ -226,6 +186,9 @@ abstract class AbstractAutomaton(
         undoRedoManager.perform(act = { doRemoveVertex(vertex) }, undo = { doAddVertex(vertex) })
     }
 
+    protected open fun onVertexAddition(vertex: AutomatonVertex) = Unit
+    protected open fun onVertexRemoval(vertex: AutomatonVertex) = Unit
+
     private fun doAddVertex(vertex: AutomatonVertex) {
         transitionStorages[vertex] = createTransitionStorageTree(memoryDescriptors)
         outgoingTransitions[vertex] = observableSetOf()
@@ -233,10 +196,7 @@ abstract class AbstractAutomaton(
         undoRedoManager.registerProperties(vertex.undoRedoProperties)
         if (vertex is BuildingBlock)
             undoRedoManager.registerSubManager(vertex.subAutomaton.undoRedoManager)
-        if (vertex is RecursiveAutomatonBox && vertex.subAutomaton !== this && vertex.registerSubManager)
-            undoRedoManager.registerSubManager(vertex.subAutomaton.undoRedoManager)
-        if (vertex is RecursiveAutomatonBox && vertex.subAutomaton !== this)
-            (vertex.subAutomaton as? RecursiveAutomaton)?.incrementReference()
+        onVertexAddition(vertex)
         vertices.add(vertex)
     }
 
@@ -249,9 +209,7 @@ abstract class AbstractAutomaton(
         undoRedoManager.unregisterProperties(vertex.undoRedoProperties)
         if (vertex is BuildingBlock)
             undoRedoManager.unregisterSubManager(vertex.subAutomaton.undoRedoManager)
-        if (vertex is RecursiveAutomatonBox && vertex.subAutomaton !== this && vertex.registerSubManager)
-            undoRedoManager.unregisterSubManager(vertex.subAutomaton.undoRedoManager)
-        if (vertex is RecursiveAutomatonBox && vertex.subAutomaton !== this) (vertex.subAutomaton as? RecursiveAutomaton)?.decrementReference()
+        onVertexRemoval(vertex)
         vertices.remove(vertex)
     }
 
@@ -291,14 +249,14 @@ abstract class AbstractAutomaton(
         if (!visited.add(this)) return
         vertices.forEach { v ->
             v.executionStates.clear()
-            if (v is RecursiveAutomatonBox) {
-                val sub = v.subAutomaton
-                if (sub !== this) (sub as? AbstractAutomaton)?.clearExecutionStatesInternal(visited)
-            }
-            if (v is BuildingBlock) {
-                val sub = v.subAutomaton
-                if (sub !== this) (sub as? AbstractAutomaton)?.clearExecutionStatesInternal(visited)
-            }
+            clearNestedAutomaton(v, visited)
+        }
+    }
+
+    protected open fun clearNestedAutomaton(vertex: AutomatonVertex, visited: MutableSet<Automaton>) {
+        if (vertex is BuildingBlock) {
+            val sub = vertex.subAutomaton
+            if (sub !== this) (sub as? AbstractAutomaton)?.clearExecutionStatesInternal(visited)
         }
     }
 
@@ -323,9 +281,7 @@ abstract class AbstractAutomaton(
     companion object {
         const val STATE_NAME_PREFIX = "S"
         private const val BUILDING_BLOCK_NAME_PREFIX = "M"
-        private const val RECURSIVE_BOX_NAME_PREFIX = "R"
         private val GENERATED_STATE_NAME_REGEX = Regex("$STATE_NAME_PREFIX(\\d+)")
         private val GENERATED_BUILDING_BLOCK_NAME_REGEX = Regex("$BUILDING_BLOCK_NAME_PREFIX(\\d+)")
-        private val GENERATED_RECURSIVE_BOX_NAME_REGEX = Regex("${RECURSIVE_BOX_NAME_PREFIX}(\\d+)")
     }
 }

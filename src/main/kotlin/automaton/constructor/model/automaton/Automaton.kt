@@ -80,6 +80,23 @@ interface Automaton {
      */
     fun addTransition(source: AutomatonVertex, target: AutomatonVertex): Transition
 
+    /**
+     * Safe wrapper for adding a transition, intended for UI/controllers.
+     * Catches IllegalArgumentException thrown by implementations (e.g., endpoint validation)
+     * and returns a Failure with the error message instead of throwing.
+     */
+    sealed interface AddTransitionResult {
+        data class Success(val transition: Transition) : AddTransitionResult
+        data class Failure(val message: String) : AddTransitionResult
+    }
+
+    fun safeAddTransition(source: AutomatonVertex, target: AutomatonVertex): AddTransitionResult =
+        try {
+            AddTransitionResult.Success(addTransition(source, target))
+        } catch (e: IllegalArgumentException) {
+            AddTransitionResult.Failure(e.message ?: "")
+        }
+
     fun removeTransition(transition: Transition)
 
 
@@ -90,15 +107,6 @@ interface Automaton {
         name: String? = null,
         position: Point2D = Point2D.ZERO
     ): BuildingBlock
-
-    fun addRecursiveAutomatonBox(
-        subAutomaton: Automaton = this,
-        name: String? = null,
-        position: Point2D = Point2D.ZERO,
-        bindName: Boolean = true,
-        registerSubManager: Boolean = true,
-        visibleInParent: Boolean = true
-    ): RecursiveAutomatonBox
 
     fun createEmptyAutomatonOfSameType(): Automaton
 
