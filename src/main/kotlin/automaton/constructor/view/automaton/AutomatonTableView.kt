@@ -12,6 +12,7 @@ import automaton.constructor.model.module.hasProblemsBinding
 import automaton.constructor.utils.I18N
 import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.utils.hoverableTooltip
+import automaton.constructor.utils.tryAddTransitionWithDialog
 import automaton.constructor.view.AutomatonElementView
 import automaton.constructor.view.elements.vertex.AutomatonTableVertexView
 import automaton.constructor.view.AutomatonViewContext
@@ -117,7 +118,10 @@ class NewTransitionPopup: Fragment() {
         }
         button(I18N.messages.getString("NewTransitionPopup.Add")) {
             action {
-                automaton.addTransition(source.value, target.value)
+                if (!automaton.allowsModificationsByUser) return@action
+                val src = source.value ?: return@action
+                val tgt = target.value ?: return@action
+                tryAddTransitionWithDialog(automaton,src,tgt,currentWindow)
             }
         }
         padding = Insets(5.0, 5.0, 5.0, 5.0)

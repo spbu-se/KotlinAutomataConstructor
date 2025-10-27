@@ -1,14 +1,16 @@
 package automaton.constructor.model.data
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.utils.MostlyGeneratedOrInline
 import javafx.geometry.Point2D
 import kotlinx.serialization.Serializable
+import java.util.*
 
 /**
  * The data of an [automaton][Automaton].
  *
-  * It consists of a [base] type data, a list of [vertices] data, list of [transitions] data and a list of [edges] data.
+ * It consists of a [base] type data, a list of [vertices] data, list of [transitions] data and a list of [edges] data.
  *
  * [edges] data may skip non-routed edges for backward compatability.
  */
@@ -25,13 +27,26 @@ data class AutomatonData(
 /**
  * Retrieves the [data][AutomatonData] from the automaton.
  */
-fun Automaton.getData(): AutomatonData {
-    val vertexToIdMap = vertices.sortedWith(compareBy(
-        { it.name },
-        { it.allProperties.joinToString { prop -> prop.displayValue } },
-        { it.position.x },
-        { it.position.y }
-    )).asSequence().withIndex().associate { (i, v) -> v to i }
+fun Automaton.getData(): AutomatonData = getDataInternal(Collections.newSetFromMap(IdentityHashMap()))
+
+internal fun Automaton.getDataInternal(
+    visited: MutableSet<Automaton>,
+): AutomatonData {
+    if (!visited.add(this)) {
+        return AutomatonData(
+            base = getTypeData(),
+            vertices = emptySet(),
+            transitions = emptySet(),
+            edges = emptySet()
+        )
+    }
+    val vertexToIdMap = vertices.sortedWith(
+        compareBy(
+            { it.name },
+            { it.allProperties.joinToString { prop -> prop.displayValue } },
+            { it.position.x },
+            { it.position.y }
+        )).asSequence().withIndex().associate { (i, v) -> v to i }
     return AutomatonData(
         base = getTypeData(),
         vertices = getVerticesData(vertexToIdMap),
@@ -50,20 +65,46 @@ fun AutomatonData.createAutomaton(): Automaton = base.createEmptyAutomaton().als
 fun Automaton.addContent(
     verticesData: Set<AutomatonVertexData>,
     transitionsData: Set<TransitionData>,
-    edgesData: Set<AutomatonEdgeData>
+    edgesData: Set<AutomatonEdgeData>,
+    recursiveSubs: MutableMap<String, Automaton>? = null
 ) {
-    val idToVertexMap = verticesData.associate {
-        it.id to when (it) {
-            is StateData -> addState(it.name, Point2D(it.x, it.y)).apply { writeProperties(it.properties) }
+    val subs = recursiveSubs ?: mutableMapOf()
+    val orderedVerticesData: List<AutomatonVertexData> = run {
+        val (boxes, others) = verticesData.partition { it is RecursiveAutomatonBoxData }
+        val (withContent, withoutContent) = boxes.partition { box ->
+            box is RecursiveAutomatonBoxData && (box.vertices.isNotEmpty() || box.transitions.isNotEmpty())
+        }
+        withContent + withoutContent + others
+    }
+    val idToVertexMap = orderedVerticesData.associate { vData ->
+        vData.id to when (vData) {
+            is StateData -> addState(vData.name, Point2D(vData.x, vData.y)).apply { writeProperties(vData.properties) }
             is BuildingBlockData -> addBuildingBlock(
-                createEmptyAutomatonOfSameType().apply { addContent(it.vertices, it.transitions, it.edges) },
-                it.name,
-                Point2D(it.x, it.y)
+                createEmptyAutomatonOfSameType().apply { addContent(vData.vertices, vData.transitions, vData.edges) },
+                vData.name,
+                Point2D(vData.x, vData.y)
             )
+
+            is RecursiveAutomatonBoxData -> {
+                val subAutomaton = if (vData.vertices.isNotEmpty() || vData.transitions.isNotEmpty()) {
+                    subs[vData.name] ?: createEmptyAutomatonOfSameType().apply {
+                        addContent(vData.vertices, vData.transitions, vData.edges, subs)
+                    }.also { sub -> subs.putIfAbsent(vData.name, sub) }
+                } else {
+                    subs[vData.name] ?: this
+                }
+                (this as RecursiveAutomaton).addRecursiveAutomatonBox(
+                    subAutomaton = subAutomaton,
+                    name = vData.name,
+                    position = Point2D(vData.x, vData.y),
+                    bindName = false,
+                    registerSubManager = true
+                )
+            }
         }.apply {
-            isInitial = it.isInitial
-            isFinal = it.isFinal
-            requiresLayout = it.requiresLayout
+            isInitial = vData.isInitial
+            isFinal = vData.isFinal
+            requiresLayout = vData.requiresLayout
         }
     }
     for ((source, target, properties, position) in transitionsData) {

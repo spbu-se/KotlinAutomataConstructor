@@ -3,6 +3,7 @@ package automaton.constructor.view.elements.vertex
 import automaton.constructor.model.element.AutomatonVertex
 import automaton.constructor.model.element.AutomatonVertex.Companion.RADIUS
 import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.model.element.State
 import automaton.constructor.model.module.hasProblems
 import automaton.constructor.model.module.hasProblemsBinding
@@ -36,17 +37,24 @@ class AutomatonVertexView(vertex: AutomatonVertex) : AutomatonBasicVertexView(ve
                     else -> DEFAULT_COLOR
                 }
             }
-        bind(when (vertex) {
-            is State -> colorBinding
-            is BuildingBlock -> colorBinding.nonNullObjectBinding(vertex.subAutomaton.hasProblemsBinding) {
-                if (vertex.subAutomaton.hasProblems) Color.RED
-                else colorBinding.value
-            }
-        })
+        bind(
+            when (vertex) {
+                is State -> colorBinding
+                is BuildingBlock -> colorBinding.nonNullObjectBinding(vertex.subAutomaton.hasProblemsBinding) {
+                    if (vertex.subAutomaton.hasProblems) Color.RED
+                    else colorBinding.value
+                }
+
+                is RecursiveAutomatonBox -> colorBinding.nonNullObjectBinding(vertex.subAutomaton.hasProblemsBinding) {
+                    if (vertex.subAutomaton.hasProblems) Color.RED
+                    else colorBinding.value
+                }
+            })
     }
     val shapeType = when (vertex) {
         is State -> CIRCLE
         is BuildingBlock -> SQUARE
+        is RecursiveAutomatonBox -> ShapeType.ROUND_SQUARE
     }
 
     val initMarker: Node
@@ -86,7 +94,7 @@ class AutomatonVertexView(vertex: AutomatonVertex) : AutomatonBasicVertexView(ve
             textOrigin = VPos.CENTER
             wrappingWidth = RADIUS * 2
             textProperty().bind(stringBinding(vertex.nameProperty, vertex.propertiesTextBinding) {
-                listOf(vertex.name, vertex.propetiesText).filter { it.isNotEmpty() }
+                listOf(vertex.name, vertex.propertiesText).filter { it.isNotEmpty() }
                     .joinToString(separator = "/")
             })
             fontProperty().bind(textProperty().objectBinding {
@@ -112,11 +120,22 @@ class AutomatonVertexView(vertex: AutomatonVertex) : AutomatonBasicVertexView(ve
             centerYProperty().bind(positionProperty.y)
             op()
         }
+
         SQUARE -> rectangle {
             xProperty().bind(positionProperty.x - radius)
             yProperty().bind(positionProperty.y - radius)
             width = radius * 2
             height = radius * 2
+            op()
+        }
+
+        ShapeType.ROUND_SQUARE -> rectangle {
+            xProperty().bind(positionProperty.x - radius)
+            yProperty().bind(positionProperty.y - radius)
+            width = radius * 2
+            height = radius * 2
+            arcWidth = radius / 2
+            arcHeight = radius / 2
             op()
         }
     }
@@ -127,14 +146,14 @@ class AutomatonVertexView(vertex: AutomatonVertex) : AutomatonBasicVertexView(ve
     }
 
     enum class ShapeType {
-        CIRCLE, SQUARE;
+        CIRCLE, SQUARE, ROUND_SQUARE;
 
         fun project(shapeCenter: Point2D, point: Point2D): Point2D {
             val v = shapeCenter - point
             return if (v == Vector2D.ZERO) point
             else shapeCenter - RADIUS * when (this) {
                 CIRCLE -> v.normalize()
-                SQUARE -> v / max(abs(v.x), abs(v.y))
+                SQUARE, ROUND_SQUARE -> v / max(abs(v.x), abs(v.y))
             }
         }
     }

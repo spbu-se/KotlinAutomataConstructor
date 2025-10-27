@@ -17,7 +17,7 @@ import tornadofx.*
 open class AutomatonRepresentationController(
     val automaton: Automaton,
     val automatonViewContext: AutomatonViewContext
-): Controller() {
+) : Controller() {
     val lastSelectedElementProperty = objectProperty<AutomatonElementView?>(null).also {
         it.addListener { _, _, newValue ->
             if (newValue == null) {
@@ -45,11 +45,13 @@ open class AutomatonRepresentationController(
                         automatonElementView.selected = true
                         automatonElementView
                     }
+
                     automatonElementView.selected -> {
                         selectedElementsViews.remove(automatonElementView)
                         automatonElementView.selected = false
                         null
                     }
+
                     else -> {
                         selectedElementsViews.add(automatonElementView)
                         automatonElementView.selected = true
@@ -96,10 +98,17 @@ open class AutomatonRepresentationController(
                         automatonElementView.automatonElement,
                         automaton.stateActions
                     )
+
                     is BuildingBlock -> showActionsMenu(
                         automatonElementView.automatonElement,
                         automaton.buildingBlockActions
                     )
+
+                    is RecursiveAutomatonBox -> showActionsMenu(
+                        automatonElementView.automatonElement,
+                        listOf()
+                    )
+
                     is Transition -> showActionsMenu(
                         automatonElementView.automatonElement,
                         automaton.transitionActions

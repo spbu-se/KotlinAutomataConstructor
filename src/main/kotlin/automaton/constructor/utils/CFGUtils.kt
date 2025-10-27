@@ -1,7 +1,7 @@
 package automaton.constructor.utils
 
 import automaton.constructor.controller.algorithms.HellingsTransition
-import automaton.constructor.model.element.ContextFreeGrammar
+import automaton.constructor.model.grammar.ContextFreeGrammar
 import javafx.collections.ObservableList
 
 fun doNextIterationOfHellingsAlgo(

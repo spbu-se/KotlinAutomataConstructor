@@ -26,6 +26,8 @@ A comprehensive user guide is available in Russian in the [Wiki of this reposito
   - Mealy machine, Moore machine
   - Turing Machine (TM), multi-tape TM, multi-track TM, TM with registers
     - Support building blocks
+  - Recursive Automaton (Recursive State Machine)
+    - Support recursive boxes
 * Automaton graph editing and visualization
   - State and transition addition, editing, and deletion
   - State moving
@@ -54,6 +56,7 @@ A comprehensive user guide is available in Russian in the [Wiki of this reposito
   - Conversion of Moore machine to Mealy machine
   - Conversion of PDA to context-free grammar
   - Hellings algorithm
+  - Multi source BFS based regular path querying algorithm
 * Other features
   - Non determinism detection
   - Epsilon-transition detection

@@ -39,3 +39,5 @@ class Transition(
         position = null
     }
 }
+
+fun Transition.touchesRecursiveBox() = this.source is RecursiveAutomatonBox || this.target is RecursiveAutomatonBox
