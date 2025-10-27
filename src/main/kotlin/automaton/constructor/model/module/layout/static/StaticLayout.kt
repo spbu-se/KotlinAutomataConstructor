@@ -47,7 +47,7 @@ fun Automaton.toElkGraphMapping(transitionLayoutBounds: Map<Transition, Bounds>)
             ElkGraphUtil.createPort(vertexToElkNode.getValue(edge.target))
         )
         edge.transitions.forEach { transition ->
-            val elkLabel = ElkGraphUtil.createLabel(transition.propetiesText, elkEdge)
+            val elkLabel = ElkGraphUtil.createLabel(transition.propertiesText, elkEdge)
             elkLabel.width = transitionLayoutBounds.getValue(transition).width / LAYOUT_SCALE
             elkLabel.height = transitionLayoutBounds.getValue(transition).height / LAYOUT_SCALE
             elkLabel.setProperty(CoreOptions.FONT_SIZE, TRANSITION_FONT_SIZE)

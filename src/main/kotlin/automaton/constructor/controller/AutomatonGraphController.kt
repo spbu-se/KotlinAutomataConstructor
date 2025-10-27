@@ -1,19 +1,30 @@
 package automaton.constructor.controller
 
 import automaton.constructor.model.automaton.Automaton
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.automaton.allowsBuildingBlocks
 import automaton.constructor.model.data.addContent
-import automaton.constructor.model.element.*
+import automaton.constructor.model.element.BuildingBlock
+import automaton.constructor.model.element.RecursiveAutomatonBox
 import automaton.constructor.utils.*
-import automaton.constructor.view.*
+import automaton.constructor.view.AutomatonEdgeView
+import automaton.constructor.view.AutomatonElementView
+import automaton.constructor.view.AutomatonViewContext
 import automaton.constructor.view.automaton.AutomatonGraphView
-import automaton.constructor.view.elements.vertex.AutomatonVertexView
 import automaton.constructor.view.elements.transition.TransitionView
+import automaton.constructor.view.elements.vertex.AutomatonVertexView
 import javafx.geometry.Point2D
 import javafx.scene.control.ContextMenu
+import javafx.scene.control.MenuItem
+import javafx.scene.control.Label
 import javafx.scene.input.MouseButton
 import javafx.scene.shape.Line
 import tornadofx.*
+import automaton.constructor.model.automaton.recursive.displayNameForMenu
+import automaton.constructor.model.automaton.recursive.allowedBoxes
+import automaton.constructor.view.grammar.EBNFExportView
+import automaton.constructor.model.automaton.recursive.RecursiveAutomatonEBNFExporter
+import javafx.scene.input.MouseEvent
 
 class AutomatonGraphController(automaton: Automaton, automatonViewContext: AutomatonViewContext) :
     AutomatonRepresentationController(automaton, automatonViewContext) {
@@ -39,7 +50,7 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
 
     fun registerGraphView(graphView: AutomatonGraphView) {
         graphView.add(newTransitionLine)
-        graphView.setOnMouseClicked {
+        graphView.setOnMouseClicked { it ->
             it.consume()
             graphView.requestFocus()
             if (it.button == MouseButton.PRIMARY && it.isStillSincePress) clearSelection()
@@ -47,23 +58,24 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
                 ContextMenu().apply {
                     item(I18N.messages.getString("AutomatonGraphController.AddState")) {
                         action {
-                            if (automaton.allowsModificationsByUser)
-                                automaton.addState(position = Point2D(it.x, it.y))
+                            if (automaton.allowsModificationsByUser) automaton.addState(position = Point2D(it.x, it.y))
                         }
                     }
                     if (automaton.allowsBuildingBlocks) {
                         item(I18N.messages.getString("AutomatonGraphController.AddEmptyBuildingBlock")) {
                             action {
-                                if (automaton.allowsModificationsByUser)
-                                    automaton.addBuildingBlock(position = Point2D(it.x, it.y))
+                                if (automaton.allowsModificationsByUser) automaton.addBuildingBlock(
+                                    position = Point2D(
+                                        it.x, it.y
+                                    )
+                                )
                             }
                         }
                         item(I18N.messages.getString("AutomatonGraphController.CopyBuildingBlockFromFile")) {
                             action {
                                 if (!automaton.allowsModificationsByUser) return@action
                                 val file = automatonViewContext.fileController.chooseFile(
-                                    I18N.messages.getString("MainView.File.Open"),
-                                    FileChooserMode.Single
+                                    I18N.messages.getString("MainView.File.Open"), FileChooserMode.Single
                                 ) ?: return@action
                                 automatonViewContext.fileController.loadAsync(file) addOnSuccess { (type, vertices, transitions, edges) ->
                                     if (type != automaton.getTypeData()) error(
@@ -80,6 +92,9 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
                                 }
                             }
                         }
+                    }
+                    if (automaton is RecursiveAutomaton) {
+                        addRecursiveAutomatonItems(automaton, it, graphView)
                     }
                     show(graphView.scene.window, it.screenX, it.screenY)
                 }
@@ -99,6 +114,12 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
             if (it.clickCount == 2) {
                 it.consume()
                 automatonViewContext.onBuildingBlockDoubleClicked(automatonVertexView.vertex)
+            }
+        }
+        if (automatonVertexView.vertex is RecursiveAutomatonBox) automatonVertexView.onMouseClicked += {
+            if (it.clickCount == 2) {
+                it.consume()
+                automatonViewContext.onRecursiveBoxDoubleClicked(automatonVertexView.vertex)
             }
         }
         automatonVertexView.setOnMouseDragged {
@@ -156,7 +177,9 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
             if (automaton.allowsModificationsByUser) {
                 source.vertex.requiresLayout = false
                 automatonVertexView.vertex.requiresLayout = false
-                automaton.addTransition(source.vertex, automatonVertexView.vertex)
+                val src = source.vertex
+                val tgt = automatonVertexView.vertex
+                tryAddTransitionWithDialog(automaton, src, tgt, automatonViewContext.uiComponent.currentWindow)
             }
         }
     }
@@ -168,12 +191,63 @@ class AutomatonGraphController(automaton: Automaton, automatonViewContext: Autom
         }
         edgeView.transitionViews.forEach { registerTransitionView(it) }
         edgeView.transitionViews.onChange { change ->
-            while (change.next())
-                if (change.wasAdded())
-                    change.addedSubList.forEach { registerTransitionView(it) }
+            while (change.next()) if (change.wasAdded()) change.addedSubList.forEach { registerTransitionView(it) }
         }
     }
 
-    private fun registerTransitionView(transitionView: TransitionView) =
-        registerAutomatonElementView(transitionView)
+    private fun registerTransitionView(transitionView: TransitionView) = registerAutomatonElementView(transitionView)
+    private fun ContextMenu.addRecursiveAutomatonItems(
+        automaton: RecursiveAutomaton, mouseEvent: MouseEvent, graphView: AutomatonGraphView
+    ) {
+        item(I18N.messages.getString("RecursiveAutomaton.Context.RecursiveBox.Add")) {
+            action {
+                val newSub = automaton.createEmptyAutomatonOfSameType()
+                automaton.addRecursiveAutomatonBox(
+                    subAutomaton = newSub, bindName = true, position = Point2D(mouseEvent.x, mouseEvent.y)
+                )
+            }
+        }
+        item(I18N.messages.getString("RecursiveAutomaton.Context.ExportEBNFGrammar")) {
+            action {
+                val (g, warnings) = RecursiveAutomatonEBNFExporter.export(automaton)
+                val view = find<EBNFExportView>(
+                    mapOf(
+                        EBNFExportView::grammar to g, EBNFExportView::warnings to warnings
+                    )
+                )
+                view.title = I18N.messages.getString("EBNF.Export.Title")
+                view.openWindow()
+            }
+        }
+        val allowed = automaton.allowedBoxes()
+        val existingRecursive = allowed.sortedBy { it.displayNameForMenu() }
+        if (existingRecursive.isNotEmpty()) {
+            val existingMenu =
+                MenuItem(I18N.messages.getString("RecursiveAutomaton.Context.RecursiveBox.AddExisting")).also { menuItem ->
+                    val contextMenu = ContextMenu()
+                    existingRecursive.forEach { sub ->
+                        val label = sub.displayNameForMenu()
+                            .ifBlank { I18N.messages.getString("RecursiveAutomaton.Context.RecursiveBox.AddExisting.Unnamed") }
+                        contextMenu.items.add(MenuItem(label).apply {
+                            setOnAction { _ ->
+                                automaton.addRecursiveAutomatonBox(
+                                    subAutomaton = sub,
+                                    name = sub.name,
+                                    position = Point2D(mouseEvent.x, mouseEvent.y),
+                                    bindName = false,
+                                    registerSubManager = false
+                                )
+                            }
+                        })
+                    }
+                    menuItem.graphic = Label("▶")
+                    menuItem.setOnAction { _ ->
+                        contextMenu.show(
+                            graphView.scene.window, mouseEvent.screenX, mouseEvent.screenY
+                        )
+                    }
+                }
+            items.add(existingMenu)
+        }
+    }
 }

@@ -37,13 +37,14 @@ abstract class AbstractSteppingStrategy(override val name: String) : SteppingStr
             when (curExeState) {
                 is SuperExecutionState -> {
                     preStepForSuperState(curExeState)
-                    curExeState.unhandledAcceptedStates.forEach { acceptedState ->
-                        automaton.getPossibleTransitions(curExeState.buildingBlock, acceptedState.memory)
+                    val toHandle = curExeState.unhandledAcceptedStates.toList()
+                    curExeState.unhandledAcceptedStates.clear()
+                    toHandle.forEach { acceptedState ->
+                        automaton.getPossibleTransitions(curExeState.vertex, acceptedState.memory)
                             .forEach { transition ->
                                 curExeState.takeTransition(transition, memory = acceptedState.memory)
                             }
                     }
-                    curExeState.unhandledAcceptedStates.clear()
                     postStepForSuperState(curExeState)
                     if (curExeState.children.isEmpty() && !curExeState.canHaveMoreChildren && curExeState.status != ACCEPTED)
                         curExeState.fail()

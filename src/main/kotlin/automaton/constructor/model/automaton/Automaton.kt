@@ -80,6 +80,23 @@ interface Automaton {
      */
     fun addTransition(source: AutomatonVertex, target: AutomatonVertex): Transition
 
+    /**
+     * Safe wrapper for adding a transition, intended for UI/controllers.
+     * Catches IllegalArgumentException thrown by implementations (e.g., endpoint validation)
+     * and returns a Failure with the error message instead of throwing.
+     */
+    sealed interface AddTransitionResult {
+        data class Success(val transition: Transition) : AddTransitionResult
+        data class Failure(val message: String) : AddTransitionResult
+    }
+
+    fun safeAddTransition(source: AutomatonVertex, target: AutomatonVertex): AddTransitionResult =
+        try {
+            AddTransitionResult.Success(addTransition(source, target))
+        } catch (e: IllegalArgumentException) {
+            AddTransitionResult.Failure(e.message ?: "")
+        }
+
     fun removeTransition(transition: Transition)
 
 
@@ -264,18 +281,19 @@ fun Automaton.getNondistinguishableStateGroupByMember(groupMember: State): Set<S
     return states.filter { getStateIdentifier(it) == memberIdentifier }.toSet()
 }
 
-fun Automaton.mergeStates(stateGroup: Set<State>, mergeState: State = stateGroup.minBy { it.name }) = undoRedoManager.group {
-    if (stateGroup.size <= 1) return@group
-    mergeState.isInitial = stateGroup.any { it.isInitial }
-    mergeState.requiresLayout = true
-    val remainingStates = stateGroup.toMutableSet().also { it.remove(mergeState) }
-    remainingStates.forEach { state ->
-        getIncomingTransitions(state).forEach { transition ->
-            addTransition(transition.source, mergeState).writeProperties(transition.readProperties())
+fun Automaton.mergeStates(stateGroup: Set<State>, mergeState: State = stateGroup.minBy { it.name }) =
+    undoRedoManager.group {
+        if (stateGroup.size <= 1) return@group
+        mergeState.isInitial = stateGroup.any { it.isInitial }
+        mergeState.requiresLayout = true
+        val remainingStates = stateGroup.toMutableSet().also { it.remove(mergeState) }
+        remainingStates.forEach { state ->
+            getIncomingTransitions(state).forEach { transition ->
+                addTransition(transition.source, mergeState).writeProperties(transition.readProperties())
+            }
         }
+        remainingStates.forEach { removeVertex(it) }
     }
-    remainingStates.forEach { removeVertex(it) }
-}
 
 val Automaton.transformationOutput: Automaton? get() = isInputForTransformation?.resultingAutomaton
 

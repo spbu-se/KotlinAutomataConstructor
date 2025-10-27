@@ -6,7 +6,11 @@ import automaton.constructor.model.automaton.flavours.AutomatonWithStacks
 import automaton.constructor.model.data.PushdownAutomatonData
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.data.getData
-import automaton.constructor.model.element.*
+import automaton.constructor.model.grammar.CFGSymbol
+import automaton.constructor.model.grammar.ContextFreeGrammar
+import automaton.constructor.model.grammar.Nonterminal
+import automaton.constructor.model.grammar.SimpleProduction
+import automaton.constructor.model.grammar.Terminal
 import automaton.constructor.model.memory.StackDescriptor
 import automaton.constructor.model.memory.tape.InputTapeDescriptor
 import automaton.constructor.model.module.finalVertices
@@ -196,14 +200,17 @@ class PushdownAutomaton(
         }
 
         for (i in nonterminals.indices) {
-            newGrammar.productions.add(Production(nonterminals[i][i], mutableListOf()))
+            newGrammar.productions.add(SimpleProduction(nonterminals[i][i], mutableListOf()))
         }
         for (i in nonterminals.indices) {
             for (j in nonterminals.indices) {
                 for (k in nonterminals.indices) {
-                    newGrammar.productions.add(Production(nonterminals[i][j],
-                        mutableListOf(nonterminals[i][k], nonterminals[k][j])
-                    ))
+                    newGrammar.productions.add(
+                        SimpleProduction(
+                            nonterminals[i][j],
+                            mutableListOf(nonterminals[i][k], nonterminals[k][j])
+                        )
+                    )
                 }
             }
         }
@@ -227,7 +234,8 @@ class PushdownAutomaton(
                         rightSideOfNewProduction.add(Terminal(transitionTapeChar2.char))
                     }
                     newGrammar.productions.add(
-                        Production(nonterminals[indexOfSource1][indexOfTarget2], rightSideOfNewProduction))
+                        SimpleProduction(nonterminals[indexOfSource1][indexOfTarget2], rightSideOfNewProduction)
+                    )
                 }
             }
         }
@@ -237,13 +245,17 @@ class PushdownAutomaton(
                 val indexOfSource2 = automatonCopy.vertices.indexOf(automatonCopy.vertices.find { it.name == vertex.name })
                 val indexOfTarget1 = automatonCopy.vertices.indexOf(oldInitialState)
                 val indexOfTarget2 = automatonCopy.vertices.indexOf(automatonCopy.finalVertices.first())
-                newGrammar.productions.add(Production(nonterminals[indexOfSource1][indexOfTarget2],
-                    mutableListOf(nonterminals[indexOfTarget1][indexOfSource2])))
+                newGrammar.productions.add(
+                    SimpleProduction(
+                        nonterminals[indexOfSource1][indexOfTarget2],
+                        mutableListOf(nonterminals[indexOfTarget1][indexOfSource2])
+                    )
+                )
             }
         }
 
         if (biggestNonterminal != null) {
-            newGrammar.productions.add(Production(initialNonterminal, mutableListOf(biggestNonterminal!!)))
+            newGrammar.productions.add(SimpleProduction(initialNonterminal, mutableListOf(biggestNonterminal!!)))
         }
         newGrammar.removeUselessNonterminals()
         newGrammar.convertToCNF()

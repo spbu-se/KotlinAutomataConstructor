@@ -88,7 +88,7 @@ class Executor(val automaton: Automaton, val superState: SuperExecutionState? = 
     fun start(memory: List<MemoryUnit> = automaton.memoryDescriptors.map { it.createMemoryUnit() }) {
         stop()
         roots.addAll(automaton.initialVertices.map { root ->
-            ExecutionState.create(root, null, memory.map { it.copy() }, superState)
+            ExecutionState.createExecutionState(root, null, memory.map { it.copy() }, superState)
         })
     }
 

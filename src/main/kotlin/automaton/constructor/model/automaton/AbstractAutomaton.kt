@@ -8,7 +8,6 @@ import automaton.constructor.model.action.transition.RemoveTransitionAction
 import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitDescriptor
-import automaton.constructor.model.memory.tape.MultiTrackTapeDescriptor
 import automaton.constructor.model.module.AutomatonModule
 import automaton.constructor.model.property.EPSILON_VALUE
 import automaton.constructor.model.transformation.AutomatonTransformation
@@ -78,7 +77,7 @@ abstract class AbstractAutomaton(
     fun nextStateSuffix(): Int = nextVertexSuffix(GENERATED_STATE_NAME_REGEX)
     private fun nextBuildingBlockSuffix(): Int = nextVertexSuffix(GENERATED_BUILDING_BLOCK_NAME_REGEX)
 
-    private fun nextVertexSuffix(vertexNameRegex: Regex): Int {
+    protected fun nextVertexSuffix(vertexNameRegex: Regex): Int {
         val takenSuffixes = vertices
             .mapNotNull { vertexNameRegex.matchEntire(it.name) }
             .mapNotNull { it.groupValues[1].toIntOrNull() }
@@ -103,8 +102,13 @@ abstract class AbstractAutomaton(
 
     override fun getIncomingTransitions(vertex: AutomatonVertex): Set<Transition> = incomingTransitions.getValue(vertex)
 
+    protected open fun validateTransitionEndpoints(source: AutomatonVertex, target: AutomatonVertex) = Unit
+    protected open fun afterTransitionCreated(transition: Transition) = Unit
+
     override fun addTransition(source: AutomatonVertex, target: AutomatonVertex): Transition {
+        validateTransitionEndpoints(source, target)
         val transition = Transition(source, target, memoryDescriptors)
+        afterTransitionCreated(transition)
         undoRedoManager.perform(
             act = { doAddTransition(transition) },
             undo = { doRemoveTransition(transition) }
@@ -167,7 +171,7 @@ abstract class AbstractAutomaton(
         return buildingBlock
     }
 
-    private fun addVertex(vertex: AutomatonVertex) {
+    protected fun addVertex(vertex: AutomatonVertex) {
         vertex.positionProperty.onChange {
             undoRedoManager.group {
                 (getIncomingTransitions(vertex) + getOutgoingTransitions(vertex)).forEach {
@@ -182,12 +186,17 @@ abstract class AbstractAutomaton(
         undoRedoManager.perform(act = { doRemoveVertex(vertex) }, undo = { doAddVertex(vertex) })
     }
 
+    protected open fun onVertexAddition(vertex: AutomatonVertex) = Unit
+    protected open fun onVertexRemoval(vertex: AutomatonVertex) = Unit
+
     private fun doAddVertex(vertex: AutomatonVertex) {
         transitionStorages[vertex] = createTransitionStorageTree(memoryDescriptors)
         outgoingTransitions[vertex] = observableSetOf()
         incomingTransitions[vertex] = mutableSetOf()
         undoRedoManager.registerProperties(vertex.undoRedoProperties)
-        if (vertex is BuildingBlock) undoRedoManager.registerSubManager(vertex.subAutomaton.undoRedoManager)
+        if (vertex is BuildingBlock)
+            undoRedoManager.registerSubManager(vertex.subAutomaton.undoRedoManager)
+        onVertexAddition(vertex)
         vertices.add(vertex)
     }
 
@@ -198,7 +207,9 @@ abstract class AbstractAutomaton(
         outgoingTransitions.remove(vertex)
         incomingTransitions.remove(vertex)
         undoRedoManager.unregisterProperties(vertex.undoRedoProperties)
-        if (vertex is BuildingBlock) undoRedoManager.unregisterSubManager(vertex.subAutomaton.undoRedoManager)
+        if (vertex is BuildingBlock)
+            undoRedoManager.unregisterSubManager(vertex.subAutomaton.undoRedoManager)
+        onVertexRemoval(vertex)
         vertices.remove(vertex)
     }
 
@@ -230,9 +241,23 @@ abstract class AbstractAutomaton(
     }
     final override val allowsModificationsByUser by allowsModificationsByUserProperty
 
-    override fun clearExecutionStates() = vertices.forEach {
-        it.executionStates.clear()
-        if (it is BuildingBlock) it.subAutomaton.clearExecutionStates()
+    override fun clearExecutionStates() {
+        clearExecutionStatesInternal(mutableSetOf())
+    }
+
+    private fun clearExecutionStatesInternal(visited: MutableSet<Automaton>) {
+        if (!visited.add(this)) return
+        vertices.forEach { v ->
+            v.executionStates.clear()
+            clearNestedAutomaton(v, visited)
+        }
+    }
+
+    protected open fun clearNestedAutomaton(vertex: AutomatonVertex, visited: MutableSet<Automaton>) {
+        if (vertex is BuildingBlock) {
+            val sub = vertex.subAutomaton
+            if (sub !== this) (sub as? AbstractAutomaton)?.clearExecutionStatesInternal(visited)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

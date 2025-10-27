@@ -7,6 +7,7 @@ import automaton.constructor.model.automaton.MealyMooreMachine
 import automaton.constructor.model.automaton.PushdownAutomaton
 import automaton.constructor.model.automaton.RegisterAutomaton
 import automaton.constructor.model.automaton.TuringMachine
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
 import automaton.constructor.model.data.createAutomaton
 import automaton.constructor.model.serializers.JsonAutomatonSerializer
 import java.io.File
@@ -74,6 +75,7 @@ object TestAutomatons {
     val SAME_NUMBER_OF_ZEROS_AND_ONES get() = getAutomatonFromJson("/same-number-of-zeros-and-ones.atmtn") as PushdownAutomaton
     val DFA_0110011 get() = getAutomatonFromJson("/dfa-0110011.atmtn") as FiniteAutomaton
     val SAME_NUMBER_OF_ZEROS_AND_ONES_BY_EMPTY_STACK get() = getAutomatonFromJson("/same-number-of-zeros-and-ones-by-empty-stack.atmtn") as PushdownAutomaton
+    val RECURSIVE_AUTOMATON_A_KLEENE_STAR_B get() = getAutomatonFromJson("/recursive_automaton_a_kleene_star_b.atmtn") as RecursiveAutomaton
 
     private fun getAutomatonFromJson(path: String): Automaton {
         val file = File(requireNotNull(javaClass.getResource(path)) { "Missing resource $path" }.file)
@@ -141,6 +143,7 @@ object TestAutomatons {
         CORRECT_BRACKET_SEQUENCE_RECOGNISER,
         SAME_NUMBER_OF_ZEROS_AND_ONES,
         DFA_0110011,
-        SAME_NUMBER_OF_ZEROS_AND_ONES_BY_EMPTY_STACK
+        SAME_NUMBER_OF_ZEROS_AND_ONES_BY_EMPTY_STACK,
+        RECURSIVE_AUTOMATON_A_KLEENE_STAR_B
     )
 }

@@ -1,9 +1,7 @@
 package automaton.constructor.model.module.executor
 
-import automaton.constructor.model.element.AutomatonVertex
-import automaton.constructor.model.element.BuildingBlock
-import automaton.constructor.model.element.State
-import automaton.constructor.model.element.Transition
+import automaton.constructor.model.automaton.recursive.RecursiveAutomaton
+import automaton.constructor.model.element.*
 import automaton.constructor.model.memory.MemoryUnit
 import automaton.constructor.model.memory.MemoryUnitStatus.NOT_READY_TO_ACCEPT
 import automaton.constructor.model.memory.MemoryUnitStatus.REQUIRES_ACCEPTANCE
@@ -46,7 +44,7 @@ sealed class ExecutionState(
     val children = observableSetOf<ExecutionState>()
 
     fun takeTransition(transition: Transition, memory: List<MemoryUnit> = this.memory) =
-        create(
+        createExecutionState(
             transition.target,
             transition,
             memory.map { it.copy().apply { onTransition(transition) } },
@@ -70,14 +68,15 @@ sealed class ExecutionState(
     }
 
     companion object {
-        fun create(
+        fun createExecutionState(
             vertex: AutomatonVertex,
             lastTransition: Transition?,
             memory: List<MemoryUnit>,
             superState: SuperExecutionState?
-        ) = when (vertex) {
+        ): ExecutionState = when (vertex) {
             is State -> SimpleExecutionState(vertex, lastTransition, memory, superState)
-            is BuildingBlock -> SuperExecutionState(vertex, lastTransition, memory, superState)
+            is HasSubAutomaton -> SuperExecutionState(vertex, lastTransition, memory, superState)
+            else -> kotlin.error("Unsupported vertex type: $vertex")
         }
     }
 }
@@ -90,14 +89,17 @@ class SimpleExecutionState(
 ) : ExecutionState(state, lastTransition, memory, superState) {
     init {
         memory.forEach { it.onStateEntered(state) }
+        val isRecursiveSub = superState?.buildingBlock is RecursiveAutomatonBox
         statusProperty.bind(
             state.isFinalProperty.nonNullObjectBinding(
                 isFrozenProperty,
                 *memory.map { it.observableStatus }.toTypedArray()
             ) {
                 when {
+                    isRecursiveSub && state.isFinal -> ACCEPTED
                     (state.isFinal || memory.any { it.status == REQUIRES_ACCEPTANCE }) &&
                             memory.all { it.status != NOT_READY_TO_ACCEPT } -> ACCEPTED
+
                     isFrozen -> FROZEN
                     else -> RUNNING
                 }
@@ -111,12 +113,18 @@ class SimpleExecutionState(
 }
 
 class SuperExecutionState(
-    val buildingBlock: BuildingBlock,
+    val buildingBlock: HasSubAutomaton,
     lastTransition: Transition?,
     memory: List<MemoryUnit>,
     superState: SuperExecutionState?
-) : ExecutionState(buildingBlock, lastTransition, memory, superState) {
-    val subExecutor = Executor(buildingBlock.subAutomaton, this)
+) : ExecutionState(buildingBlock as AutomatonVertex, lastTransition, memory, superState) {
+    private val effectiveSubAutomaton = when (buildingBlock) {
+        is RecursiveAutomatonBox -> (buildingBlock.subAutomaton as? RecursiveAutomaton)
+            ?.shallowCloneForRecursion() ?: buildingBlock.subAutomaton
+
+        else -> buildingBlock.subAutomaton
+    }
+    val subExecutor = Executor(effectiveSubAutomaton, this)
     val unhandledAcceptedStates = observableSetOf<ExecutionState>()
 
     init {

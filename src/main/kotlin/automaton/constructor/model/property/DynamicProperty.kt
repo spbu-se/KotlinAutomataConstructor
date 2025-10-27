@@ -32,4 +32,8 @@ class DynamicProperty<T>(
      * Human-readable string representation of this property
      */
     override fun toString(): String = descriptor.stringConverter.toString(value)
+
+    fun setFromString(s: String) {
+        value = descriptor.stringConverter.fromString(s)
+    }
 }

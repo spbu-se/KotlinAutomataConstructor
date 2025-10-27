@@ -8,10 +8,9 @@ import automaton.constructor.model.data.serializersModule
 import automaton.constructor.model.memory.Test
 import automaton.constructor.model.memory.TestsForSerializing
 import automaton.constructor.utils.*
-import automaton.constructor.utils.addOnSuccess
 import automaton.constructor.view.tests.TestAndResult
-import automaton.constructor.view.tests.TestsView
 import automaton.constructor.view.tests.TestsResultsFragment
+import automaton.constructor.view.tests.TestsView
 import javafx.concurrent.Task
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
@@ -48,8 +47,10 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
             I18N.messages.getString("TestsController.Saving"),
             daemon = false
         ) {
-            val testsForSerializing = TestsForSerializing(tests.map { test -> test.input.map { it.getData() } },
-                openedAutomaton::class.simpleName!!)
+            val testsForSerializing = TestsForSerializing(
+                tests.map { test -> test.input.map { it.getData() } },
+                openedAutomaton::class.simpleName!!
+            )
             file.writeText(formatForSerializing.encodeToString(testsForSerializing))
         } addOnSuccess {
             wereTestsModified = false
@@ -70,8 +71,12 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
     private fun chooseFile(title: String, mode: FileChooserMode): File? =
         chooseFile(
             title = title,
-            filters = arrayOf(FileChooser.ExtensionFilter(I18N.messages.getString("TestsController.Description"),
-                "*.json")),
+            filters = arrayOf(
+                FileChooser.ExtensionFilter(
+                    I18N.messages.getString("TestsController.Description"),
+                    "*.json"
+                )
+            ),
             initialDirectory = defaultDirectory(),
             mode = mode,
             owner = testsWindow.currentWindow,
@@ -107,7 +112,8 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
             val descriptors = deserializedTests.tests.map { test -> Test(test.map { it.createDescriptor() }) }
             if (deserializedTests.automatonType != openedAutomaton::class.simpleName!! ||
                 (deserializedTests.tests.isNotEmpty() &&
-                !openedAutomaton.canUseTheseDescriptors(descriptors[0].input))) {
+                        !openedAutomaton.canUseTheseDescriptors(descriptors[0].input))
+            ) {
                 null
             } else {
                 descriptors
@@ -128,13 +134,14 @@ class TestsController(val openedAutomaton: Automaton) : Controller() {
         val testsAndResults = mutableListOf<TestAndResult>()
         tests.forEach { test ->
             val automatonCopy = openedAutomaton.getData().createAutomaton()
-            val memory = automatonCopy.memoryDescriptors.zip(test.input).map {
-                    (descriptor, content) -> descriptor.createMemoryUnit(content)
+            val memory = automatonCopy.memoryDescriptors.zip(test.input).map { (descriptor, content) ->
+                descriptor.createMemoryUnit(content)
             }
             val executorResult = createExecutorAndRun(automatonCopy, memory) ?: return@runOnTests
             testsAndResults.add(TestAndResult(test, executorResult.executionResult, executorResult.graphic))
         }
-        val testsResultsWindow = find<TestsResultsFragment>(mapOf(TestsResultsFragment::testsAndResults to testsAndResults))
+        val testsResultsWindow =
+            find<TestsResultsFragment>(mapOf(TestsResultsFragment::testsAndResults to testsAndResults))
         testsResultsWindow.title = I18N.messages.getString("TestsResultsFragment.Title")
         testsResultsWindow.openWindow()
     }

@@ -8,5 +8,6 @@ fun getAllAutomatonFactories() = listOf<AutomatonFactory>(
     TuringMachineFactory(),
     MultiTrackTuringMachineFactory(),
     MultiTapeTuringMachineFactory(),
-    TuringMachineWithRegistersFactory()
+    TuringMachineWithRegistersFactory(),
+    RecursiveAutomatonFactory(),
 )
