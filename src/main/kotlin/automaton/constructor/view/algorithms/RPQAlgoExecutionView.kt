@@ -73,7 +73,7 @@ class RPQAlgoExecutionView : Fragment() {
         label(I18N.messages.getString("RPQAlgorithm.Execution.Info")) {
             padding = Insets(4.0)
         }
-        label(I18N.messages.getString("RPQAlgorithm.Execution.Description")) {
+        text(I18N.messages.getString("RPQAlgorithm.Execution.Description")) {
             padding = Insets(4.0)
         }
 
