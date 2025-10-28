@@ -30,7 +30,17 @@ object RecursiveAutomatonBuilder {
         root.nameProperty.unbind()
         if (grammar.productions.isEmpty()) return
 
-        val transformed = eliminateImmediateLeftRecursion(grammar)
+        val productionsByNonterminal = groupProductions(grammar)
+
+        val grammarForLeftRecursionElimination = EBNFGrammar().apply {
+            grammar.nonterminals.forEach { addNonterminal(it) }
+            initialNonterminal = grammar.initialNonterminal
+            productionsByNonterminal.forEach { (nonterminal, rhs) ->
+                if (rhs != null) addProduction(nonterminal, rhs)
+            }
+        }
+
+        val transformed = eliminateImmediateLeftRecursion(grammarForLeftRecursionElimination)
         val initial = transformed.initialNonterminal
 
         val grouped = groupProductions(transformed)
