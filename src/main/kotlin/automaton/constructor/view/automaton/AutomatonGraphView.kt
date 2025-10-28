@@ -67,16 +67,22 @@ class AutomatonGraphView(val automaton: Automaton, private val automatonViewCont
                 }
             }
             is RecursiveAutomatonBox -> {
-                automatonVertexView.hoverableTooltip(stopManagingOnInteraction = true) {
-                    Pane().apply {
-                        minWidth = this@AutomatonGraphView.scene.window.width / 1.5
-                        minHeight = this@AutomatonGraphView.scene.window.height / 1.5
-                        maxWidth = this@AutomatonGraphView.scene.window.width / 1.5
-                        maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
-                        val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
-                        add(subAutomatonView)
-                        subAutomatonView.tablePrefHeight.bind(subAutomatonView.heightProperty())
-                        subAutomatonView.fitToParentSize()
+                val previewAllowed = this.automaton !== vertex.subAutomaton
+                println(previewAllowed)
+                if (!previewAllowed) {
+                    automatonVertexView.hoverableTooltip { null }
+                } else {
+                    automatonVertexView.hoverableTooltip(stopManagingOnInteraction = true) {
+                        Pane().apply {
+                            minWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                            minHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                            maxWidth = this@AutomatonGraphView.scene.window.width / 1.5
+                            maxHeight = this@AutomatonGraphView.scene.window.height / 1.5
+                            val subAutomatonView = automatonViewContext.getAutomatonView(vertex.subAutomaton)
+                            add(subAutomatonView)
+                            subAutomatonView.tablePrefHeight.bind(subAutomatonView.heightProperty())
+                            subAutomatonView.fitToParentSize()
+                        }
                     }
                 }
             }
