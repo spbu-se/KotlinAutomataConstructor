@@ -245,13 +245,15 @@ abstract class AbstractAutomaton(
         clearExecutionStatesInternal(mutableSetOf())
     }
 
-    private fun clearExecutionStatesInternal(visited: MutableSet<Automaton>) {
+    protected fun clearExecutionStatesInternal(visited: MutableSet<Automaton>) {
         if (!visited.add(this)) return
         vertices.forEach { v ->
             v.executionStates.clear()
             clearNestedAutomaton(v, visited)
         }
     }
+
+    internal fun clearExecutionStatesFromOutside(visited: MutableSet<Automaton>) = clearExecutionStatesInternal(visited)
 
     protected open fun clearNestedAutomaton(vertex: AutomatonVertex, visited: MutableSet<Automaton>) {
         if (vertex is BuildingBlock) {
