@@ -199,7 +199,7 @@ class RecursiveAutomaton(
     override fun clearNestedAutomaton(vertex: AutomatonVertex, visited: MutableSet<Automaton>) {
         if (vertex is RecursiveAutomatonBox) {
             val sub = vertex.subAutomaton
-            if (sub !== this) (sub as? AbstractAutomaton)?.clearExecutionStates()
+            if (sub !== this) (sub as? AbstractAutomaton)?.clearExecutionStatesFromOutside(visited)
         }
     }
 
